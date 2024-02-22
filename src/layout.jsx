@@ -18,7 +18,6 @@
                 setSession(session)
             })
 
-            console.log(session);
 
             // Redirect if session is not found
 

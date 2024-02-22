@@ -15,7 +15,7 @@ const HomePage = () => {
         if (previousPercent === 100) {
           return navigate("/scoreboard");
         }
-        const diff = Math.random() * 10;
+        const diff = Math.random() * 20;
         return Math.min(previousPercent + diff, 100);
       });
     }, 500);

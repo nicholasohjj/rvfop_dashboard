@@ -35,7 +35,7 @@ export const Footer = () => {
                             }}
                             onClick={() => setOpen(false)}
                         >
-                            <MenuListItem onClick={() => handleNavigate("/login")}>
+                            <MenuListItem onClick={() => handleNavigate("/scoreboard")}>
 
                                 Scoreboard
                             </MenuListItem>

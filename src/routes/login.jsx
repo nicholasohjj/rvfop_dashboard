@@ -31,7 +31,6 @@ export const Login = () => {
       }
 
       supabaseClient.auth.getSession().then(({ data: { session } }) => {
-        console.log(session);
       })
 
       navigate("/");

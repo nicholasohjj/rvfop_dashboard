@@ -8,7 +8,7 @@ import { Login } from './routes/login';
 import { Layout } from './layout';
 import Scoreboard from "./routes/scoreboard";
 import HomePage from "./routes/homepage";
-
+import Group from "./routes/group";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -22,6 +22,10 @@ const router = createBrowserRouter([
       {
         path: "/scoreboard",
         element: <Scoreboard />,
+      },
+      {
+        path: "/group",
+        element: <Group />,
       },
     ],
   },

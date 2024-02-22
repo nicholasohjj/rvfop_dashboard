@@ -10,9 +10,10 @@ import {
   WindowContent,
   WindowHeader,
   Hourglass,
+  GroupBox
 } from "react95";
 import { supabaseClient } from "../supabase/supabaseClient";
-const Scoreboard = () => {
+const Group = () => {
   const [houses, setHouses] = useState([]);
   const [loading, setLoading] = useState(false);
   const [sortKey, setSortKey] = useState("name"); // Default sort column
@@ -54,7 +55,7 @@ const Scoreboard = () => {
   if (loading) {
     return (
       <Window style={{ flex: 1, alignItems: 'center', width: 320 }}>
-        <WindowHeader>Scoreboard</WindowHeader>
+        <WindowHeader>My Progress</WindowHeader>
         <Hourglass
           size={32}
           style={{ flex: 1, alignItems: "center", margin: 20 }}
@@ -65,8 +66,11 @@ const Scoreboard = () => {
 
   return (
     <Window style={{ flex: 1, width: 320 }}>
-      <WindowHeader>Scoreboard</WindowHeader>
+      <WindowHeader>My Progress</WindowHeader>
       <WindowContent>
+        <GroupBox>
+          
+        </GroupBox>
         <Table>
           <TableHead>
             <TableRow>
@@ -94,4 +98,4 @@ const Scoreboard = () => {
     </Window>
   );
 };
-export default Scoreboard;
+export default Group;
