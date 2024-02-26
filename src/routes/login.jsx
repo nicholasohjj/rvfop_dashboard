@@ -59,7 +59,7 @@ export const Login = () => {
             <span>Welcome to Insieme</span>
           </WindowHeader>
           <div style={{ marginTop: 8 }}>
-            <img src="../../images/logo.png" alt="rvrc-logo" width={100} />
+            <img src="https://insieme.s3.ap-southeast-1.amazonaws.com/logo.png" alt="rvrc-logo" width={100} />
           </div>
           <WindowContent>
           <form onSubmit={handleSubmit}>

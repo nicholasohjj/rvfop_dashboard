@@ -28,7 +28,7 @@ export const Footer = () => {
                         style={{ fontWeight: "bold" }}
                     >
                         <img
-                            src="../images/logo.png"
+                            src="https://insieme.s3.ap-southeast-1.amazonaws.com/logo.png"
                             alt="rvrc-logo"
                             style={{ height: "20px", marginRight: 4 }}
                         />
@@ -46,7 +46,7 @@ export const Footer = () => {
 
                                 Scoreboard
                             </MenuListItem>
-                            <MenuListItem onClick={() => handleNavigate("/login")}>
+                            <MenuListItem onClick={() => handleNavigate("/group")}>
 
                                 My Progress
                             </MenuListItem>
