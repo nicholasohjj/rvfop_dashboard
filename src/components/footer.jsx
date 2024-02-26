@@ -21,7 +21,7 @@ export const Footer = () => {
                         style={{ fontWeight: "bold" }}
                     >
                         <img
-                            src="../../../images/logo.png"
+                            src="../images/logo.png"
                             alt="rvrc-logo"
                             style={{ height: "20px", marginRight: 4 }}
                         />
