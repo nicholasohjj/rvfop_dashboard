@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { AppBar, Toolbar, Button, MenuList, MenuListItem } from "react95";
 import { useNavigate } from "react-router-dom";
-
+import { supabaseClient } from "../supabase/supabaseClient";
 export const Footer = () => {
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
@@ -9,6 +9,13 @@ export const Footer = () => {
     const handleNavigate = (path) => {
         navigate(path);
     };
+
+    const handleLogout = () => {
+        supabaseClient.auth.signOut();
+        console.log(supabaseClient.auth.getSession());
+        navigate("/login");
+    }
+
 
 
     return (
@@ -43,7 +50,7 @@ export const Footer = () => {
 
                                 My Progress
                             </MenuListItem>
-                            <MenuListItem onClick={() => handleNavigate("/login")}>
+                            <MenuListItem onClick={() => handleLogout()}>
                                 <span role="img" aria-label="🔙">
                                     🔙
                                 </span>
