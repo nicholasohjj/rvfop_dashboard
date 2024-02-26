@@ -7,7 +7,7 @@ import { Layout } from './layout';
 import Scoreboard from "./routes/scoreboard";
 import HomePage from "./routes/homepage";
 import Group from "./routes/group";
-
+import { UpdatePassword } from './routes/updatePassword';
 const App = () => {
 
   const router = createBrowserRouter([
@@ -33,6 +33,11 @@ const App = () => {
     {
       path: "/login",
       element: <Login />,
+      errorElement: <ErrorPage />,
+    },
+    {
+      path: "/updatepassword",
+      element: <UpdatePassword />,
       errorElement: <ErrorPage />,
     },
     {

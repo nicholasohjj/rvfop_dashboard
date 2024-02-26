@@ -11,7 +11,8 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { supabaseClient } from "../supabase/supabaseClient";
 
-export const Login = () => {
+export const UpdatePassword = () => {
+
   const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
   const constraintsRef = useRef(null);
@@ -19,35 +20,28 @@ export const Login = () => {
 
   useEffect(() => {
       const checkSession = async () => {
-          const { data: { session }, error } = await supabaseClient.auth.getSession();
-
-          if (session) {
-              navigate("/");
-          }
+          const { data: { user } } = await supabaseClient.auth.getUser();
+          console.log(user)
+          setemail(user.email);
       };
 
       checkSession();
 
-      const { data: listener } = supabaseClient.auth.onAuthStateChange((_event, session) => {
-          if (session) {
-              navigate("/updatepassword");
-          }
-      });
-
-  }, [navigate]);
+  }, []);
 
   const handleSubmit = async(e) => {
     e.preventDefault();
 
     try {
-      const { data, error } = await supabaseClient.auth.signInWithOtp({
-        email,
-        options: { redirectTo: "http://localhost:5173/updatepassword" },
+      const { data, error } = await supabaseClient.auth.updateUser({
+        password
       });
 
       if (error) {
         throw error;
       }
+
+      navigate("/");
     }
     catch (error) {
       alert(error.error_description || error.message);
@@ -70,11 +64,9 @@ export const Login = () => {
       <motion.div drag dragConstraints={constraintsRef}>
         <Window>
           <WindowHeader>
-            <span>Welcome to Insieme</span>
+            <span>Update your password</span>
           </WindowHeader>
-          <div style={{ marginTop: 8 }}>
-            <img src="https://insieme.s3.ap-southeast-1.amazonaws.com/logo.png" alt="rvrc-logo" width={100} />
-          </div>
+
           <WindowContent>
           <form onSubmit={handleSubmit}>
 
@@ -90,8 +82,18 @@ export const Login = () => {
                   />
                 </div>
                 <br />
+                <TextInput
+                  placeholder="Password"
+                  fullWidth
+                  type="password"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                  }}
+                />
+                <br />
                 <Button type="submit" value="login">
-                  Sign in
+                  Update
                 </Button>
               </div>
             </form>
