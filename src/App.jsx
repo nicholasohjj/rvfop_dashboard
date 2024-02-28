@@ -7,29 +7,36 @@ import Scoreboard from "./routes/scoreboard";
 import HomePage from "./routes/homepage";
 import Progress from "./routes/progress";
 import { supabaseClient } from './supabase/supabaseClient';
-
+import { Update } from './routes/update';
 const App = () => {
   const [session, setSession] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const checkSession = async () => {
         const { data: { session }, error } = await supabaseClient.auth.getSession();
 
         setSession(session);
+        // Set loading to false after the session check
+        setLoading(false);
     };
 
     checkSession();
 
     const { data: listener } = supabaseClient.auth.onAuthStateChange((_event, session) => {
         setSession(session);
+        // Ideally, handle loading state here as well if necessary
     });
 
-}, []);
+    // Cleanup listener on component unmount
+
+
+  }, []);
 
   const router = createBrowserRouter([
     {
       path: "/",
-      element: session ? <Layout /> : <Navigate to="/login" replace />,
+      element: loading ? <HomePage/> : session ? <Layout /> : <Navigate to="/login" replace />,
       errorElement: <ErrorPage />,
       children: [
         {
@@ -56,6 +63,10 @@ const App = () => {
     {
       path: "/error",
       element: <ErrorPage />,
+    },
+    {
+      path: "/update",
+      element: loading ? <HomePage/> : session ? <Update /> : <Navigate to="/login" replace />,
     },
     {
       path: "*",

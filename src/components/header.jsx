@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { AppBar, Toolbar, Button, MenuList, MenuListItem } from "react95";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export const Header = () => {
+    const navigate = useNavigate();
     const [open, setOpen] = useState(false);
 
     return (
@@ -45,6 +46,12 @@ export const Header = () => {
                         }}
                         onClick={() => setOpen(false)}
                     >
+                                                    <MenuListItem onClick={() => navigate('/update')}>
+                                <span role="img" aria-label="🔙">
+                                </span>
+                                Update Password
+                            </MenuListItem>
+                        
                     </MenuList>
                 )}
             </Toolbar>

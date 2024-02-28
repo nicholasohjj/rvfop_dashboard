@@ -6,13 +6,12 @@ import {
   WindowContent,
   TextInput,
   Button,
-  Tooltip
 } from "react95";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { supabaseClient } from "../supabase/supabaseClient";
 
-export const Login = () => {
+export const Update = () => {
   const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -21,6 +20,13 @@ export const Login = () => {
   const navigate = useNavigate(); // Hook for navigation
 
   useEffect(() => {
+    const getEmail = async () => {
+      const { data } = await supabaseClient.auth.getUser();
+      setemail(data.user.email);
+  };
+
+  getEmail();
+
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
     };
@@ -35,8 +41,7 @@ export const Login = () => {
     e.preventDefault();
 
     try {
-      const { data, error } = await supabaseClient.auth.signInWithPassword({
-        email,
+      const { data, error } = await supabaseClient.auth.updateUser({
         password,
       });
 
@@ -74,13 +79,8 @@ export const Login = () => {
       <motion.div drag dragConstraints={constraintsRef} >
       <Window style={windowStyle}>
           <WindowHeader>
-            <span>Insieme 2024</span>
+            <span>Update your password</span>
           </WindowHeader>
-          <div style={{ marginTop: 8 }}>
-          <Tooltip  text='Meow! 🐱‍' enterDelay={100} leaveDelay={100}>
-            <img src="https://insieme.s3.ap-southeast-1.amazonaws.com/logo.png" alt="rvrc-logo" width={100} />
-            </Tooltip >
-          </div>
           <WindowContent>
           <form onSubmit={handleSubmit}>
 
@@ -90,6 +90,7 @@ export const Login = () => {
                     placeholder="Email Address"
                     fullWidth
                     value={email}
+                    disabled 
                     onChange={(e) => {
                       setemail(e.target.value);
                     }}
@@ -107,7 +108,7 @@ export const Login = () => {
                 />
                 <br />
                 <Button type="submit" value="login">
-                  Sign in
+                  Update
                 </Button>
               </div>
             </form>
