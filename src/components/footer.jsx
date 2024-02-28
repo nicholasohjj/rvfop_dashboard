@@ -46,7 +46,7 @@ export const Footer = () => {
 
                                 Scoreboard
                             </MenuListItem>
-                            <MenuListItem onClick={() => handleNavigate("/group")}>
+                            <MenuListItem onClick={() => handleNavigate("/progress")}>
 
                                 My Progress
                             </MenuListItem>

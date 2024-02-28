@@ -16,10 +16,11 @@ const Scoreboard = () => {
   const [houses, setHouses] = useState([]);
   const [loading, setLoading] = useState(false);
   const [sortKey, setSortKey] = useState("name"); // Default sort column
-  const [sortDirection, setSortDirection] = useState("asc"); // or 'desc'
+  const [sortDirection, setSortDirection] = useState("desc"); // Start with points descending
 
   useEffect(() => {
     const fetchHouses = async () => {
+      setLoading(true);
       const { data, error } = await supabaseClient
         .from("houses")
         .select("house_id, name, total_points");
@@ -27,14 +28,20 @@ const Scoreboard = () => {
       if (error) {
         console.error("Error fetching houses:", error.message);
       } else {
-        setHouses(data);
-        setLoading(false);
+        // Apply initial sort (points DESC, name ASC) immediately after fetch
+        const sortedData = data.sort((a, b) => {
+          if (a.total_points === b.total_points) {
+            return a.name.localeCompare(b.name); // Secondary sort by name ASC
+          }
+          return b.total_points - a.total_points; // Primary sort by points DESC
+        });
+        setHouses(sortedData);
       }
+      setLoading(false);
     };
 
-    setLoading(true);
     fetchHouses();
-  }, []); // Removed 'houses' from the dependency array to prevent infinite loops.
+  }, []);
 
   const sortHouses = (key) => {
     const direction =
