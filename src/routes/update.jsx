@@ -25,14 +25,12 @@ export const Update = () => {
       setemail(data.user.email);
   };
 
-  getEmail();
-
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
     };
 
     window.addEventListener('resize', handleResize);
-
+    getEmail();
     // Cleanup the event listener on component unmount
     return () => window.removeEventListener('resize', handleResize);
   }, []);
