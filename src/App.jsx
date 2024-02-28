@@ -1,19 +1,35 @@
-import React, { useEffect } from 'react';
-import { createBrowserRouter, RouterProvider, useNavigate, Navigate  } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { createBrowserRouter, RouterProvider, Navigate  } from 'react-router-dom';
 import ErrorPage from "./routes/errorpage";
-// original Windows95 font (optionally)
 import { Login } from './routes/login';
 import { Layout } from './layout';
 import Scoreboard from "./routes/scoreboard";
 import HomePage from "./routes/homepage";
 import Progress from "./routes/progress";
+import { supabaseClient } from './supabase/supabaseClient';
 
 const App = () => {
+  const [session, setSession] = useState(null);
+
+  useEffect(() => {
+    const checkSession = async () => {
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
+
+        setSession(session);
+    };
+
+    checkSession();
+
+    const { data: listener } = supabaseClient.auth.onAuthStateChange((_event, session) => {
+        setSession(session);
+    });
+
+}, []);
 
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <Layout />,
+      element: session ? <Layout /> : <Navigate to="/login" replace />,
       errorElement: <ErrorPage />,
       children: [
         {

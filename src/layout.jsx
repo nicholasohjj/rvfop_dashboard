@@ -1,31 +1,9 @@
 
     import { Footer } from "./components/footer";
     import { Header } from "./components/header";
-    import { supabaseClient } from "./supabase/supabaseClient";
-    import { useEffect } from "react";
-    import { useNavigate, Outlet } from 'react-router-dom';
+    import { Outlet } from 'react-router-dom';
 
     export const Layout = () => {
-        const navigate = useNavigate();
-
-        useEffect(() => {
-            const checkSession = async () => {
-                const { data: { session }, error } = await supabaseClient.auth.getSession();
-    
-                if (!session && !error) {
-                    navigate("/login");
-                }
-            };
-    
-            checkSession();
-    
-            const { data: listener } = supabaseClient.auth.onAuthStateChange((_event, session) => {
-                if (!session) {
-                    navigate("/login");
-                }
-            });
-    
-        }, [navigate]);
 
         return (
             <div style={{flex:1}}>

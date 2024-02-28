@@ -54,7 +54,7 @@ export const Login = () => {
   };
 
   const windowStyle = {
-    width: windowWidth > 500 ? '500' : '90%', // Adjust width here
+    width: windowWidth > 500 ? 500 : '90%', // Adjust width here
     margin: "0%",
   };
 
