@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 import {
   Window,
@@ -12,10 +12,23 @@ import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { supabaseClient } from "../supabase/supabaseClient";
 
 export const Login = () => {
-  const [email, setemail] = useState("e1234567@u.nus.edu");
-  const [password, setPassword] = useState("ensieme-supabase");
+  const [email, setemail] = useState("");
+  const [password, setPassword] = useState("");
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
   const constraintsRef = useRef(null);
   const navigate = useNavigate(); // Hook for navigation
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup the event listener on component unmount
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleSubmit = async(e) => {
     e.preventDefault();
@@ -40,6 +53,11 @@ export const Login = () => {
     }
   };
 
+  const windowStyle = {
+    width: windowWidth > 500 ? '500' : '90%', // Adjust width here
+    margin: "0%",
+  };
+
   return (
     <div
       ref={constraintsRef}
@@ -47,14 +65,13 @@ export const Login = () => {
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
-        alignItems: "center",
         textAlign: "center",
         minHeight: "100vh",
         backgroundColor: "rgb(0, 128, 128)",
       }}
     >
-      <motion.div drag dragConstraints={constraintsRef}>
-        <Window>
+      <motion.div drag dragConstraints={constraintsRef} >
+      <Window style={windowStyle}>
           <WindowHeader>
             <span>Welcome to Insieme</span>
           </WindowHeader>
@@ -64,10 +81,10 @@ export const Login = () => {
           <WindowContent>
           <form onSubmit={handleSubmit}>
 
-              <div style={{ width: 500 }}>
+              <div >
                 <div style={{ display: "flex" }}>
                   <TextInput
-                    placeholder="User Name"
+                    placeholder="Email Address"
                     fullWidth
                     value={email}
                     onChange={(e) => {
