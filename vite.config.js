@@ -11,7 +11,7 @@ export default defineConfig({
       manifest: {
         name: 'Insieme 2024',
         short_name: 'Insieme',
-        theme_color: '#ffffff',
+        theme_color: '#008080',
         icons: [
             {
                 src: './public/favicon-16x16.png',
