@@ -6,9 +6,9 @@ import {
   WindowContent,
   TextInput,
   Button,
-  Tooltip
+  Tooltip,
 } from "react95";
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useTransform } from "framer-motion";
 import { redirect, useNavigate } from "react-router-dom"; // Import useNavigate
 import { supabaseClient } from "../supabase/supabaseClient";
 import styled from "styled-components";
@@ -23,9 +23,10 @@ const CloseIcon = styled.div`
   position: relative;
   &:before,
   &:after {
-    content: '';
+    content: "";
     position: absolute;
-    background: ${({ theme }) => theme.materialText}; // Adjust the color as needed
+    background: ${({ theme }) =>
+      theme.materialText}; // Adjust the color as needed
   }
   &:before {
     height: 100%;
@@ -43,7 +44,7 @@ const CloseIcon = styled.div`
 `;
 
 const StyledWindowHeader = styled(WindowHeader)`
-  background-color: #FF0000; // Change this hex code to your desired color
+  background-color: #ff0000; // Change this hex code to your desired color
   color: white; // Adjust the text color as needed for contrast
   display: flex;
   justify-content: space-between;
@@ -58,16 +59,21 @@ export const Login = () => {
   const [error, setError] = useState(null);
   const constraintsRef = useRef(null);
   const navigate = useNavigate(); // Hook for navigation
+  const dragX = useMotionValue(0);
+  const dragxError = useMotionValue(0);
+
+  const rotateValue = useTransform(dragX, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
+  const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
 
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     // Cleanup the event listener on component unmount
-    return () => window.removeEventListener('resize', handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const modalVariants = {
@@ -83,11 +89,9 @@ export const Login = () => {
 
   const handleResetPassword = async () => {
     try {
-      const { error } = await supabaseClient.auth.resetPasswordForEmail(
-        email, {
+      const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
         redirectTo: "https://insieme.vercel.app/reset",
-        }
-      );
+      });
 
       if (error) {
         throw error;
@@ -102,9 +106,9 @@ export const Login = () => {
       setIsModalOpen(true);
       setError(error);
     }
-  }
+  };
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
@@ -117,19 +121,17 @@ export const Login = () => {
         throw error;
       }
 
-      supabaseClient.auth.getSession().then(({ data: { session } }) => {
-      })
+      supabaseClient.auth.getSession().then(({ data: { session } }) => {});
 
       navigate("/");
-    }
-    catch (error) {
+    } catch (error) {
       setIsModalOpen(true);
       setError(error);
     }
   };
 
   const windowStyle = {
-    width: windowWidth > 500 ? 500 : '90%', // Adjust width here
+    width: windowWidth > 500 ? 500 : "90%", // Adjust width here
     margin: "0%",
   };
 
@@ -145,20 +147,27 @@ export const Login = () => {
         backgroundColor: "rgb(0, 128, 128)",
       }}
     >
-      <motion.div drag dragConstraints={constraintsRef} >
-      <Window style={windowStyle}>
+      <motion.div
+        drag
+        dragConstraints={constraintsRef}
+        style={{ rotate: rotateValue, x: dragX }} // Apply the dynamic rotation and x position
+      >
+        <Window style={windowStyle}>
           <WindowHeader>
             <span>Insieme 2024</span>
           </WindowHeader>
           <div style={{ marginTop: 8 }}>
-          <Tooltip  text='Meow! 🐱‍' enterDelay={100} leaveDelay={100}>
-            <img src="https://insieme.s3.ap-southeast-1.amazonaws.com/logo.png" alt="rvrc-logo" width={100} />
-            </Tooltip >
+            <Tooltip text="Meow! 🐱‍" enterDelay={100} leaveDelay={100}>
+              <img
+                src="https://insieme.s3.ap-southeast-1.amazonaws.com/logo.png"
+                alt="rvrc-logo"
+                width={100}
+              />
+            </Tooltip>
           </div>
           <WindowContent>
-          <form onSubmit={handleSubmit}>
-
-              <div >
+            <form onSubmit={handleSubmit}>
+              <div>
                 <div style={{ display: "flex" }}>
                   <TextInput
                     placeholder="Email Address"
@@ -181,17 +190,15 @@ export const Login = () => {
                 />
                 <br />
                 <div
-                                style={{ display: "flex", justifyContent: "space-around" }}
-
+                  style={{ display: "flex", justifyContent: "space-around" }}
                 >
-                <Button onClick={() => handleResetPassword()}>
-                  Forgot your password?
-                </Button>
-                <Button type="submit" value="login">
-                  Sign in
-                </Button>
+                  <Button onClick={() => handleResetPassword()}>
+                    Forgot your password?
+                  </Button>
+                  <Button type="submit" value="login">
+                    Sign in
+                  </Button>
                 </div>
-
               </div>
             </form>
           </WindowContent>
@@ -199,53 +206,49 @@ export const Login = () => {
       </motion.div>
       {isModalOpen && (
         <div
-        ref={constraintsRef}
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          display: "flex", // Use flexbox for centering
-          alignItems: "center", // Vertical center
-          justifyContent: "center", // Horizontal center
-          zIndex: 10, // Ensure it's above other content
-        }}
-        >
-        <motion.div
-          drag
-          dragConstraints={constraintsRef}
-          initial="hidden"
-          animate="visible"
-          exit="hidden"
-          variants={modalVariants}
+          ref={constraintsRef}
           style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '80%', // Responsive width
-            maxWidth: '90%', // Ensures it doesn't get too large on big screens
-            zIndex: 10,
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            display: "flex", // Use flexbox for centering
+            alignItems: "center", // Vertical center
+            justifyContent: "center", // Horizontal center
+            zIndex: 10, // Ensure it's above other content
           }}
         >
-      <Window style={windowStyle}>
-      <StyledWindowHeader>
-            <span>{error.name} ⚠️</span>
-            <Button onClick={() => setIsModalOpen(false)}>
-      <CloseIcon />
-    </Button>
-            </StyledWindowHeader>
-            <WindowContent>
-              {error.message}
-            </WindowContent>
-          </Window>
-        </motion.div>
+          <motion.div
+            drag
+            dragConstraints={constraintsRef}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            variants={modalVariants}
+            style={{
+              rotate: rotateValueError,
+              x: dragxError,
+              position: "absolute",
+              top: "50%",
+              left: "0%",
+              width: "80%", // Responsive width
+              maxWidth: "90%", // Ensures it doesn't get too large on big screens
+              zIndex: 10,
+            }}
+          >
+            <Window style={windowStyle}>
+              <StyledWindowHeader>
+                <span>{error.name} ⚠️</span>
+                <Button onClick={() => setIsModalOpen(false)}>
+                  <CloseIcon />
+                </Button>
+              </StyledWindowHeader>
+              <WindowContent>{error.message}</WindowContent>
+            </Window>
+          </motion.div>
         </div>
-
-          
       )}
-
     </div>
   );
 };
