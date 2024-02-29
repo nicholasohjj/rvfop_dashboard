@@ -4,7 +4,7 @@ import ErrorPage from "./routes/errorpage";
 import { Login } from './routes/login';
 import { Layout } from './layout';
 import Scoreboard from "./routes/scoreboard";
-import HomePage from "./routes/homepage";
+import Loading from "./routes/loading";
 import Progress from "./routes/progress";
 import { supabaseClient } from './supabase/supabaseClient';
 import { Update } from './routes/update';
@@ -36,7 +36,7 @@ const App = () => {
   const router = createBrowserRouter([
     {
       path: "/",
-      element: loading ? <HomePage/> : session ? <Layout /> : <Navigate to="/login" replace />,
+      element: loading ? <Loading/> : session ? <Layout /> : <Navigate to="/login" replace />,
       errorElement: <ErrorPage />,
       children: [
         {
@@ -57,7 +57,7 @@ const App = () => {
     },
     {
       path: "/login",
-      element: <Login />,
+      element: loading ? <Loading/> : !session ? <Login /> : <Navigate to="/" replace />,
       errorElement: <ErrorPage />,
     },
     {
@@ -66,7 +66,7 @@ const App = () => {
     },
     {
       path: "/update",
-      element: loading ? <HomePage/> : session ? <Update /> : <Navigate to="/login" replace />,
+      element: loading ? <Loading/> : session ? <Update /> : <Navigate to="/login" replace />,
     },
     {
       path: "*",

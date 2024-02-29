@@ -2,11 +2,10 @@ import React, { useState, useEffect } from "react";
 import {
   ProgressBar,
 } from "react95";
-import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 
 
-const HomePage = () => {
+const Loading = () => {
   const [percent, setPercent] = useState(0);
   const navigate = useNavigate();
   useEffect(() => {
@@ -32,4 +31,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default Loading;
