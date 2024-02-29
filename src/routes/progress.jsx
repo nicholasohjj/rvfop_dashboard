@@ -95,6 +95,7 @@ const Progress = () => {
             });
 
           if (activityError) throw activityError;
+          activityData.sort((a, b) => new Date(b.tm_created) - new Date(a.tm_created));
           setActivityData(activityData);
           console.log("Activity data: ", activityData);
         }

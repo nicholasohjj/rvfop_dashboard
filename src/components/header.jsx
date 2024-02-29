@@ -33,6 +33,9 @@ export const Header = () => {
             <MenuListItem onClick={() => navigate("/addactivity")}>
               Add Activity
             </MenuListItem>
+            <MenuListItem onClick={() => navigate("/adddeduction")}>
+              Add Deduction 😈
+            </MenuListItem>
           </MenuList>
         )}
       </Toolbar>

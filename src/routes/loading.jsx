@@ -58,7 +58,7 @@ const Loading = () => {
       <img
         src="https://insieme.s3.ap-southeast-1.amazonaws.com/logo.png"
         alt="Company Logo"
-        style={{ marginBottom: '20px', width: '25%' }}
+        style={{ marginBottom: '20px', width: '20%' }}
       />
       Loading ...
       <ProgressBar variant="tile" value={Math.floor(percent)} style={{ width: '50%', minWidth: '250px' }} />
