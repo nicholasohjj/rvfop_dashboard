@@ -20,6 +20,7 @@ const App = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+
     const checkSession = async () => {
       const {
         data: { session } } = await supabaseClient.auth.getSession();
