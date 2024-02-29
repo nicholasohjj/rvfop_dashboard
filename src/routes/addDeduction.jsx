@@ -13,7 +13,6 @@ import styled from "styled-components";
 import { supabaseClient } from "../supabase/supabaseClient";
 import { useNavigate } from "react-router-dom";
 import { motion, useMotionValue, useTransform } from "framer-motion";
-
 import Loading from "./loading";
 // Styled components
 const StyledWindow = styled(Window)`
@@ -101,31 +100,30 @@ const AddDeduction = () => {
         }
       } catch (err) {
         console.error(err);
+      }
+    };
+
+    const fetchHouses = async () => {
+      try {
+        const { data, error } = await supabaseClient.from("houses").select("*");
+        if (error) throw error;
+        setHouses(data);
+      } catch (error) {
+        console.error(error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchGroupData();
+    fetchHouses();
 
     const handleResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
-    fetchHouses();
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const fetchHouses = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabaseClient.from("houses").select("*");
-      if (error) throw error;
-      setHouses(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+
 
   const handleApplyDeduction = async () => {
     return;
