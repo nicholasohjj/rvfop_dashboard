@@ -9,7 +9,7 @@ import {
   Tooltip,
 } from "react95";
 import { motion, useMotionValue, useTransform } from "framer-motion";
-import { redirect, useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { supabaseClient } from "../supabase/supabaseClient";
 import styled from "styled-components";
 

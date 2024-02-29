@@ -60,7 +60,7 @@ const Scoreboard = () => {
 
   if (loading) {
     return (
-      <Window style={{ flex: 1, alignItems: 'center', width: 320 }}>
+      <Window style={{ flex: 1, alignItems: "center", width: 320 }}>
         <WindowHeader>Scoreboard</WindowHeader>
         <Hourglass
           size={32}

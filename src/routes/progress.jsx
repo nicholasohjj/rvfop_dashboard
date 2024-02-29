@@ -209,62 +209,59 @@ const Progress = () => {
           </Table>
         </div>
         {isModalOpen && (
-        <div
-        ref={constraintsRef}
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          display: "flex", // Use flexbox for centering
-          alignItems: "center", // Vertical center
-          justifyContent: "center", // Horizontal center
-          zIndex: 10, // Ensure it's above other content
-        }}
-        
-        >
-          <motion.div
-            drag
-            dragConstraints={constraintsRef}
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
-            variants={modalVariants}
+          <div
+            ref={constraintsRef}
             style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: '80%', // Responsive width
-              maxWidth: '90%', // Ensures it doesn't get too large on big screens
-              zIndex: 10,
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: "flex", // Use flexbox for centering
+              alignItems: "center", // Vertical center
+              justifyContent: "center", // Horizontal center
+              zIndex: 10, // Ensure it's above other content
             }}
           >
-            <Window style={windowStyle}>
-            <StyledWindowHeader>
-                <span>{selectedActivity.name}</span>
-                <Button onClick={() => setIsModalOpen(false)}>
-                  <CloseIcon />
-                </Button>{" "}
-              </StyledWindowHeader>
-              <WindowContent>
-                <div style={{ marginBottom: 10 }}>
-                  <GroupBox label="Description">
-                    {selectedActivity?.description}
-                  </GroupBox>
-                  <GroupBox label="Points Earned">
-                    {selectedActivity?.points_earned}
-                  </GroupBox>
-                </div>
-              </WindowContent>
-            </Window>
-          </motion.div>
-        </div>
-      )}
+            <motion.div
+              drag
+              dragConstraints={constraintsRef}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              variants={modalVariants}
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: "80%", // Responsive width
+                maxWidth: "90%", // Ensures it doesn't get too large on big screens
+                zIndex: 10,
+              }}
+            >
+              <Window style={windowStyle}>
+                <StyledWindowHeader>
+                  <span>{selectedActivity.name}</span>
+                  <Button onClick={() => setIsModalOpen(false)}>
+                    <CloseIcon />
+                  </Button>{" "}
+                </StyledWindowHeader>
+                <WindowContent>
+                  <div style={{ marginBottom: 10 }}>
+                    <GroupBox label="Description">
+                      {selectedActivity?.description}
+                    </GroupBox>
+                    <GroupBox label="Points Earned">
+                      {selectedActivity?.points_earned}
+                    </GroupBox>
+                  </div>
+                </WindowContent>
+              </Window>
+            </motion.div>
+          </div>
+        )}
       </WindowContent>
-
-
     </Window>
   );
 };

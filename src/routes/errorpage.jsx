@@ -6,7 +6,7 @@ import {
   WindowContent,
   TextInput,
   Button,
-  Tooltip
+  Tooltip,
 } from "react95";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
@@ -23,9 +23,10 @@ const CloseIcon = styled.div`
   position: relative;
   &:before,
   &:after {
-    content: '';
+    content: "";
     position: absolute;
-    background: ${({ theme }) => theme.materialText}; // Adjust the color as needed
+    background: ${({ theme }) =>
+      theme.materialText}; // Adjust the color as needed
   }
   &:before {
     height: 100%;
@@ -43,7 +44,7 @@ const CloseIcon = styled.div`
 `;
 
 const StyledWindowHeader = styled(WindowHeader)`
-  background-color: #FF0000; // Change this hex code to your desired color
+  background-color: #ff0000; // Change this hex code to your desired color
   color: white; // Adjust the text color as needed for contrast
   display: flex;
   justify-content: center;
@@ -60,14 +61,14 @@ const ErrorPage = () => {
       setWindowWidth(window.innerWidth);
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     // Cleanup the event listener on component unmount
-    return () => window.removeEventListener('resize', handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const windowStyle = {
-    width: windowWidth > 500 ? 500 : '90%', // Adjust width here
+    width: windowWidth > 500 ? 500 : "90%", // Adjust width here
     margin: "0%",
   };
 
@@ -83,17 +84,14 @@ const ErrorPage = () => {
         backgroundColor: "rgb(0, 128, 128)",
       }}
     >
-      <motion.div drag dragConstraints={constraintsRef} >
-      <Window style={windowStyle}>
+      <motion.div drag dragConstraints={constraintsRef}>
+        <Window style={windowStyle}>
           <StyledWindowHeader>
             <span>Error 404</span>
           </StyledWindowHeader>
           <WindowContent>
-            <p>
-              The page you are looking for does not exist.
-            </p>
-            <Button style={{margin:10}}
-            onClick={() => navigate('/')}>
+            <p>The page you are looking for does not exist.</p>
+            <Button style={{ margin: 10 }} onClick={() => navigate("/")}>
               Return home
             </Button>
           </WindowContent>
@@ -102,6 +100,5 @@ const ErrorPage = () => {
     </div>
   );
 };
-
 
 export default ErrorPage;

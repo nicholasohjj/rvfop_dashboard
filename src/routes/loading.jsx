@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
-import {
-  ProgressBar,
-} from "react95";
+import { ProgressBar } from "react95";
 import { useNavigate } from "react-router-dom";
-
 
 const Loading = () => {
   const [percent, setPercent] = useState(0);
@@ -24,9 +21,9 @@ const Loading = () => {
   }, []);
 
   return (
-    <div style={{flex:1, alignSelf:"center", padding:"25%"}}>
+    <div style={{ flex: 1, alignSelf: "center", padding: "25%" }}>
       Loading ...
-      <ProgressBar  variant='tile' value={Math.floor(percent)} />
+      <ProgressBar variant="tile" value={Math.floor(percent)} />
     </div>
   );
 };
