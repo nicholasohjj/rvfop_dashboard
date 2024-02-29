@@ -162,7 +162,9 @@ const Progress = () => {
         <GroupBox label={`Group: ${groupData.name}`}>
           Total Points Earned: {groupData.total_points}
         </GroupBox>
-        <div style={{ overflowX: "auto" }}>
+        <div
+        style={{marginTop: 10}}
+        >
           <Table>
             <TableHead>
               <TableRow>
@@ -197,44 +199,44 @@ const Progress = () => {
           </Table>
         </div>
         {isModalOpen && (
-          <div
-            ref={constraintsRef}
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              display: "flex", // Use flexbox for centering
-              alignItems: "center", // Vertical center
-              justifyContent: "center", // Horizontal center
-              zIndex: 10, // Ensure it's above other content
-            }}
-          >
-            <motion.div
-              drag
-              dragConstraints={constraintsRef}
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              variants={modalVariants}
-              style={{
-                rotate: rotateValueError,
-                x: dragxError,
-                position: "absolute",
-                top: "50%",
-                left: "0%",
-                width: "80%", // Responsive width
-                maxWidth: "90%", // Ensures it doesn't get too large on big screens
-                zIndex: 10,
-              }}
-            >
+        <div
+        ref={constraintsRef}
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          display: "flex", // Use flexbox for centering
+          alignItems: "center", // Vertical center
+          justifyContent: "center", // Horizontal center
+          zIndex: 10, // Ensure it's above other content
+        }}
+      >
+        <motion.div
+          drag
+          dragConstraints={constraintsRef}
+          initial="hidden"
+          animate="visible"
+          exit="hidden"
+          variants={modalVariants}
+          style={{
+            rotate: rotateValueError,
+            x: dragxError,
+            position: "absolute",
+            top: "50%",
+            left: "0%",
+            width: "80%", // Responsive width
+            maxWidth: "90%", // Ensures it doesn't get too large on big screens
+            zIndex: 10,
+          }}
+        >
               <Window style={windowStyle}>
                 <StyledWindowHeader>
                   <span>{selectedActivity.name}</span>
                   <Button onClick={() => setIsModalOpen(false)}>
                     <CloseIcon />
-                  </Button>{" "}
+                  </Button>
                 </StyledWindowHeader>
                 <WindowContent>
                   <div style={{ marginBottom: 10 }}>

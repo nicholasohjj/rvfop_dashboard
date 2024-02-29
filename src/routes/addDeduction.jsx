@@ -76,7 +76,7 @@ const AddDeduction = () => {
   const [loading, setLoading] = useState(true);
   const [groupData, setGroupData] = useState(null);
   const [selectedHouse, setSelectedHouse] = useState(null);
-  const dragxError = useMotionValue(0);
+  const [deductionPoints, setDeductionPoints] = useState(0);
 
   const navigate = useNavigate();
 
@@ -151,14 +151,23 @@ const AddDeduction = () => {
               value: house,
             }))}
             width="100%"
-            onChange={(e) => setSelectedHouse(e.value)}
+            onChange={(e) => {
+              setSelectedHouse(e.value)
+              setDeductionPoints(0)
+            }}
           />
         </GroupBox>
 
         {selectedHouse && (
+        
           <PointsSection>
             <p>Points to deduct: </p>
-            <NumberInput defaultValue={0} step={20} min={0} max={groupData.total_points} />
+            <NumberInput 
+            value={deductionPoints}
+            onChange={(value) => setDeductionPoints(Number(value))} // Ensure value is a number
+            step={20}
+            min={0}
+            max={Math.min(groupData.total_points, selectedHouse.total_points)} />
           </PointsSection>
         )}
         <div
