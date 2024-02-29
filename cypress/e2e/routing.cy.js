@@ -60,7 +60,7 @@ describe("Header and Footer Functionality Tests", () => {
 
   navigationTests.forEach(({ title, route }) => {
     it(`navigates to "${title}" using the menu`, () => {
-      cy.get("button.menu").click(); // Assuming you've abstracted the button with a class or data attribute
+      cy.get("button.sc-eDLKkx.kZouAe").click(); // Assuming you've abstracted the button with a class or data attribute
       cy.contains(title).click();
       cy.url().should("include", route);
     });
