@@ -16,16 +16,7 @@ export const Header = () => {
           Edit
         </Button>
         <Button variant="menu" disabled>
-          View
-        </Button>
-        <Button variant="menu" disabled>
-          Format
-        </Button>
-        <Button variant="menu" disabled>
           Tools
-        </Button>
-        <Button variant="menu" disabled>
-          Table
         </Button>
         {open && (
           <MenuList
