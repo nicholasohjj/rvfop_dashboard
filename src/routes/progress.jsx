@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Button,
   Table,
@@ -13,15 +13,51 @@ import {
   Hourglass,
   GroupBox,
 } from "react95";
+import styled from "styled-components";
 import { motion } from "framer-motion"; // Import Framer Motion
 import { supabaseClient } from "../supabase/supabaseClient";
+
+const CloseIcon = styled.div`
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  transform: rotateZ(45deg);
+  position: relative;
+  &:before,
+  &:after {
+    content: "";
+    position: absolute;
+    background: ${({ theme }) =>
+      theme.materialText}; // Adjust the color as needed
+  }
+  &:before {
+    height: 100%;
+    width: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  &:after {
+    height: 3px;
+    width: 100%;
+    left: 0px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+`;
+
+const StyledWindowHeader = styled(WindowHeader)`
+  color: white; // Adjust the text color as needed for contrast
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
 const Progress = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const [user, setUser] = useState();
   const [groupData, setGroupData] = useState(null); // Initialize to null for better checks
   const [ActivityData, setActivityData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState(null);
   const constraintsRef = useRef(null);
@@ -31,7 +67,7 @@ const Progress = () => {
       setWindowWidth(window.innerWidth);
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     setLoading(true);
     const fetchGroupAndActivityData = async () => {
@@ -41,7 +77,6 @@ const Progress = () => {
           error: userError,
         } = await supabaseClient.auth.getUser();
         if (userError) throw userError;
-        setUser(user);
 
         const { data: fetchedGroupData, error: fetchDataError } =
           await supabaseClient.rpc("fetch_group_data", { user_id: user.id });
@@ -63,14 +98,13 @@ const Progress = () => {
         }
       } catch (err) {
         console.error(err);
-        setError(err.message);
       } finally {
         setLoading(false);
       }
     };
 
     fetchGroupAndActivityData();
-    return () => window.removeEventListener('resize', handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   if (loading) {
@@ -106,7 +140,7 @@ const Progress = () => {
   };
 
   const windowStyle = {
-    width: windowWidth > 500 ? 500 : '90%', // Adjust width here
+    width: windowWidth > 500 ? 500 : "90%", // Adjust width here
     margin: "0%",
   };
 
@@ -125,87 +159,104 @@ const Progress = () => {
   };
 
   return (
-    <Window style={{ flex: 1, maxWidth: '100vw', margin: '0 auto', position: 'relative' }}>
+    <Window
+      style={{
+        flex: 1,
+        maxWidth: "100vw",
+        margin: "0 auto",
+        position: "relative",
+      }}
+    >
       <WindowHeader>My Progress</WindowHeader>
       <WindowContent>
         <GroupBox label={`Group: ${groupData.name}`}>
           Total Points Earned: {groupData.total_points}
         </GroupBox>
-        <div style={{ overflowX: 'auto' }}> {/* Container to make the table scrollable */}
-
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableHeadCell>Day</TableHeadCell>
-              <TableHeadCell>Activity</TableHeadCell>
-              <TableHeadCell>Points</TableHeadCell>
-              <TableHeadCell>Details</TableHeadCell>
-
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {ActivityData.map((activity, index) => (
-              <TableRow key={index}>
-                <TableDataCell>{formatSGT(activity.tm_created)}</TableDataCell>
-                <TableDataCell>{activity.name}</TableDataCell>
-                <TableDataCell>{activity.points_earned}</TableDataCell>
-                <TableDataCell style={{gap:16, display:'flex', justifyContent:'center'}}>
-                  <Button onClick={() => handleViewButtonClick(activity)}>
-                    View
-                  </Button>
-                </TableDataCell>
+        <div style={{ overflowX: "auto" }}>
+          {" "}
+          {/* Container to make the table scrollable */}
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableHeadCell>Day</TableHeadCell>
+                <TableHeadCell>Activity</TableHeadCell>
+                <TableHeadCell>Points</TableHeadCell>
+                <TableHeadCell>Details</TableHeadCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHead>
+            <TableBody>
+              {ActivityData.map((activity, index) => (
+                <TableRow key={index}>
+                  <TableDataCell>
+                    {formatSGT(activity.tm_created)}
+                  </TableDataCell>
+                  <TableDataCell>{activity.name}</TableDataCell>
+                  <TableDataCell>{activity.points_earned}</TableDataCell>
+                  <TableDataCell
+                    style={{
+                      gap: 16,
+                      display: "flex",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Button onClick={() => handleViewButtonClick(activity)}>
+                      View
+                    </Button>
+                  </TableDataCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       </WindowContent>
 
       {isModalOpen && (
         <div
-        ref={constraintsRef}
-        style={{
-          display: "flex",
-          flexDirection: "column",
-        }}
-        >
-        <motion.div
-          drag
-          dragConstraints={constraintsRef}
-          initial="hidden"
-          animate="visible"
-          exit="hidden"
-          variants={modalVariants}
+          ref={constraintsRef}
           style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '80%', // Responsive width
-            maxWidth: '90%', // Ensures it doesn't get too large on big screens
-            zIndex: 10,
+            display: "flex",
+            flexDirection: "column",
           }}
         >
-          <Window style={{ width: '100%' }}>
-            <WindowHeader>{selectedActivity.name}</WindowHeader>
-            <WindowContent>
-              <div style={{marginBottom:10}}>
-              <GroupBox label="Description">
-              {selectedActivity?.description} 
-              </GroupBox>
-                <GroupBox label="Points Earned">
-              {selectedActivity?.points_earned} 
-                </GroupBox>
-              </div>
+          <motion.div
+            drag
+            dragConstraints={constraintsRef}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            variants={modalVariants}
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "80%", // Responsive width
+              maxWidth: "90%", // Ensures it doesn't get too large on big screens
+              zIndex: 10,
+            }}
+          >
+            <Window style={windowStyle}>
+            <StyledWindowHeader>
+                <span>{selectedActivity.name}</span>
+                <Button onClick={() => setIsModalOpen(false)}>
+                  <CloseIcon />
+                </Button>{" "}
+              </StyledWindowHeader>
+              <WindowContent>
+                <div style={{ marginBottom: 10 }}>
+                  <GroupBox label="Description">
+                    {selectedActivity?.description}
+                  </GroupBox>
+                  <GroupBox label="Points Earned">
+                    {selectedActivity?.points_earned}
+                  </GroupBox>
+                </div>
 
-                
-              <Button onClick={() => setIsModalOpen(false)}>Close</Button>
-            </WindowContent>
-          </Window>
-        </motion.div>
+                <Button onClick={() => setIsModalOpen(false)}>Close</Button>
+              </WindowContent>
+            </Window>
+          </motion.div>
         </div>
-
-          
       )}
     </Window>
   );

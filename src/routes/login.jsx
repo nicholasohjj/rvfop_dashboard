@@ -9,7 +9,7 @@ import {
   Tooltip
 } from "react95";
 import { motion } from "framer-motion";
-import { json, useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { supabaseClient } from "../supabase/supabaseClient";
 import styled from "styled-components";
 
@@ -85,7 +85,7 @@ export const Login = () => {
     e.preventDefault();
 
     try {
-      const { data, error } = await supabaseClient.auth.signInWithPassword({
+      const { error } = await supabaseClient.auth.signInWithPassword({
         email,
         password,
       });
