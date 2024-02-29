@@ -13,6 +13,7 @@ import Progress from "./routes/progress";
 import { supabaseClient } from "./supabase/supabaseClient";
 import { Update } from "./routes/update";
 import { Reset } from "./routes/reset";
+import AddActivity from "./routes/addActivity";
 const App = () => {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -65,6 +66,10 @@ const App = () => {
         {
           path: "/progress",
           element: <Progress />,
+        },
+        {
+          path: "/addactivity",
+          element: <AddActivity />,
         },
       ],
     },

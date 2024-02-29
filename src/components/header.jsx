@@ -30,7 +30,7 @@ export const Header = () => {
             <MenuListItem onClick={() => navigate("/update")}>
               Update Password
             </MenuListItem>
-            <MenuListItem onClick={() => navigate("/update")}>
+            <MenuListItem onClick={() => navigate("/addactivity")}>
               Add Activity
             </MenuListItem>
           </MenuList>
