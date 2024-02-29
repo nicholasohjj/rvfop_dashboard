@@ -16,6 +16,7 @@ import {
 import { motion } from "framer-motion"; // Import Framer Motion
 import { supabaseClient } from "../supabase/supabaseClient";
 const Progress = () => {
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [user, setUser] = useState();
   const [groupData, setGroupData] = useState(null); // Initialize to null for better checks
   const [ActivityData, setActivityData] = useState([]);
@@ -26,6 +27,12 @@ const Progress = () => {
   const constraintsRef = useRef(null);
 
   useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleResize);
+
     setLoading(true);
     const fetchGroupAndActivityData = async () => {
       try {
@@ -63,6 +70,7 @@ const Progress = () => {
     };
 
     fetchGroupAndActivityData();
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   if (loading) {
@@ -95,6 +103,11 @@ const Progress = () => {
   const handleViewButtonClick = (activity) => {
     setIsModalOpen(!isModalOpen);
     setSelectedActivity(activity); // Set the selected activity
+  };
+
+  const windowStyle = {
+    width: windowWidth > 500 ? 500 : '90%', // Adjust width here
+    margin: "0%",
   };
 
   const modalVariants = {
