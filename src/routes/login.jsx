@@ -149,6 +149,10 @@ export const Login = () => {
     >
       <motion.div
         drag
+        initial="hidden"
+        animate="visible"
+        exit="hidden"
+        variants={modalVariants}
         dragConstraints={constraintsRef}
         style={{ rotate: rotateValue, x: dragX }} // Apply the dynamic rotation and x position
       >

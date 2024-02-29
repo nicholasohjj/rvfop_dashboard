@@ -12,7 +12,6 @@ import {
 import styled from "styled-components";
 import { supabaseClient } from "../supabase/supabaseClient";
 import { useNavigate } from "react-router-dom";
-import { motion, useMotionValue, useTransform } from "framer-motion";
 import Loading from "./loading";
 // Styled components
 const StyledWindow = styled(Window)`
@@ -110,13 +109,10 @@ const AddDeduction = () => {
         setHouses(data);
       } catch (error) {
         console.error(error);
-      } finally {
-        setLoading(false);
       }
     };
 
-    fetchGroupData();
-    fetchHouses();
+    Promise.all([fetchGroupData(), fetchHouses()]).then(() => setLoading(false));
 
     const handleResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);

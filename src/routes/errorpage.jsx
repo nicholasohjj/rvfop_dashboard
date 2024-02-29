@@ -8,7 +8,7 @@ import {
   Button,
   Tooltip,
 } from "react95";
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { supabaseClient } from "../supabase/supabaseClient";
 import styled from "styled-components";
@@ -55,6 +55,12 @@ const ErrorPage = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const constraintsRef = useRef(null);
   const navigate = useNavigate(); // Hook for navigation
+  const dragX = useMotionValue(0);
+  const dragxError = useMotionValue(0);
+
+  const rotateValue = useTransform(dragX, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
+  const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
+
 
   useEffect(() => {
     const handleResize = () => {
@@ -71,6 +77,16 @@ const ErrorPage = () => {
     width: windowWidth > 500 ? 500 : "90%", // Adjust width here
     margin: "0%",
   };
+  const modalVariants = {
+    hidden: {
+      opacity: 0,
+      scale: 0,
+    },
+    visible: {
+      opacity: 1,
+      scale: 1,
+    },
+  };
 
   return (
     <div
@@ -84,8 +100,25 @@ const ErrorPage = () => {
         backgroundColor: "rgb(0, 128, 128)",
       }}
     >
-      <motion.div drag dragConstraints={constraintsRef}>
-        <Window style={windowStyle}>
+          <motion.div
+            drag
+            dragConstraints={constraintsRef}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            variants={modalVariants}
+            style={{
+              rotate: rotateValueError,
+              x: dragxError,
+              position: "absolute",
+              top: "50%",
+              left: "0%",
+              width: "80%", // Responsive width
+              maxWidth: "90%", // Ensures it doesn't get too large on big screens
+              zIndex: 10,
+            }}
+          >
+                    <Window style={windowStyle}>
           <StyledWindowHeader>
             <span>Error 404</span>
           </StyledWindowHeader>
