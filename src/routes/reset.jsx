@@ -6,10 +6,9 @@ import {
   WindowContent,
   TextInput,
   Button,
-  Tooltip
 } from "react95";
 import { motion } from "framer-motion";
-import { redirect, useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { supabaseClient } from "../supabase/supabaseClient";
 import styled from "styled-components";
 
@@ -50,66 +49,42 @@ const StyledWindowHeader = styled(WindowHeader)`
   align-items: center;
 `;
 
-export const Login = () => {
+export const Reset = () => {
   const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState(null);
+
   const constraintsRef = useRef(null);
   const navigate = useNavigate(); // Hook for navigation
 
   useEffect(() => {
+    const getEmail = async () => {
+      const { data } = await supabaseClient.auth.getUser();
+      setemail(data.user.email);
+  };
+
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
     };
 
     window.addEventListener('resize', handleResize);
-
+    getEmail();
     // Cleanup the event listener on component unmount
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const modalVariants = {
-    hidden: {
-      opacity: 0,
-      scale: 0,
-    },
-    visible: {
-      opacity: 1,
-      scale: 1,
-    },
-  };
-
-  const handleResetPassword = async () => {
-    try {
-      const { error } = await supabaseClient.auth.resetPasswordForEmail(
-        email, {
-        redirectTo: "https://insieme.vercel.app/reset",
-        }
-      );
-
-      if (error) {
-        throw error;
-      }
-
-      setIsModalOpen(true);
-      setError({
-        name: "Password Reset Email Sent",
-        message: `An email has been sent to ${email} with a link to reset your password.`,
-      });
-    } catch (error) {
-      setIsModalOpen(true);
-      setError(error);
-    }
+  const handleReturnHome = () => {
+    setPassword("");
+    navigate("/");
   }
 
   const handleSubmit = async(e) => {
     e.preventDefault();
 
     try {
-      const { error } = await supabaseClient.auth.signInWithPassword({
-        email,
+      const { data, error } = await supabaseClient.auth.updateUser({
         password,
       });
 
@@ -133,6 +108,17 @@ export const Login = () => {
     margin: "0%",
   };
 
+  const modalVariants = {
+    hidden: {
+      opacity: 0,
+      scale: 0,
+    },
+    visible: {
+      opacity: 1,
+      scale: 1,
+    },
+  };
+
   return (
     <div
       ref={constraintsRef}
@@ -148,13 +134,8 @@ export const Login = () => {
       <motion.div drag dragConstraints={constraintsRef} >
       <Window style={windowStyle}>
           <WindowHeader>
-            <span>Insieme 2024</span>
+            <span>Reset your password</span>
           </WindowHeader>
-          <div style={{ marginTop: 8 }}>
-          <Tooltip  text='Meow! 🐱‍' enterDelay={100} leaveDelay={100}>
-            <img src="https://insieme.s3.ap-southeast-1.amazonaws.com/logo.png" alt="rvrc-logo" width={100} />
-            </Tooltip >
-          </div>
           <WindowContent>
           <form onSubmit={handleSubmit}>
 
@@ -164,6 +145,7 @@ export const Login = () => {
                     placeholder="Email Address"
                     fullWidth
                     value={email}
+                    disabled 
                     onChange={(e) => {
                       setemail(e.target.value);
                     }}
@@ -180,17 +162,11 @@ export const Login = () => {
                   }}
                 />
                 <br />
-                <div
-                                style={{ display: "flex", justifyContent: "space-around" }}
 
-                >
-                <Button onClick={() => handleResetPassword()}>
-                  Forgot your password?
-                </Button>
                 <Button type="submit" value="login">
-                  Sign in
-                </Button>
-                </div>
+                  Update
+                  </Button>
+
 
               </div>
             </form>
@@ -201,14 +177,14 @@ export const Login = () => {
         <div
         ref={constraintsRef}
         style={{
-          position: "fixed",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          position: "fixed", // Use fixed to position relative to the viewport
           top: 0,
           left: 0,
-          right: 0,
-          bottom: 0,
-          display: "flex", // Use flexbox for centering
-          alignItems: "center", // Vertical center
-          justifyContent: "center", // Horizontal center
+          width: "100%",
+          height: "100%",
           zIndex: 10, // Ensure it's above other content
         }}
         >
@@ -245,7 +221,6 @@ export const Login = () => {
 
           
       )}
-
     </div>
   );
 };
