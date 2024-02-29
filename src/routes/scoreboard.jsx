@@ -9,9 +9,9 @@ import {
   Window,
   WindowContent,
   WindowHeader,
-  Hourglass,
 } from "react95";
 import { supabaseClient } from "../supabase/supabaseClient";
+import Loading from "./loading";
 const Scoreboard = () => {
   const [houses, setHouses] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -58,18 +58,7 @@ const Scoreboard = () => {
     setHouses(sortedHouses);
   };
 
-  if (loading) {
-    return (
-      <Window style={{ flex: 1, alignItems: "center", width: 320 }}>
-        <WindowHeader>Scoreboard</WindowHeader>
-        <Hourglass
-          size={32}
-          style={{ flex: 1, alignItems: "center", margin: 20 }}
-        />
-      </Window>
-    );
-  }
-
+  if (loading) return <Loading />;
   return (
     <Window style={{ flex: 1, width: 320 }}>
       <WindowHeader>Scoreboard</WindowHeader>

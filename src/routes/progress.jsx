@@ -10,13 +10,12 @@ import {
   Window,
   WindowContent,
   WindowHeader,
-  Hourglass,
   GroupBox,
 } from "react95";
 import styled from "styled-components";
-import { motion } from "framer-motion"; // Import Framer Motion
+import { motion, useMotionValue, useTransform } from "framer-motion";
 import { supabaseClient } from "../supabase/supabaseClient";
-
+import Loading from "./loading";
 const CloseIcon = styled.div`
   display: inline-block;
   width: 16px;
@@ -61,6 +60,9 @@ const Progress = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState(null);
   const constraintsRef = useRef(null);
+  const dragxError = useMotionValue(0);
+
+  const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
 
   useEffect(() => {
     const handleResize = () => {
@@ -107,17 +109,18 @@ const Progress = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  if (loading) {
-    return (
-      <Window style={{ flex: 1, alignItems: "center", width: 320 }}>
-        <WindowHeader>My Progress</WindowHeader>
-        <Hourglass
-          size={32}
-          style={{ flex: 1, alignItems: "center", margin: 20 }}
-        />
-      </Window>
-    );
-  }
+  const modalVariants = {
+    hidden: {
+      opacity: 0,
+      scale: 0,
+    },
+    visible: {
+      opacity: 1,
+      scale: 1,
+    },
+  };
+
+  if (loading) return <Loading />;
 
   // Helper function to convert UTC to SGT and format to "day-month"
   const formatSGT = (utcString) => {
@@ -144,20 +147,6 @@ const Progress = () => {
     margin: "0%",
   };
 
-  const modalVariants = {
-    hidden: {
-      opacity: 0,
-      scale: 0.75,
-    },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: {
-        duration: 0.5,
-      },
-    },
-  };
-
   return (
     <Window
       style={{
@@ -173,8 +162,6 @@ const Progress = () => {
           Total Points Earned: {groupData.total_points}
         </GroupBox>
         <div style={{ overflowX: "auto" }}>
-          {" "}
-          {/* Container to make the table scrollable */}
           <Table>
             <TableHead>
               <TableRow>
@@ -231,10 +218,11 @@ const Progress = () => {
               exit="hidden"
               variants={modalVariants}
               style={{
+                rotate: rotateValueError,
+                x: dragxError,
                 position: "absolute",
                 top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
+                left: "0%",
                 width: "80%", // Responsive width
                 maxWidth: "90%", // Ensures it doesn't get too large on big screens
                 zIndex: 10,

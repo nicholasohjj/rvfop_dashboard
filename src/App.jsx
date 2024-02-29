@@ -14,6 +14,7 @@ import { supabaseClient } from "./supabase/supabaseClient";
 import { Update } from "./routes/update";
 import { Reset } from "./routes/reset";
 import AddActivity from "./routes/addActivity";
+import AddDeduction from "./routes/addDeduction";
 const App = () => {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -21,9 +22,7 @@ const App = () => {
   useEffect(() => {
     const checkSession = async () => {
       const {
-        data: { session },
-        error,
-      } = await supabaseClient.auth.getSession();
+        data: { session } } = await supabaseClient.auth.getSession();
 
       setSession(session);
       // Set loading to false after the session check
@@ -71,6 +70,10 @@ const App = () => {
           path: "/addactivity",
           element: <AddActivity />,
         },
+        {
+          path: "/adddeduction",
+          element: <AddDeduction />,
+        },
       ],
     },
     {
@@ -107,6 +110,10 @@ const App = () => {
       ) : (
         <Navigate to="/login" replace />
       ),
+    },
+    {
+      path: "/loading",
+      element: <Loading />,
     },
     {
       path: "*",
