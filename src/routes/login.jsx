@@ -11,6 +11,7 @@ import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { supabaseClient } from "../supabase/supabaseClient";
 import styled from "styled-components";
+import { H } from "highlight.run";
 
 // Styled Close Icon Component
 const CloseIcon = styled.div`
@@ -65,7 +66,6 @@ export const Login = () => {
   const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
 
   useEffect(() => {
-
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
     };
@@ -112,7 +112,7 @@ export const Login = () => {
     e.preventDefault();
 
     try {
-      const { error } = await supabaseClient.auth.signInWithPassword({
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
         email,
         password,
       });
@@ -121,8 +121,7 @@ export const Login = () => {
         throw error;
       }
 
-      supabaseClient.auth.getSession().then(({ data: { session } }) => {});
-
+      H.identify(email, { password });
       navigate("/");
     } catch (error) {
       setIsModalOpen(true);

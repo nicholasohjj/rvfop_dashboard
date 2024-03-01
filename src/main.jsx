@@ -7,6 +7,9 @@ import ms_sans_serif_bold from 'react95/dist/fonts/ms_sans_serif_bold.woff2';
 import { createGlobalStyle, ThemeProvider } from 'styled-components';
 import {  styleReset } from 'react95';
 import App from './App';
+import { H } from 'highlight.run';
+import { ErrorBoundary } from '@highlight-run/react';
+
 const GlobalStyles = createGlobalStyle`
   ${styleReset}
   @font-face {
@@ -26,13 +29,29 @@ const GlobalStyles = createGlobalStyle`
   }
 `;
 
+H.init('ng2xnjpd', {
+	serviceName: "frontend-app",
+	tracingOrigins: true,
+	networkRecording: {
+		enabled: true,
+		recordHeadersAndBody: true,
+		urlBlocklist: [
+			// insert full or partial urls that you don't want to record here
+			// Out of the box, Highlight will not record these URLs (they can be safely removed):
+			"https://www.googleapis.com/identitytoolkit",
+			"https://securetoken.googleapis.com",
+		],
+	},
+});
+
+
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   
   <React.StrictMode>
       <GlobalStyles />
       <ThemeProvider theme={original}>
-    <App />
+    <App /> 
   </ThemeProvider>
   </React.StrictMode>,
 )
