@@ -16,6 +16,13 @@ import styled from "styled-components";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { supabaseClient } from "../supabase/supabaseClient";
 import Loading from "./loading";
+import {
+  fetchGroupActivities,
+  fetchHouses,
+  fetchUser,
+  fetchGroup,
+} from "../supabase/services";
+
 const CloseIcon = styled.div`
   display: inline-block;
   width: 16px;
@@ -72,41 +79,24 @@ const Progress = () => {
     window.addEventListener("resize", handleResize);
 
     setLoading(true);
-    const fetchGroupAndActivityData = async () => {
+
+    const fetchData = async () => {
+      setLoading(true);
       try {
-        const {
-          data: { user },
-          error: userError,
-        } = await supabaseClient.auth.getUser();
-        if (userError) throw userError;
+        const group = await fetchGroup();
+        setGroupData(group);
 
-        const { data: fetchedGroupData, error: fetchDataError } =
-          await supabaseClient.rpc("fetch_group_data", { user_id: user.id });
-
-        if (fetchDataError) throw fetchDataError;
-
-        if (fetchedGroupData && fetchedGroupData.length > 0) {
-          const group = fetchedGroupData[0]; // Assuming the first group is what you're interested in
-          setGroupData(group);
-
-          const { data: activityData, error: activityError } =
-            await supabaseClient.rpc("get_activity_data", {
-              current_group_id: group.group_id,
-            });
-
-          if (activityError) throw activityError;
-          activityData.sort((a, b) => new Date(b.tm_created) - new Date(a.tm_created));
-          setActivityData(activityData);
-          console.log("Activity data: ", activityData);
-        }
-      } catch (err) {
-        console.error(err);
+        const activityData = await fetchGroupActivities(group.group_id);
+        setActivityData(activityData);
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchGroupAndActivityData();
+    fetchData();
+
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
@@ -162,9 +152,7 @@ const Progress = () => {
         <GroupBox label={`Group: ${groupData.name}`}>
           Total Points Earned: {groupData.total_points}
         </GroupBox>
-        <div
-        style={{marginTop: 10}}
-        >
+        <div style={{ marginTop: 10 }}>
           <Table>
             <TableHead>
               <TableRow>
@@ -199,38 +187,38 @@ const Progress = () => {
           </Table>
         </div>
         {isModalOpen && (
-        <div
-        ref={constraintsRef}
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          display: "flex", // Use flexbox for centering
-          alignItems: "center", // Vertical center
-          justifyContent: "center", // Horizontal center
-          zIndex: 10, // Ensure it's above other content
-        }}
-      >
-        <motion.div
-          drag
-          dragConstraints={constraintsRef}
-          initial="hidden"
-          animate="visible"
-          exit="hidden"
-          variants={modalVariants}
-          style={{
-            rotate: rotateValueError,
-            x: dragxError,
-            position: "absolute",
-            top: "50%",
-            left: "0%",
-            width: "80%", // Responsive width
-            maxWidth: "90%", // Ensures it doesn't get too large on big screens
-            zIndex: 10,
-          }}
-        >
+          <div
+            ref={constraintsRef}
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: "flex", // Use flexbox for centering
+              alignItems: "center", // Vertical center
+              justifyContent: "center", // Horizontal center
+              zIndex: 10, // Ensure it's above other content
+            }}
+          >
+            <motion.div
+              drag
+              dragConstraints={constraintsRef}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              variants={modalVariants}
+              style={{
+                rotate: rotateValueError,
+                x: dragxError,
+                position: "absolute",
+                top: "50%",
+                left: "0%",
+                width: "80%", // Responsive width
+                maxWidth: "90%", // Ensures it doesn't get too large on big screens
+                zIndex: 10,
+              }}
+            >
               <Window style={windowStyle}>
                 <StyledWindowHeader>
                   <span>{selectedActivity.name}</span>

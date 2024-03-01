@@ -13,7 +13,12 @@ import styled from "styled-components";
 import { supabaseClient } from "../supabase/supabaseClient";
 import { useNavigate } from "react-router-dom";
 import { motion, useMotionValue, useTransform } from "framer-motion";
-import { fetchActivities } from "../supabase/services";
+import {
+  fetchGroup,
+  fetchActivities,
+  addActivity,
+  addGroupActivity,
+} from "../supabase/services";
 import Loading from "./loading";
 // Styled components
 const StyledWindow = styled(Window)`
@@ -78,6 +83,11 @@ const AddActivity = () => {
   const [error, setError] = useState(null);
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [newActivity, setNewActivity] = useState({ name: "", description: "" });
+  const [newGroupActivity, setNewGroupActivity] = useState({
+    group_id: "",
+    activity_id: "",
+    points_earned: 0,
+  });
   const constraintsRef = useRef(null);
   const dragxError = useMotionValue(0);
   const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
@@ -89,7 +99,10 @@ const AddActivity = () => {
     const handleResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
     Promise.all([fetchActivities()]).then((data) => {
-      setActivityData([...data[0], { name: "Create Activity", id: "custom" }]);
+      setActivityData([
+        ...data[0],
+        { name: "Create Activity", activity_id: "custom" },
+      ]);
       setLoading(false);
     });
     return () => window.removeEventListener("resize", handleResize);
@@ -112,16 +125,51 @@ const AddActivity = () => {
   };
 
   const handleAddActivity = async () => {
-    if (selectedActivity.id === "custom") {
-      if (newActivity.description === "" || newActivity.name === "") {
+    let activityToAdd;
+
+    if (selectedActivity.activity_id === "custom") {
+      console.log(
+        "Please fill in all fields" + newActivity.description + newActivity.name
+      );
+
+      if (newActivity.description == "" || newActivity.name == "") {
         setError("Please fill in all fields");
         setIsModalOpen(true);
         return;
       }
-      console.log("Adding custom activity: ", newActivity);
-      return;
+
+      try {
+        // Directly await the addActivity call without using Promise.all for a single promise
+        const [addedActivity] = await addActivity(newActivity);
+        console.log("Custom activity received: ", addedActivity);
+        activityToAdd = addedActivity;
+        console.log("Custom: ", activityToAdd);
+      } catch (error) {
+        console.error("Error adding activity: ", error);
+        setError("Failed to add activity"); // Set an error message to display in your modal
+        setIsModalOpen(true);
+      }
     }
-    console.log("Adding activity: ", selectedActivity);
+    if (activityToAdd === undefined) {
+      activityToAdd = selectedActivity;
+    }
+
+    const group = await fetchGroup();
+
+    newGroupActivity.activity_id = activityToAdd.activity_id;
+    newGroupActivity.group_id = group.group_id;
+
+    console.log("Adding activity: ", newGroupActivity);
+    
+    try { 
+      await addGroupActivity(newGroupActivity);
+      setNewActivity({ name: "", description: "" });
+      navigate("/progress");
+    } catch (error) {
+      console.error("Error adding group activity: ", error);
+      setError("Failed to add group activity"); // Set an error message to display in your modal
+      setIsModalOpen(true);
+    }
   };
 
   if (loading) return <Loading />;
@@ -139,12 +187,17 @@ const AddActivity = () => {
               value: activity,
             }))}
             width="100%"
-            onChange={(e) => setSelectedActivity(e.value)}
+            onChange={(e) => {
+              setSelectedActivity(e.value)
+              setNewGroupActivity({ ...newGroupActivity, activity_id: e.value.activity_id })
+            }
+            }
           />
         </GroupBox>
-        {selectedActivity && selectedActivity.id === "custom" && (
+        {selectedActivity && selectedActivity.activity_id === "custom" && (
           <div style={{ marginTop: "20px" }}>
             <TextInput
+              value={newActivity.name}
               placeholder="Activity name"
               onChange={(e) =>
                 setNewActivity({ ...newActivity, name: e.target.value })
@@ -152,6 +205,7 @@ const AddActivity = () => {
               style={{ marginBottom: "10px" }}
             />
             <TextInput
+              value={newActivity.description}
               multiline
               onChange={(e) =>
                 setNewActivity({ ...newActivity, description: e.target.value })
@@ -161,7 +215,7 @@ const AddActivity = () => {
             />
           </div>
         )}
-        {selectedActivity && selectedActivity.id != "custom" && (
+        {selectedActivity && selectedActivity.activity_id != "custom" && (
           <div style={{ marginTop: "10px" }}>
             <p>Activity: {selectedActivity.name}</p>
             <p>Description: {selectedActivity.description}</p>
@@ -171,7 +225,16 @@ const AddActivity = () => {
         {selectedActivity && (
           <PointsSection>
             <p>Points earned: </p>
-            <NumberInput defaultValue={0} step={20} min={0} max={200} />
+            <NumberInput
+              value={newGroupActivity.points_earned}
+              defaultValue={0}
+              step={20}
+              min={0}
+              max={200}
+              onChange={(e) =>
+                setNewGroupActivity({ ...newGroupActivity, points_earned: e })
+              }
+            />
           </PointsSection>
         )}
         <div

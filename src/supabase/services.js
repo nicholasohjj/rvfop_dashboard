@@ -17,8 +17,8 @@ const fetchUser = async () => {
   } = await supabaseClient.auth.getUser();
   if (userError) throw userError;
 
-  return user
-}
+  return user;
+};
 
 const fetchGroup = async () => {
   const user = await fetchUser();
@@ -34,10 +34,48 @@ const fetchGroup = async () => {
   }
 };
 
+const fetchGroupActivities = async (group_id) => {
+  const { data: activityData, error: activityError } = await supabaseClient.rpc(
+    "get_activity_data",
+    {
+      current_group_id: group_id,
+    }
+  );
+
+  if (activityError) throw activityError;
+  activityData.sort((a, b) => new Date(b.tm_created) - new Date(a.tm_created));
+  return activityData;
+};
+
 const fetchActivities = async () => {
   const { data, error } = await supabaseClient.from("activities").select("*");
   if (error) throw error;
   return data;
 };
 
-export { fetchHouses, fetchUser, fetchGroup, fetchActivities };
+const addActivity = async (activity) => {
+  const { data, error } = await supabaseClient
+    .from("activities")
+    .insert([activity])
+    .select("*");
+  if (error) throw error;
+  return data;
+};
+
+const addGroupActivity = async (groupactivity) => {
+  const { data, error } = await supabaseClient
+    .from("groupactivities")
+    .insert([groupactivity])
+    .select("*");
+  if (error) throw error;
+  return data;
+};
+export {
+  fetchGroupActivities,
+  fetchHouses,
+  fetchUser,
+  fetchGroup,
+  fetchActivities,
+  addActivity,
+  addGroupActivity
+};
