@@ -1,7 +1,7 @@
 import { Footer } from "./components/footer";
 import { Header } from "./components/header";
 import { Outlet } from "react-router-dom";
-import { motion, useMotionValue, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 
 const modalVariants = {
   hidden: {
