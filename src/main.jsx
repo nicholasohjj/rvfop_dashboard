@@ -7,7 +7,6 @@ import ms_sans_serif_bold from 'react95/dist/fonts/ms_sans_serif_bold.woff2';
 import { createGlobalStyle, ThemeProvider } from 'styled-components';
 import {  styleReset } from 'react95';
 import App from './App';
-import { inject } from '@vercel/analytics';
 
 const GlobalStyles = createGlobalStyle`
   ${styleReset}
@@ -27,9 +26,6 @@ const GlobalStyles = createGlobalStyle`
     font-family: 'ms_sans_serif';
   }
 `;
-
-
-inject();
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   

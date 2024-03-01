@@ -15,6 +15,7 @@ import { Update } from "./routes/update";
 import { Reset } from "./routes/reset";
 import AddActivity from "./routes/addActivity";
 import AddDeduction from "./routes/addDeduction";
+import { Analytics } from "@vercel/analytics/react"
 const App = () => {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -123,7 +124,14 @@ const App = () => {
     },
   ]);
 
-  return <RouterProvider router={router} />;
+  return (
+    <>
+  <RouterProvider router={router} />
+  <Analytics/>
+  </>
+  
+  )
+  ;
 };
 
 export default App;
