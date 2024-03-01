@@ -16,7 +16,7 @@ import { Reset } from "./routes/reset";
 import AddActivity from "./routes/addActivity";
 import AddDeduction from "./routes/addDeduction";
 import { Analytics } from "@vercel/analytics/react"
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { SpeedInsights } from "@vercel/speed-insights/react"
 const App = () => {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
