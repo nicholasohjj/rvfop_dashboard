@@ -11,7 +11,7 @@ import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { supabaseClient } from "../supabase/supabaseClient";
 import styled from "styled-components";
-
+import { fetchUser } from "../supabase/services";
 // Styled Close Icon Component
 const CloseIcon = styled.div`
   display: inline-block;
@@ -66,18 +66,14 @@ export const Update = () => {
   const navigate = useNavigate(); // Hook for navigation
 
   useEffect(() => {
-    const getEmail = async () => {
-      const { data } = await supabaseClient.auth.getUser();
-      setemail(data.user.email);
-    };
-
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
     };
 
     window.addEventListener("resize", handleResize);
-    getEmail();
-    // Cleanup the event listener on component unmount
+    Promise.all([fetchUser()]).then(([user]) => {
+      setemail(user.email);
+    });
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 

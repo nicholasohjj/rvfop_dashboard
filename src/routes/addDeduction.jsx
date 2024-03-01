@@ -7,12 +7,12 @@ import {
   WindowHeader,
   GroupBox,
   NumberInput,
-  TextInput,
 } from "react95";
 import styled from "styled-components";
 import { supabaseClient } from "../supabase/supabaseClient";
 import { useNavigate } from "react-router-dom";
 import Loading from "./loading";
+import { fetchHouses, fetchGroup } from "../supabase/services";
 // Styled components
 const StyledWindow = styled(Window)`
   flex: 1;
@@ -72,54 +72,32 @@ const AddDeduction = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [houses, setHouses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [groupData, setGroupData] = useState(null);
+  const [group, setGroup] = useState(null);
   const [selectedHouse, setSelectedHouse] = useState(null);
   const [deductionPoints, setDeductionPoints] = useState(0);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchGroupData = async () => {
-      try {
-        const {
-          data: { user },
-          error: userError,
-        } = await supabaseClient.auth.getUser();
-        if (userError) throw userError;
+    setLoading(true); // Ensure loading is true at the start
 
-        const { data: fetchedGroupData, error: fetchDataError } =
-          await supabaseClient.rpc("fetch_group_data", { user_id: user.id });
-
-        if (fetchDataError) throw fetchDataError;
-
-        if (fetchedGroupData && fetchedGroupData.length > 0) {
-          const group = fetchedGroupData[0]; // Assuming the first group is what you're interested in
-          setGroupData(group);
-
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    const fetchHouses = async () => {
-      try {
-        const { data, error } = await supabaseClient.from("houses").select("*");
-        if (error) throw error;
-        setHouses(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    Promise.all([fetchGroupData(), fetchHouses()]).then(() => setLoading(false));
+    Promise.all([fetchGroup(), fetchHouses()])
+      .then(([groupData, housesData]) => {
+        setGroup(groupData);
+        setHouses(housesData);
+        setLoading(false); // Set loading to false once both promises resolve
+      })
+      .catch((error) => {
+        console.error("Failed to fetch data:", error);
+        setLoading(false); // Ensure loading is set to false even if there's an error
+      });
 
     const handleResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
+
+    // Cleanup function to remove the event listener
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
-
 
   const handleApplyDeduction = async () => {
     return;
@@ -127,8 +105,7 @@ const AddDeduction = () => {
 
   if (loading) return <Loading />;
 
-
-  houses.sort((a, b) => a.total_points > b.total_points ? -1 : 1);
+  houses.sort((a, b) => (a.total_points > b.total_points ? -1 : 1));
   return (
     <StyledWindow windowWidth={windowWidth}>
       <WindowHeader>
@@ -136,7 +113,8 @@ const AddDeduction = () => {
       </WindowHeader>
       <WindowContent style={{ overflowX: "visible" }}>
         <GroupBox style={{ marginBottom: "10px" }}>
-          You have {groupData.total_points} points in total. You can deduct a maximum of {groupData.total_points} points.
+          You have {group.total_points} points in total. You can deduct a
+          maximum of {group.total_points} points.
         </GroupBox>
         <GroupBox label="Select House to Deduct">
           <Select
@@ -146,22 +124,22 @@ const AddDeduction = () => {
             }))}
             width="100%"
             onChange={(e) => {
-              setSelectedHouse(e.value)
-              setDeductionPoints(0)
+              setSelectedHouse(e.value);
+              setDeductionPoints(0);
             }}
           />
         </GroupBox>
 
         {selectedHouse && (
-        
           <PointsSection>
             <p>Points to deduct: </p>
-            <NumberInput 
-            value={deductionPoints}
-            onChange={(value) => setDeductionPoints(Number(value))} // Ensure value is a number
-            step={20}
-            min={0}
-            max={Math.min(groupData.total_points, selectedHouse.total_points)} />
+            <NumberInput
+              value={deductionPoints}
+              onChange={(value) => setDeductionPoints(Number(value))} // Ensure value is a number
+              step={20}
+              min={0}
+              max={Math.min(group.total_points, selectedHouse.total_points)}
+            />
           </PointsSection>
         )}
         <div

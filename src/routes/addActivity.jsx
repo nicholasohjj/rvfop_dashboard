@@ -13,7 +13,7 @@ import styled from "styled-components";
 import { supabaseClient } from "../supabase/supabaseClient";
 import { useNavigate } from "react-router-dom";
 import { motion, useMotionValue, useTransform } from "framer-motion";
-
+import { fetchActivities } from "../supabase/services";
 import Loading from "./loading";
 // Styled components
 const StyledWindow = styled(Window)`
@@ -30,7 +30,6 @@ const StyledWindowHeader = styled(WindowHeader)`
   align-items: center;
   color: white;
   background-color: #ff0000; // Change this hex code to your desired color
-
 `;
 
 const CloseIcon = styled.div`
@@ -86,26 +85,15 @@ const AddActivity = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    setLoading(true);
     const handleResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
-    fetchActivities();
+    Promise.all([fetchActivities()]).then((data) => {
+      setActivityData([...data[0], { name: "Create Activity", id: "custom" }]);
+      setLoading(false);
+    });
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
-  const fetchActivities = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabaseClient
-        .from("activities")
-        .select("*");
-      if (error) throw error;
-      setActivityData([...data, { name: "Create Activity", id: "custom" }]);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const modalVariants = {
     hidden: {
@@ -214,25 +202,25 @@ const AddActivity = () => {
               zIndex: 10, // Ensure it's above other content
             }}
           >
-          <motion.div
-            drag
-            dragConstraints={constraintsRef}
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
-            variants={modalVariants}
-            style={{
-              rotate: rotateValueError,
-              x: dragxError,
-              position: "absolute",
-              top: "50%",
-              left: "0%",
-              width: "80%", // Responsive width
-              maxWidth: "90%", // Ensures it doesn't get too large on big screens
-              zIndex: 10,
-            }}
-          >
-        <Window style={windowStyle}>
+            <motion.div
+              drag
+              dragConstraints={constraintsRef}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              variants={modalVariants}
+              style={{
+                rotate: rotateValueError,
+                x: dragxError,
+                position: "absolute",
+                top: "50%",
+                left: "0%",
+                width: "80%", // Responsive width
+                maxWidth: "90%", // Ensures it doesn't get too large on big screens
+                zIndex: 10,
+              }}
+            >
+              <Window style={windowStyle}>
                 <StyledWindowHeader>
                   <span>Error ⚠️</span>
                   <Button onClick={() => setIsModalOpen(false)}>
