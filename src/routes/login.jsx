@@ -11,6 +11,7 @@ import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { supabaseClient } from "../supabase/supabaseClient";
 import styled from "styled-components";
+import { H } from 'highlight.run';
 
 // Styled Close Icon Component
 const CloseIcon = styled.div`
@@ -112,7 +113,7 @@ export const Login = () => {
     e.preventDefault();
 
     try {
-      const { error } = await supabaseClient.auth.signInWithPassword({
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
         email,
         password,
       });
@@ -121,8 +122,7 @@ export const Login = () => {
         throw error;
       }
 
-      supabaseClient.auth.getSession().then(({ data: { session } }) => {});
-
+      H.identify(data.user.email, ...data);
       navigate("/");
     } catch (error) {
       setIsModalOpen(true);

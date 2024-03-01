@@ -18,6 +18,7 @@ import AddDeduction from "./routes/addDeduction";
 const App = () => {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
+  
 
   useEffect(() => {
 
