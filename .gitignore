@@ -1,3 +1,5 @@
+cypress.env.json
+
 .env
 # Logs
 logs
@@ -26,4 +28,3 @@ dist-ssr
 
 .vercel
 .env*.local
-cypress.env.json
