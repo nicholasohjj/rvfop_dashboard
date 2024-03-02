@@ -83,9 +83,10 @@ const Progress = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
+        
         const group = await fetchGroup();
         setGroupData(group);
-
+ 
         const activityData = await fetchGroupActivities(group.group_id);
         setActivityData(activityData);
       } catch (error) {
