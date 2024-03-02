@@ -124,7 +124,7 @@ By integrating technology with tradition, we're setting a new standard for how o
   </tr>
 </table>
 
-The project uses PostgreSQL, provided by Supabase, for database management. The schema and migrations are designed to support the dynamic features of the dashboard.
+The project uses PostgreSQL, provided by Supabase, for database management. The schema and migrations are designed to support the dynamic features of the dashboard. More info [here](https://github.com/nicholasohjj/rvfop_dashboard/tree/main/db).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

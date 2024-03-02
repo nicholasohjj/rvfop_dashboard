@@ -1,4 +1,4 @@
-## Database Diagram for RVRC FOP 2024 Dashboard
+## Database Diagram for Insieme Dashboard
 
 ![Database Diagram](/images/database_diagram.png)
 
