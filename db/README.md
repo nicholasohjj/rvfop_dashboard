@@ -1,5 +1,6 @@
-# Database for Insieme Dashboard
-This documentation provides a comprehensive overview of the schema, tables, and functions designed for managing a system of houses, groups, activities, group activities, deductions, and profiles. It outlines the relationships between these entities, permissions, and triggers implemented to ensure data integrity and automate data management.
+# Insieme Dashboard Database Documentation
+This documentation offers a detailed guide to the database schema tailored for the Insieme Dashboard, a platform designed to monitor and manage a system encompassing houses, groups, activities, and user profiles. It delves into the structure of the database, explaining the purpose of each table and the relationships between them, outlines the security policies in place to safeguard data, and introduces the automated functions and triggers that streamline data handling.
+
 ## ER Diagram
 
 <table>
@@ -8,6 +9,8 @@ This documentation provides a comprehensive overview of the schema, tables, and 
     <td><img src="images/postgres.png" alt="Product Name Screen Shot" style="width: 100%; display: block;"></td>
   </tr>
 </table>
+
+## Database Schema Overview
 
 ### **Tables**
 
