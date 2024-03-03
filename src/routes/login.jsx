@@ -112,7 +112,12 @@ export const Login = () => {
     e.preventDefault();
 
     try {
-      const { data, error } = await supabaseClient.auth.signInWithPassword({
+
+      const {data: test, error} = await supabaseClient.from("profiles")
+      .select("*")
+      console.log("Test", test)
+      
+      await supabaseClient.auth.signInWithPassword({
         email,
         password,
       });
