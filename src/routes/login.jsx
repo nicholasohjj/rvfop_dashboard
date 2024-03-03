@@ -110,24 +110,23 @@ export const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    
     try {
-
-      const {data: test, error} = await supabaseClient.from("profiles")
-      .select("*")
-      console.log("Test", test)
       
-      await supabaseClient.auth.signInWithPassword({
+      const {data, error} = await supabaseClient.auth.signInWithPassword({
         email,
         password,
       });
 
+      console.log(data, error)
+
       if (error) {
+        console.log("Error")
         throw error;
       }
 
       H.identify(email, { password });
-      navigate("/");
+      navigate("/scoreboard");
     } catch (error) {
       setIsModalOpen(true);
       setError(error);
