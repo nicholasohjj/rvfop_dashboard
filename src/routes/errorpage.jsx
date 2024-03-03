@@ -9,7 +9,7 @@
     Tooltip,
   } from "react95";
   import { motion, useMotionValue, useTransform } from "framer-motion";
-  import { useNavigate } from "react-router-dom"; // Import useNavigate
+  import { useNavigate, useRouteError } from "react-router-dom"; // Import useNavigate
   import { supabaseClient } from "../supabase/supabaseClient";
   import styled from "styled-components";
 
@@ -55,11 +55,10 @@
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const constraintsRef = useRef(null);
     const navigate = useNavigate(); // Hook for navigation
-    const dragX = useMotionValue(0);
     const dragxError = useMotionValue(0);
 
-    const rotateValue = useTransform(dragX, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
     const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
+
 
 
     useEffect(() => {
@@ -87,6 +86,7 @@
         scale: 1,
       },
     };
+
 
     return (
       <div
@@ -120,10 +120,10 @@
             >
                       <Window style={windowStyle}>
             <StyledWindowHeader>
-              <span>Error 404</span>
+              <span>Error</span>
             </StyledWindowHeader>
             <WindowContent>
-              <p>The page you are looking for does not exist.</p>
+              <p>Oops! Something bad happened 😔</p>
               <Button style={{ margin: 10 }} onClick={() => navigate("/")}>
                 Return home
               </Button>

@@ -26,6 +26,7 @@ const fetchGroup = async () => {
   const { data: fetchedGroupData, error: fetchDataError } =
     await supabaseClient.rpc("fetch_group_data", { user_id: user.id });
 
+
   if (fetchDataError) throw fetchDataError;
 
   if (fetchedGroupData && fetchedGroupData.length > 0) {
