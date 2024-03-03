@@ -1,4 +1,3 @@
--- Create houses table
 create table houses
 (
     house_id     uuid         default uuid_generate_v4()    not null
@@ -17,7 +16,6 @@ grant delete, insert, references, select, trigger, truncate, update on houses to
 
 grant delete, insert, references, select, trigger, truncate, update on houses to service_role;
 
--- Create groups table
 create table groups
 (
     group_id     uuid    default uuid_generate_v4() not null
@@ -40,8 +38,6 @@ grant delete, insert, references, select, trigger, truncate, update on groups to
 
 grant delete, insert, references, select, trigger, truncate, update on groups to service_role;
 
-
--- Create activities table
 create table activities
 (
     activity_id uuid    default uuid_generate_v4() not null
@@ -64,8 +60,6 @@ grant delete, insert, references, select, trigger, truncate, update on activitie
 
 grant delete, insert, references, select, trigger, truncate, update on activities to service_role;
 
-
--- Create groupactivities table
 create table groupactivities
 (
     group_id          uuid                                                not null
@@ -88,8 +82,6 @@ grant delete, insert, references, select, trigger, truncate, update on groupacti
 
 grant delete, insert, references, select, trigger, truncate, update on groupactivities to service_role;
 
-
--- Create deductions table
 create table deductions
 (
     group_id        uuid                                                                                     not null
@@ -114,7 +106,6 @@ grant delete, insert, references, select, trigger, truncate, update on deduction
 
 grant delete, insert, references, select, trigger, truncate, update on deductions to service_role;
 
--- Create profiles table
 create table profiles
 (
     id       uuid    not null
@@ -153,4 +144,92 @@ grant delete, insert, references, select, trigger, truncate, update on profiles 
 grant delete, insert, references, select, trigger, truncate, update on profiles to authenticated;
 
 grant delete, insert, references, select, trigger, truncate, update on profiles to service_role;
+
+create function handle_new_user() returns trigger
+    security definer
+    SET search_path = public
+    language plpgsql
+as
+$$
+begin
+    -- missing source code
+end;
+$$;
+
+alter function handle_new_user() owner to postgres;
+
+grant execute on function handle_new_user() to anon;
+
+grant execute on function handle_new_user() to authenticated;
+
+grant execute on function handle_new_user() to service_role;
+
+create function update_points_after_activity() returns trigger
+    language plpgsql
+as
+$$
+begin
+    -- missing source code
+end;
+$$;
+
+alter function update_points_after_activity() owner to postgres;
+
+create trigger trigger_update_points_after_activity
+    after insert
+    on groupactivities
+    for each row
+execute procedure update_points_after_activity();
+
+grant execute on function update_points_after_activity() to anon;
+
+grant execute on function update_points_after_activity() to authenticated;
+
+grant execute on function update_points_after_activity() to service_role;
+
+create function check_isprohuman() returns trigger
+    language plpgsql
+as
+$$
+begin
+    -- missing source code
+end;
+$$;
+
+alter function check_isprohuman() owner to postgres;
+
+create trigger trigger_check_isprohuman
+    before insert or update
+    on deductions
+    for each row
+execute procedure check_isprohuman();
+
+grant execute on function check_isprohuman() to anon;
+
+grant execute on function check_isprohuman() to authenticated;
+
+grant execute on function check_isprohuman() to service_role;
+
+create function update_points_after_deduction() returns trigger
+    language plpgsql
+as
+$$
+begin
+    -- missing source code
+end;
+$$;
+
+alter function update_points_after_deduction() owner to postgres;
+
+create trigger trigger_update_points_after_deduction
+    after insert or update
+    on deductions
+    for each row
+execute procedure update_points_after_deduction();
+
+grant execute on function update_points_after_deduction() to anon;
+
+grant execute on function update_points_after_deduction() to authenticated;
+
+grant execute on function update_points_after_deduction() to service_role;
 
