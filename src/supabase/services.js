@@ -48,6 +48,19 @@ const fetchGroupActivities = async (group_id) => {
   return activityData;
 };
 
+const fetchDeductions = async (group_id) => {
+  const { data: deductionData, error: deductionError } = await supabaseClient.rpc(
+    "get_deductions",
+    {
+      current_group_id: group_id,
+    }
+  );
+
+  if (deductionError) throw deductionError;
+  deductionData.sort((a, b) => new Date(b.tm_created) - new Date(a.tm_created));
+  return deductionData;
+};
+
 const fetchActivities = async () => {
   const { data, error } = await supabaseClient.from("activities").select("*");
   if (error) throw error;
@@ -58,6 +71,15 @@ const addActivity = async (activity) => {
   const { data, error } = await supabaseClient
     .from("activities")
     .insert([activity])
+    .select("*");
+  if (error) throw error;
+  return data;
+};
+
+const addDeduction = async (deduction) => {
+  const { data, error } = await supabaseClient
+    .from("deductions")
+    .insert([deduction])
     .select("*");
   if (error) throw error;
   return data;
@@ -78,5 +100,7 @@ export {
   fetchGroup,
   fetchActivities,
   addActivity,
-  addGroupActivity
+  addDeduction,
+  addGroupActivity,
+  fetchDeductions
 };

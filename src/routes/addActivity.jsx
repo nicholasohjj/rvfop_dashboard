@@ -8,6 +8,7 @@ import {
   GroupBox,
   NumberInput,
   TextInput,
+  ScrollView,
 } from "react95";
 import styled from "styled-components";
 import { supabaseClient } from "../supabase/supabaseClient";
@@ -181,6 +182,7 @@ const AddActivity = () => {
       </WindowHeader>
       <WindowContent style={{ overflowX: "visible" }}>
         <GroupBox label="Select Activity">
+          
           <Select
             options={activityData.map((activity) => ({
               label: activity.name,
@@ -194,6 +196,7 @@ const AddActivity = () => {
             }
           />
         </GroupBox>
+        
         {selectedActivity && selectedActivity.activity_id === "custom" && (
           <div style={{ marginTop: "20px" }}>
             <TextInput

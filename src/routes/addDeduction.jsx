@@ -12,7 +12,7 @@ import styled from "styled-components";
 import { supabaseClient } from "../supabase/supabaseClient";
 import { useNavigate } from "react-router-dom";
 import Loading from "./loading";
-import { fetchHouses, fetchGroup } from "../supabase/services";
+import { fetchHouses, fetchGroup, addDeduction } from "../supabase/services";
 // Styled components
 const StyledWindow = styled(Window)`
   flex: 1;
@@ -99,8 +99,22 @@ const AddDeduction = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const handleApplyDeduction = async () => {
-    return;
+  const handleAddDeduction = async () => {
+    const deduction = {
+      house_id: selectedHouse.house_id,
+      group_id: group.group_id,
+      points_deducted: deductionPoints,
+    }
+
+    try {
+      const response = await addDeduction(deduction)
+      console.log(response)
+      return
+    } catch (error) {
+      alert(error)
+    }
+
+    console.log(deduction)
   };
 
   if (loading) return <Loading />;
@@ -152,7 +166,7 @@ const AddDeduction = () => {
         >
           <Button onClick={() => navigate("/")}>Go back</Button>
           {selectedHouse && (
-            <Button onClick={() => handleApplyDeduction()}>Deduct</Button>
+            <Button onClick={() => handleAddDeduction()}>Deduct</Button>
           )}
         </div>
       </WindowContent>
