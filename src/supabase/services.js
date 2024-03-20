@@ -24,7 +24,7 @@ const fetchGroup = async () => {
   const user = await fetchUser();
 
   const { data: fetchedGroupData, error: fetchDataError } =
-    await supabaseClient.rpc("fetch_group_data", { user_id: user.id });
+    await supabaseClient.rpc("get_group_data", { user_id: user.id });
 
 
   if (fetchDataError) throw fetchDataError;
@@ -86,13 +86,18 @@ const addDeduction = async (deduction) => {
 };
 
 const addGroupActivity = async (groupactivity) => {
-  const { data, error } = await supabaseClient
-    .from("groupactivities")
-    .insert([groupactivity])
-    .select("*");
+  const { group_id, activity_id, points_earned } = groupactivity
+  const { data, error } = await supabaseClient.from("groupactivities")
+  .insert([
+    {group_id, activity_id, points_earned
+    }])
+
   if (error) throw error;
-  return data;
+return data;
 };
+
+
+
 export {
   fetchGroupActivities,
   fetchHouses,

@@ -12,6 +12,7 @@ import styled from "styled-components";
 import { supabaseClient } from "../supabase/supabaseClient";
 import { useNavigate } from "react-router-dom";
 import Loading from "./loading";
+import { motion, useMotionValue, useTransform } from "framer-motion";
 import { fetchHouses, fetchGroup, addDeduction } from "../supabase/services";
 // Styled components
 const StyledWindow = styled(Window)`
@@ -75,6 +76,12 @@ const AddDeduction = () => {
   const [group, setGroup] = useState(null);
   const [selectedHouse, setSelectedHouse] = useState(null);
   const [deductionPoints, setDeductionPoints] = useState(0);
+  const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const constraintsRef = useRef(null);
+  const dragxError = useMotionValue(0);
+  const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
 
   const navigate = useNavigate();
 
@@ -109,15 +116,33 @@ const AddDeduction = () => {
     try {
       const response = await addDeduction(deduction)
       console.log(response)
-      return
+      navigate("/progress")
     } catch (error) {
-      alert(error)
+      console.error("Error adding deduction: ", error);
+      setError(error.message); // Set an error message to display in your modal
+      setIsModalOpen(true); // Open the modal to display the error
     }
 
     console.log(deduction)
   };
 
   if (loading) return <Loading />;
+
+  const modalVariants = {
+    hidden: {
+      opacity: 0,
+      scale: 0,
+    },
+    visible: {
+      opacity: 1,
+      scale: 1,
+    },
+  };
+
+  const windowStyle = {
+    width: windowWidth > 500 ? 500 : "90%", // Adjust width here
+    margin: "0%",
+  };
 
   houses.sort((a, b) => (a.total_points > b.total_points ? -1 : 1));
   return (
@@ -165,10 +190,55 @@ const AddDeduction = () => {
           }}
         >
           <Button onClick={() => navigate("/")}>Go back</Button>
-          {selectedHouse && (
+          {selectedHouse && deductionPoints > 0 && (
             <Button onClick={() => handleAddDeduction()}>Deduct</Button>
           )}
         </div>
+        {isModalOpen && (
+          <div
+            ref={constraintsRef}
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: "flex", // Use flexbox for centering
+              alignItems: "center", // Vertical center
+              justifyContent: "center", // Horizontal center
+              zIndex: 10, // Ensure it's above other content
+            }}
+          >
+            <motion.div
+              drag
+              dragConstraints={constraintsRef}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              variants={modalVariants}
+              style={{
+                rotate: rotateValueError,
+                x: dragxError,
+                position: "absolute",
+                top: "50%",
+                left: "0%",
+                width: "80%", // Responsive width
+                maxWidth: "90%", // Ensures it doesn't get too large on big screens
+                zIndex: 10,
+              }}
+            >
+              <Window style={windowStyle}>
+                <StyledWindowHeader>
+                  <span>Error ⚠️</span>
+                  <Button onClick={() => setIsModalOpen(false)}>
+                    <CloseIcon />
+                  </Button>
+                </StyledWindowHeader>
+                <WindowContent>{error}</WindowContent>
+              </Window>
+            </motion.div>
+          </div>
+        )}
       </WindowContent>
     </StyledWindow>
   );
