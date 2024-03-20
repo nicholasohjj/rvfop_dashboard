@@ -21,6 +21,7 @@ const Scoreboard = () => {
 
   useEffect(() => {
     Promise.all([fetchHouses()]).then(([housesData]) => {
+      console.log(housesData)
       setHouses(housesData);
       setLoading(false);
     });
@@ -58,6 +59,18 @@ const Scoreboard = () => {
               >
                 Points
               </TableHeadCell>
+              <TableHeadCell
+                onClick={() => sortHouses("total_deductions")}
+                sort={sortKey === "total_deductions" ? sortDirection : undefined}
+              >
+                Deductions
+              </TableHeadCell>
+              <TableHeadCell
+                onClick={() => sortHouses("overall_points")}
+                sort={sortKey === "overall_points" ? sortDirection : undefined}
+              >
+                Overall Points
+              </TableHeadCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -65,6 +78,11 @@ const Scoreboard = () => {
               <TableRow key={house.house_id}>
                 <TableDataCell>{house.name}</TableDataCell>
                 <TableDataCell>{house.total_points}</TableDataCell>
+                <TableDataCell>{house.total_penalties}</TableDataCell>
+                <TableDataCell>
+                  {house.total_points - house.total_penalties}
+                </TableDataCell>
+
               </TableRow>
             ))}
           </TableBody>
