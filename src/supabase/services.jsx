@@ -29,7 +29,10 @@ const fetchGroups = async () => {
     .from("groups")
     .select("*");
   if (error) throw error;
+  // sort the groups by alphabetical order
+  data.sort((a, b) => a.name.localeCompare(b.name));
   return data;
+  //
 };
 
 const fetchGroup = async () => {

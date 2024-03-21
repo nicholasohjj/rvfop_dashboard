@@ -20,6 +20,7 @@ import {
   addActivity,
   addGroupActivity,
 } from "../supabase/services";
+import { useStore, initialiseGroups } from "../context/userContext";
 import Loading from "./loading";
 // Styled components
 const StyledWindow = styled(Window)`
@@ -83,6 +84,7 @@ const AddActivity = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState(null);
   const [selectedActivity, setSelectedActivity] = useState(null);
+  const [selectedGroup, setSelectedGroup] = useState(null);
   const [newActivity, setNewActivity] = useState({ name: "", description: "" });
   const [newGroupActivity, setNewGroupActivity] = useState({
     group_id: "",
@@ -92,8 +94,12 @@ const AddActivity = () => {
   const constraintsRef = useRef(null);
   const dragxError = useMotionValue(0);
   const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
-
   const navigate = useNavigate();
+  const groups = [{}, ...useStore((state) => state.groups)];
+
+
+
+  console.log("Groups: ", groups);
 
   useEffect(() => {
     setLoading(true);
@@ -128,11 +134,13 @@ const AddActivity = () => {
   const handleAddActivity = async () => {
     let activityToAdd;
 
-    if (selectedActivity.activity_id === "custom") {
-      console.log(
-        "Please fill in all fields" + newActivity.description + newActivity.name
-      );
+    if (!selectedGroup) {
+      setError("Please select a group");
+      setIsModalOpen(true);
+      return;
+    }
 
+    if (selectedActivity.activity_id === "custom") {
       if (newActivity.description == "" || newActivity.name == "") {
         setError("Please fill in all fields");
         setIsModalOpen(true);
@@ -155,14 +163,12 @@ const AddActivity = () => {
       activityToAdd = selectedActivity;
     }
 
-    const group = await fetchGroup();
-
     newGroupActivity.activity_id = activityToAdd.activity_id;
-    newGroupActivity.group_id = group.group_id;
+    newGroupActivity.group_id = selectedGroup.group_id;
 
     console.log("Adding activity: ", newGroupActivity);
-    
-    try { 
+
+    try {
       await addGroupActivity(newGroupActivity);
       setNewActivity({ name: "", description: "" });
       navigate("/progress");
@@ -182,7 +188,6 @@ const AddActivity = () => {
       </WindowHeader>
       <WindowContent style={{ overflowX: "visible" }}>
         <GroupBox label="Select Activity">
-            
           <Select
             options={activityData.map((activity) => ({
               label: activity.name,
@@ -190,33 +195,32 @@ const AddActivity = () => {
             }))}
             width="100%"
             onChange={(e) => {
-              setSelectedActivity(e.value)
-              setNewGroupActivity({ ...newGroupActivity, activity_id: e.value.activity_id })
-            }
-            }
+              setSelectedActivity(e.value);
+              setNewGroupActivity({
+                ...newGroupActivity,
+                activity_id: e.value.activity_id,
+              });
+            }}
             //max height should be 20% of screen
-            menuMaxHeight = {window.innerHeight * 0.2}
+            menuMaxHeight={window.innerHeight * 0.2}
           />
         </GroupBox>
 
         <GroupBox label="Select Group">
-            
-            <Select
-              options={activityData.map((activity) => ({
-                label: activity.name,
-                value: activity.name,
-              }))}
-              width="100%"
-              onChange={(e) => {
-                setSelectedActivity(e.value)
-                setNewGroupActivity({ ...newGroupActivity, activity_id: e.value.activity_id })
-              }
-              }
-              //max height should be 20% of screen
-              menuMaxHeight = {window.innerHeight * 0.2}
-            />
-          </GroupBox>
-        
+          <Select
+            options={groups.map((group) => ({
+              label: group.name,
+              value: group,
+            }))}
+            width="100%"
+            onChange={(e) => {
+              setSelectedGroup(e.value);
+            }}
+            //max height should be 20% of screen
+            menuMaxHeight={window.innerHeight * 0.2}
+          />
+        </GroupBox>
+
         {selectedActivity && selectedActivity.activity_id === "custom" && (
           <div style={{ marginTop: "20px" }}>
             <TextInput
@@ -239,10 +243,29 @@ const AddActivity = () => {
           </div>
         )}
         {selectedActivity && selectedActivity.activity_id != "custom" && (
-          <div style={{ marginTop: "10px" }}>
-            <p>Activity: {selectedActivity.name}</p>
-            <p>Description: {selectedActivity.description}</p>
-          </div>
+ <div style={{ marginTop: "20px" }}>
+ <div
+   style={{
+     display: "flex",
+     flexDirection: "column", // Stack information vertically for clarity
+     alignItems: "center", // Center-align the items for a neat look
+     marginBottom: "10px", // Add some space before the description
+   }}
+ >
+   <div style={{ marginBottom: "5px" }}>
+     <strong>Activity:</strong> {selectedActivity.name}
+   </div>
+   <div style={{ marginBottom: "5px" }}>
+     <strong>Group:</strong> {selectedGroup ? selectedGroup.name : "Not selected"}
+   </div>
+ </div>
+ <GroupBox label="Description" style={{ padding: "10px", margin: "0 auto", maxWidth: "90%" }}>
+   <ScrollView style={{ maxHeight: "100px", padding: "5px" }}> {/* Ensure the description box does not overflow */}
+     {selectedActivity.description || "No description available."}
+   </ScrollView>
+ </GroupBox>
+</div>
+
         )}
 
         {selectedActivity && (
