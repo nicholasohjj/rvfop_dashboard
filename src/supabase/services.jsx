@@ -24,6 +24,14 @@ const fetchUser = async () => {
   return data;
 };
 
+const fetchGroups = async () => {
+  const { data, error } = await supabaseClient
+    .from("groups")
+    .select("*");
+  if (error) throw error;
+  return data;
+};
+
 const fetchGroup = async () => {
   const {
     data: { user },
@@ -104,13 +112,12 @@ const addGroupActivity = async (groupactivity) => {
 return data;
 };
 
-
-
 export {
   fetchGroupActivities,
   fetchHouses,
   fetchUser,
   fetchGroup,
+  fetchGroups,
   fetchActivities,
   addActivity,
   addDeduction,

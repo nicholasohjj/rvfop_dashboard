@@ -182,7 +182,7 @@ const AddActivity = () => {
       </WindowHeader>
       <WindowContent style={{ overflowX: "visible" }}>
         <GroupBox label="Select Activity">
-          
+            
           <Select
             options={activityData.map((activity) => ({
               label: activity.name,
@@ -194,8 +194,28 @@ const AddActivity = () => {
               setNewGroupActivity({ ...newGroupActivity, activity_id: e.value.activity_id })
             }
             }
+            //max height should be 20% of screen
+            menuMaxHeight = {window.innerHeight * 0.2}
           />
         </GroupBox>
+
+        <GroupBox label="Select Group">
+            
+            <Select
+              options={activityData.map((activity) => ({
+                label: activity.name,
+                value: activity.name,
+              }))}
+              width="100%"
+              onChange={(e) => {
+                setSelectedActivity(e.value)
+                setNewGroupActivity({ ...newGroupActivity, activity_id: e.value.activity_id })
+              }
+              }
+              //max height should be 20% of screen
+              menuMaxHeight = {window.innerHeight * 0.2}
+            />
+          </GroupBox>
         
         {selectedActivity && selectedActivity.activity_id === "custom" && (
           <div style={{ marginTop: "20px" }}>
