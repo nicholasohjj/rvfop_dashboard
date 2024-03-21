@@ -9,12 +9,11 @@ import {
   NumberInput,
 } from "react95";
 import styled from "styled-components";
-import { supabaseClient } from "../supabase/supabaseClient";
 import { useNavigate } from "react-router-dom";
 import Loading from "./loading";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { fetchHouses, fetchGroup, addDeduction } from "../supabase/services";
-import { useStore } from "../context/userContext";
+import { useStore, initializeUserData } from "../context/userContext";
 // Styled components
 const StyledWindow = styled(Window)`
   flex: 1;
@@ -88,16 +87,17 @@ const AddDeduction = () => {
   const userData = useStore((state) => state.userData);
 
   useEffect(() => {
+    initializeUserData().then(() => {
+      const userData = useStore.getState().userData;
+      if (userData && userData.role !== "admin" && userData.role !== "deductor") {
+        navigate("/progress");
+      }
+    });
+  }, [navigate]);
 
-    if (userData.role == "admin" || userData.role == "deductor") {
-      console.log("Role", userData.role);
-    } else {
-      navigate("/progress");
-    }
-    
-
+  useEffect(() => {
     setLoading(true); // Ensure loading is true at the start
-    
+
     Promise.all([fetchGroup(), fetchHouses()])
       .then(([groupData, housesData]) => {
         setGroup(groupData);
@@ -121,19 +121,19 @@ const AddDeduction = () => {
       house_id: selectedHouse.house_id,
       group_id: group.group_id,
       points_deducted: deductionPoints,
-    }
+    };
 
     try {
-      const response = await addDeduction(deduction)
-      console.log(response)
-      navigate("/progress")
+      const response = await addDeduction(deduction);
+      console.log(response);
+      navigate("/progress");
     } catch (error) {
       console.error("Error adding deduction: ", error);
       setError(error.message); // Set an error message to display in your modal
       setIsModalOpen(true); // Open the modal to display the error
     }
 
-    console.log(deduction)
+    console.log(deduction);
   };
 
   if (loading) return <Loading />;
