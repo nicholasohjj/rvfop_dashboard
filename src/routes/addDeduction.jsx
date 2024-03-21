@@ -89,7 +89,11 @@ const AddDeduction = () => {
   useEffect(() => {
     initializeUserData().then(() => {
       const userData = useStore.getState().userData;
-      if (userData && userData.role !== "admin" && userData.role !== "deductor") {
+      if (
+        userData &&
+        userData.role !== "admin" &&
+        userData.role !== "deductor"
+      ) {
         navigate("/progress");
       }
     });

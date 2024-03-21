@@ -20,7 +20,11 @@ import {
   addActivity,
   addGroupActivity,
 } from "../supabase/services";
-import { useStore, initialiseGroups, initializeUserData } from "../context/userContext";
+import {
+  useStore,
+  initialiseGroups,
+  initializeUserData,
+} from "../context/userContext";
 import Loading from "./loading";
 // Styled components
 const StyledWindow = styled(Window)`
@@ -78,7 +82,6 @@ const PointsSection = styled.div`
 
 // Main component
 const AddActivity = () => {
-
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [activityData, setActivityData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -102,17 +105,15 @@ const AddActivity = () => {
   const userData = useStore((state) => state.userData);
 
   useEffect(() => {
-      initializeUserData().then(() => {
-        if (userData && userData.role !== "gm") {
-          navigate("/progress");
-        }
-
-      });
+    initializeUserData().then(() => {
+      if (userData && !(userData.role == "gm" || userData.role == "admin")) {
+        navigate("/progress");
+      }
+    });
 
     if (!groups) {
-      initialiseGroups()
+      initialiseGroups();
     }
-
   }, [groups, userData, navigate]);
 
   useEffect(() => {
@@ -256,29 +257,34 @@ const AddActivity = () => {
           </div>
         )}
         {selectedActivity && selectedActivity.activity_id != "custom" && (
- <div style={{ marginTop: "20px" }}>
- <div
-   style={{
-     display: "flex",
-     flexDirection: "column", // Stack information vertically for clarity
-     alignItems: "center", // Center-align the items for a neat look
-     marginBottom: "10px", // Add some space before the description
-   }}
- >
-   <div style={{ marginBottom: "5px" }}>
-     <strong>Activity:</strong> {selectedActivity.name}
-   </div>
-   <div style={{ marginBottom: "5px" }}>
-     <strong>Group:</strong> {selectedGroup ? selectedGroup.name : "Not selected"}
-   </div>
- </div>
- <GroupBox label="Description" style={{ padding: "10px", margin: "0 auto", maxWidth: "90%" }}>
-   <ScrollView style={{ maxHeight: "100px", padding: "5px" }}> {/* Ensure the description box does not overflow */}
-     {selectedActivity.description || "No description available."}
-   </ScrollView>
- </GroupBox>
-</div>
-
+          <div style={{ marginTop: "20px" }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column", // Stack information vertically for clarity
+                alignItems: "center", // Center-align the items for a neat look
+                marginBottom: "10px", // Add some space before the description
+              }}
+            >
+              <div style={{ marginBottom: "5px" }}>
+                <strong>Activity:</strong> {selectedActivity.name}
+              </div>
+              <div style={{ marginBottom: "5px" }}>
+                <strong>Group:</strong>{" "}
+                {selectedGroup ? selectedGroup.name : "Not selected"}
+              </div>
+            </div>
+            <GroupBox
+              label="Description"
+              style={{ padding: "10px", margin: "0 auto", maxWidth: "90%" }}
+            >
+              <ScrollView style={{ maxHeight: "100px", padding: "5px" }}>
+                {" "}
+                {/* Ensure the description box does not overflow */}
+                {selectedActivity.description || "No description available."}
+              </ScrollView>
+            </GroupBox>
+          </div>
         )}
 
         {selectedActivity && (
