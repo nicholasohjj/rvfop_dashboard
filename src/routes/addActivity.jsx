@@ -102,17 +102,18 @@ const AddActivity = () => {
   const userData = useStore((state) => state.userData);
 
   useEffect(() => {
-    if (!userData) {
       initializeUserData().then(() => {
-        console.log("User data initialised");
+        if (userData && userData.role !== "gm") {
+          navigate("/progress");
+        }
+
       });
-    }
 
     if (!groups) {
       initialiseGroups()
     }
 
-  }, [groups, userData]);
+  }, [groups, userData, navigate]);
 
   useEffect(() => {
     setLoading(true);
