@@ -78,6 +78,7 @@ const PointsSection = styled.div`
 
 // Main component
 const AddActivity = () => {
+
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [activityData, setActivityData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -90,16 +91,14 @@ const AddActivity = () => {
     group_id: "",
     activity_id: "",
     points_earned: 0,
+    gm_id: "",
   });
   const constraintsRef = useRef(null);
   const dragxError = useMotionValue(0);
   const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
   const navigate = useNavigate();
   const groups = [{}, ...useStore((state) => state.groups)];
-
-
-
-  console.log("Groups: ", groups);
+  const userData = useStore((state) => state.userData);
 
   useEffect(() => {
     setLoading(true);
@@ -165,8 +164,7 @@ const AddActivity = () => {
 
     newGroupActivity.activity_id = activityToAdd.activity_id;
     newGroupActivity.group_id = selectedGroup.group_id;
-
-    console.log("Adding activity: ", newGroupActivity);
+    newGroupActivity.gm_id = userData.id;
 
     try {
       await addGroupActivity(newGroupActivity);

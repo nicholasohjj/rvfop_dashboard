@@ -105,10 +105,9 @@ const addDeduction = async (deduction) => {
 };
 
 const addGroupActivity = async (groupactivity) => {
-  const { group_id, activity_id, points_earned } = groupactivity
   const { data, error } = await supabaseClient.from("groupactivities")
   .insert([
-    {group_id, activity_id, points_earned
+    {...groupactivity
     }])
 
   if (error) throw error;
