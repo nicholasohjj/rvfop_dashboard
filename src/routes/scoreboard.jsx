@@ -14,16 +14,27 @@ import Loading from "./loading";
 import { fetchHouses } from "../supabase/services";
 const Scoreboard = () => {
   const [houses, setHouses] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [sortKey, setSortKey] = useState("name"); // Default sort column
+  const [loading, setLoading] = useState(true);
+  const [sortKey, setSortKey] = useState("overall_points"); // Default sort column to overall_points
   const [sortDirection, setSortDirection] = useState("desc"); // Start with points descending
+
   useEffect(() => {
-    Promise.all([fetchHouses()]).then(([housesData]) => {
-      console.log(housesData)
-      setHouses(housesData);
+    fetchHouses().then(housesData => {
+      // After fetching, sort the houses by overall_points in descending order
+      const sortedHouses = sortHousesInitially(housesData);
+      setHouses(sortedHouses);
       setLoading(false);
     });
   }, []);
+
+  const sortHousesInitially = (housesData) => {
+    return [...housesData].sort((a, b) => {
+      const aVal = a.total_points - a.total_penalties;
+      const bVal = b.total_points - b.total_penalties;
+
+      return sortDirection === "asc" ? aVal - bVal : bVal - aVal;
+    });
+  };
 
   const sortHouses = (key) => {
     const direction =
