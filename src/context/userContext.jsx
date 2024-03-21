@@ -14,4 +14,4 @@ export const initializeUserData = async () => {
   useStore.getState().setUserData(userData);
 };
 
-await initializeUserData(); // Call this function to initialize the userData
+initializeUserData(); // Call this function to initialize the userData
