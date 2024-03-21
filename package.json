@@ -28,7 +28,8 @@
     "sort-by": "^1.2.0",
     "styled-components": "^6.1.8",
     "swr": "^2.2.5",
-    "workbox-core": "^7.0.0"
+    "workbox-core": "^7.0.0",
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@types/react": "^18.2.55",

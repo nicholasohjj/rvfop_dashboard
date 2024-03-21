@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import Loading from "./loading";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { fetchHouses, fetchGroup, addDeduction } from "../supabase/services";
+import { useStore } from "../context/userContext";
 // Styled components
 const StyledWindow = styled(Window)`
   flex: 1;
@@ -84,10 +85,19 @@ const AddDeduction = () => {
   const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
 
   const navigate = useNavigate();
+  const userData = useStore((state) => state.userData);
 
   useEffect(() => {
-    setLoading(true); // Ensure loading is true at the start
 
+    if (userData.role == "admin" || userData.role == "deductor") {
+      console.log("Role", userData.role);
+    } else {
+      navigate("/progress");
+    }
+    
+
+    setLoading(true); // Ensure loading is true at the start
+    
     Promise.all([fetchGroup(), fetchHouses()])
       .then(([groupData, housesData]) => {
         setGroup(groupData);

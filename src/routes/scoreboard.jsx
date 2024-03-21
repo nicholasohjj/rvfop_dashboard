@@ -10,7 +10,6 @@ import {
   WindowContent,
   WindowHeader,
 } from "react95";
-import { supabaseClient } from "../supabase/supabaseClient";
 import Loading from "./loading";
 import { fetchHouses } from "../supabase/services";
 const Scoreboard = () => {
@@ -18,7 +17,6 @@ const Scoreboard = () => {
   const [loading, setLoading] = useState(false);
   const [sortKey, setSortKey] = useState("name"); // Default sort column
   const [sortDirection, setSortDirection] = useState("desc"); // Start with points descending
-
   useEffect(() => {
     Promise.all([fetchHouses()]).then(([housesData]) => {
       console.log(housesData)
@@ -34,8 +32,17 @@ const Scoreboard = () => {
     setSortDirection(direction);
 
     const sortedHouses = [...houses].sort((a, b) => {
-      if (a[key] < b[key]) return direction === "asc" ? -1 : 1;
-      if (a[key] > b[key]) return direction === "asc" ? 1 : -1;
+
+      let aVal = a[key];
+      let bVal = b[key];
+
+      if (key === "overall_points") {
+        aVal = a.total_points - a.total_penalties;
+        bVal = b.total_points - b.total_penalties;
+      }
+
+      if (aVal < bVal) return direction === "asc" ? -1 : 1;
+      if (aVal > bVal) return direction === "asc" ? 1 : -1;
       return 0;
     });
 
@@ -88,6 +95,7 @@ const Scoreboard = () => {
           </TableBody>
         </Table>
       </WindowContent>
+
     </Window>
   );
 };

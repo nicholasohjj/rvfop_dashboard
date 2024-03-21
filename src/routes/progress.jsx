@@ -23,6 +23,7 @@ import {
   fetchGroup,
   fetchDeductions
 } from "../supabase/services";
+import { useStore } from "../context/userContext";
 
 const CloseIcon = styled.div`
   display: inline-block;
@@ -71,6 +72,7 @@ const Progress = () => {
   const [deductionData, setDeductionData] = useState([])
   const constraintsRef = useRef(null);
   const dragxError = useMotionValue(0);
+  const userData = useStore((state) => state.userData);
 
   const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
 
@@ -166,7 +168,9 @@ const Progress = () => {
         <div style={{ marginTop: 10 }}>
           <Tabs value={activeTab} onChange={(e) => handleTabChange(e)}>
             <Tab value={0}>Activities</Tab>
+            {(userData.role === "admin" || userData.role === "deductor") && (
             <Tab value={1}>Deductions</Tab>
+            )}
           </Tabs>
           <TabBody>
             {activeTab == 0 && (

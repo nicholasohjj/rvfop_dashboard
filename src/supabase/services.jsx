@@ -11,17 +11,25 @@ const fetchHouses = async () => {
 };
 
 const fetchUser = async () => {
+  const {data: user}  = await supabaseClient.auth.getUser();
+  const userId = user.user.id;
+
+  const { data, error } = await supabaseClient
+  .from('profiles')
+  .select('*')
+  .eq('id', userId)
+  .single();
+
+
+  return data;
+};
+
+const fetchGroup = async () => {
   const {
     data: { user },
     error: userError,
   } = await supabaseClient.auth.getUser();
   if (userError) throw userError;
-
-  return user;
-};
-
-const fetchGroup = async () => {
-  const user = await fetchUser();
 
   const { data: fetchedGroupData, error: fetchDataError } =
     await supabaseClient.rpc("get_group_data", { user_id: user.id });

@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { supabaseClient } from "../supabase/supabaseClient";
 import styled from "styled-components";
 import { fetchUser } from "../supabase/services";
+import { useStore } from "zustand";
 // Styled Close Icon Component
 const CloseIcon = styled.div`
   display: inline-block;
@@ -58,6 +59,7 @@ export const Update = () => {
   const [error, setError] = useState(null);
   const dragX = useMotionValue(0);
   const dragxError = useMotionValue(0);
+  
 
   const rotateValue = useTransform(dragX, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
   const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees

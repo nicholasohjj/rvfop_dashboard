@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { AppBar, Toolbar, Button, MenuList, MenuListItem } from "react95";
 import { useNavigate } from "react-router-dom";
-
+import { useStore } from "../context/userContext"
 export const Header = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const userData = useStore((state) => state.userData);
+
 
   return (
     <AppBar style={{ zIndex: 1 }}>
@@ -33,9 +35,11 @@ export const Header = () => {
             <MenuListItem onClick={() => navigate("/addactivity")}>
               Add Activity
             </MenuListItem>
-            <MenuListItem onClick={() => navigate("/adddeduction")}>
-              Add Deduction 😈
-            </MenuListItem>
+            {(userData.role === "admin" || userData.role === "deductor") && (
+              <MenuListItem onClick={() => navigate("/adddeduction")}>
+                Add Deduction 😈
+              </MenuListItem>
+            )}
           </MenuList>
         )}
       </Toolbar>
