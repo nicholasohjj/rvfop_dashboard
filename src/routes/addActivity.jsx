@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import {
   Button,
   Select,
@@ -20,7 +20,7 @@ import {
   addActivity,
   addGroupActivity,
 } from "../supabase/services";
-import { useStore, initialiseGroups } from "../context/userContext";
+import { useStore, initialiseGroups, initializeUserData } from "../context/userContext";
 import Loading from "./loading";
 // Styled components
 const StyledWindow = styled(Window)`
@@ -97,8 +97,22 @@ const AddActivity = () => {
   const dragxError = useMotionValue(0);
   const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
   const navigate = useNavigate();
-  const groups = [{}, ...useStore((state) => state.groups)];
+  const storeGroups = useStore((state) => state.groups);
+  const groups = useMemo(() => [{}, ...storeGroups], [storeGroups]);
   const userData = useStore((state) => state.userData);
+
+  useEffect(() => {
+    if (!userData) {
+      initializeUserData().then(() => {
+        console.log("User data initialised");
+      });
+    }
+
+    if (!groups) {
+      initialiseGroups()
+    }
+
+  }, [groups, userData]);
 
   useEffect(() => {
     setLoading(true);
