@@ -7,9 +7,6 @@ import {
   TableHead,
   TableHeadCell,
   TableRow,
-  Tabs,
-  TabBody,
-  Tab,
   Window,
   WindowContent,
   WindowHeader,
@@ -21,7 +18,6 @@ import Loading from "./loading";
 import {
   fetchGroupActivities,
   fetchGroup,
-  fetchDeductions,
 } from "../supabase/services";
 import { useStore, initializeUserData } from "../context/userContext";
 import { useNavigate } from "react-router-dom";
@@ -69,8 +65,6 @@ const Progress = () => {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState(null);
-  const [activeTab, setActiveTab] = useState(0);
-  const [deductionData, setDeductionData] = useState([]);
   const constraintsRef = useRef(null);
   const dragxError = useMotionValue(0);
   const userData = useStore((state) => state.userData);
@@ -113,8 +107,6 @@ const Progress = () => {
         const activityData = await fetchGroupActivities(group.group_id);
         setActivityData(activityData);
 
-        const deductionData = await fetchDeductions(group.group_id);
-        setDeductionData(deductionData);
       } catch (error) {
         console.error("Failed to fetch data:", error);
       } finally {
@@ -177,7 +169,7 @@ const Progress = () => {
       <WindowHeader>My Progress</WindowHeader>
       <WindowContent>
       {groupData && (
-          <GroupBox label={`Group: ${groupData.name}`}>
+          <GroupBox label={`Group: ${groupData.group_name}`}>
             Total Points Earned: {groupData.total_points}
           </GroupBox>
         )}
@@ -198,7 +190,7 @@ const Progress = () => {
                   <TableDataCell>
                     {formatSGT(activity.tm_created)}
                   </TableDataCell>
-                  <TableDataCell>{activity.name}</TableDataCell>
+                  <TableDataCell>{activity.activity_name}</TableDataCell>
                   <TableDataCell>{activity.points_earned}</TableDataCell>
                   <TableDataCell
                     style={{
@@ -256,7 +248,7 @@ const Progress = () => {
             >
               <Window style={windowStyle}>
                 <StyledWindowHeader>
-                  <span>{selectedActivity.name}</span>
+                  <span>{selectedActivity.activity_name}</span>
                   <Button onClick={() => setIsModalOpen(false)}>
                     <CloseIcon />
                   </Button>

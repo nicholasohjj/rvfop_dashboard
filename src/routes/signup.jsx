@@ -5,13 +5,12 @@ import {
   WindowContent,
   TextInput,
   Button,
-  Tooltip,
 } from "react95";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { supabaseClient } from "../supabase/supabaseClient";
 import styled from "styled-components";
-import { H } from "highlight.run";
+import { fetchGroups } from "../supabase/services";
 
 // Styled Close Icon Component
 const CloseIcon = styled.div`
@@ -51,12 +50,13 @@ const StyledWindowHeader = styled(WindowHeader)`
   align-items: center;
 `;
 
-export const Login = () => {
+export const Signup = () => {
   const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState(null);
+  const [groups, setGroups] = useState([]); // Add groups state
   const constraintsRef = useRef(null);
   const navigate = useNavigate(); // Hook for navigation
   const dragX = useMotionValue(0);
@@ -64,6 +64,13 @@ export const Login = () => {
 
   const rotateValue = useTransform(dragX, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
   const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
+
+  useEffect(() => {
+    fetchGroups().then((data) => {
+      setGroups(data);
+      console.log("Groups", data);
+    });
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -87,40 +94,18 @@ export const Login = () => {
     },
   };
 
-  const handleResetPassword = async () => {
-    try {
-      const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-        redirectTo: "https://insieme.vercel.app/reset",
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      setIsModalOpen(true);
-      setError({
-        name: "Password Reset Email Sent",
-        message: `An email has been sent to ${email} with a link to reset your password.`,
-      });
-    } catch (error) {
-      setIsModalOpen(true);
-      setError(error);
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!email || !password) {
-      setIsModalOpen(true);
       setError({
         name: "Error",
-        message: "Email and password are required.",
+        message: "Please fill in all fields",
       });
+      setIsModalOpen(true);
       return;
     }
 
-    // check if email is valid and password is at least 6 chars
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setIsModalOpen(true);
       setError({
@@ -138,22 +123,20 @@ export const Login = () => {
       });
       return;
     }
-    
+
     try {
-      
-      const {data, error} = await supabaseClient.auth.signInWithPassword({
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
         email,
         password,
       });
 
-      console.log(data, error)
+      console.log(data, error);
 
       if (error) {
-        console.log("Error")
+        console.log("Error");
         throw error;
       }
 
-      H.identify(email, { password });
       navigate("/scoreboard");
     } catch (error) {
       setIsModalOpen(true);
@@ -189,17 +172,8 @@ export const Login = () => {
       >
         <Window style={windowStyle}>
           <WindowHeader>
-            <span>Insieme 2024</span>
+            <span>Sign up</span>
           </WindowHeader>
-          <div style={{ marginTop: 8 }}>
-            <Tooltip text="Meow! 🐱‍" enterDelay={100} leaveDelay={100}>
-              <img
-                src="https://insieme.s3.ap-southeast-1.amazonaws.com/logo.png"
-                alt="rvrc-logo"
-                width={100}
-              />
-            </Tooltip>
-          </div>
           <WindowContent>
             <form onSubmit={handleSubmit}>
               <div>
@@ -227,11 +201,8 @@ export const Login = () => {
                 <div
                   style={{ display: "flex", justifyContent: "space-around" }}
                 >
-                  <Button onClick={() => handleResetPassword()}>
-                    Forgot your password?
-                  </Button>
                   <Button type="submit" value="login">
-                    Sign in
+                    Enter
                   </Button>
                 </div>
               </div>

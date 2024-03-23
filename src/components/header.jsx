@@ -6,7 +6,6 @@ export const Header = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const userData = useStore((state) => state.userData);
-  console.log("userData", userData);
 
   useEffect(() => {
     const initialise = async () => {

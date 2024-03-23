@@ -169,7 +169,7 @@ const Deductions = () => {
       <WindowHeader>My Deductions</WindowHeader>
       <WindowContent>
         <div style={{ marginTop: 10 }}>
-          {groupData.length> 0 ? (
+          {groupData ? (
               <Table>
                 <TableHead>
                   <TableRow>
@@ -186,7 +186,7 @@ const Deductions = () => {
                         {formatSGT(deduction.tm_created)}
                       </TableDataCell>
                       <TableDataCell>{deduction.points_deducted}</TableDataCell>
-                      <TableDataCell>{deduction.name}</TableDataCell>
+                      <TableDataCell>{deduction.house_name}</TableDataCell>
                       <TableDataCell
                         style={{
                           gap: 16,
@@ -244,7 +244,7 @@ const Deductions = () => {
             >
               <Window style={windowStyle}>
                 <StyledWindowHeader>
-                  <span>{selectedDeduction.name}</span>
+                  <span>{selectedDeduction.house_name}</span>
                   <Button onClick={() => setIsModalOpen(false)}>
                     <CloseIcon />
                   </Button>

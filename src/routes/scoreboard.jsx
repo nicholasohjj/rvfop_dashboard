@@ -94,7 +94,7 @@ const Scoreboard = () => {
           <TableBody>
             {houses.map((house) => (
               <TableRow key={house.house_id}>
-                <TableDataCell>{house.name}</TableDataCell>
+                <TableDataCell>{house.house_name}</TableDataCell>
                 <TableDataCell>{house.total_points}</TableDataCell>
                 <TableDataCell>{house.total_penalties}</TableDataCell>
                 <TableDataCell>

@@ -17,13 +17,13 @@ import {
   fetchActivities,
   addActivity,
   addGroupActivity,
-} from "../supabase/services";
+} from "../../supabase/services";
 import {
   useStore,
   initialiseGroups,
   initializeUserData,
-} from "../context/userContext";
-import Loading from "./loading";
+} from "../../context/userContext";
+import Loading from "../loading";
 // Styled components
 const StyledWindow = styled(Window)`
   flex: 1;
@@ -99,13 +99,12 @@ const AddActivity = () => {
   const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
   const navigate = useNavigate();
   const storeGroups = useStore((state) => state.groups);
-  const groups = useMemo(() => [{}, ...storeGroups], [storeGroups]);
+  const groups = useMemo(() => [{name: "Select Group"}, ...storeGroups], [storeGroups]);
   const userData = useStore((state) => state.userData);
 
   useEffect(() => {
     const initializeData = async () => {
       try {
-        // Initialize user data if not already present
         if (!userData) {
           await initializeUserData();
           if (userData.role !== 'gm' && userData.role !== 'admin') {
@@ -134,8 +133,9 @@ const AddActivity = () => {
     window.addEventListener("resize", handleResize);
     Promise.all([fetchActivities()]).then((data) => {
       setActivityData([
+        { activity_name: "Select Activity", activity_id: ""},
         ...data[0],
-        { name: "Create Activity", activity_id: "custom" },
+        { activity_name: "Create Activity", activity_id: "custom" },
       ]);
       setLoading(false);
     });
@@ -168,7 +168,7 @@ const AddActivity = () => {
     }
 
     if (selectedActivity.activity_id === "custom") {
-      if (newActivity.description == "" || newActivity.name == "") {
+      if (newActivity.description == "" || newActivity.activity_name == "") {
         setError("Please fill in all fields");
         setIsModalOpen(true);
         return;
@@ -216,7 +216,7 @@ const AddActivity = () => {
         <GroupBox label="Select Activity">
           <Select
             options={activityData.map((activity) => ({
-              label: activity.name,
+              label: activity.activity_name,
               value: activity,
             }))}
             width="100%"
@@ -235,7 +235,7 @@ const AddActivity = () => {
         <GroupBox label="Select Group">
           <Select
             options={groups.map((group) => ({
-              label: group.name,
+              label: group.group_name,
               value: group,
             }))}
             width="100%"
@@ -250,7 +250,7 @@ const AddActivity = () => {
         {selectedActivity && selectedActivity.activity_id === "custom" && (
           <div style={{ marginTop: "20px" }}>
             <TextInput
-              value={newActivity.name}
+              value={newActivity.activity_name}
               placeholder="Activity name"
               onChange={(e) =>
                 setNewActivity({ ...newActivity, name: e.target.value })
@@ -268,7 +268,7 @@ const AddActivity = () => {
             />
           </div>
         )}
-        {selectedActivity && selectedActivity.activity_id != "custom" && (
+        {selectedActivity && selectedActivity.activity_id != "custom" && selectedActivity.activity_id != "" && (
           <div style={{ marginTop: "20px" }}>
             <div
               style={{
@@ -279,7 +279,7 @@ const AddActivity = () => {
               }}
             >
               <div style={{ marginBottom: "5px" }}>
-                <strong>Activity:</strong> {selectedActivity.name}
+                <strong>Activity:</strong> {selectedActivity.activity_name}
               </div>
               <div style={{ marginBottom: "5px" }}>
                 <strong>Group:</strong>{" "}
@@ -291,15 +291,13 @@ const AddActivity = () => {
               style={{ padding: "10px", margin: "0 auto", maxWidth: "90%" }}
             >
               <ScrollView style={{ maxHeight: "100px", padding: "5px" }}>
-                {" "}
-                {/* Ensure the description box does not overflow */}
                 {selectedActivity.description || "No description available."}
               </ScrollView>
             </GroupBox>
           </div>
         )}
 
-        {selectedActivity && (
+        {selectedActivity && selectedActivity.activity_id != ""  && selectedGroup.group_id && (
           <PointsSection>
             <p>Points earned: </p>
             <NumberInput
@@ -323,7 +321,7 @@ const AddActivity = () => {
           }}
         >
           <Button onClick={() => navigate("/")}>Go back</Button>
-          {selectedActivity && (
+          {selectedActivity && selectedActivity.activity_id != "" && selectedGroup?.group_id && (
             <Button onClick={() => handleAddActivity()}>Add</Button>
           )}
         </div>

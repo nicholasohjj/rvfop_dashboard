@@ -20,7 +20,6 @@ export const Footer = () => {
 
   const handleLogout = () => {
     supabaseClient.auth.signOut();
-    console.log(supabaseClient.auth.getSession());
     navigate("/login");
   };
 
@@ -51,20 +50,20 @@ export const Footer = () => {
               <MenuListItem onClick={() => handleNavigate("/scoreboard")}>
                 Scoreboard
               </MenuListItem>
-              {userData?.role === "admin" ||
-                userData?.role === "normal" ||
-                (userData?.role === "deductor" && (
+              {(userData.role == "admin" ||
+                userData.role == "normal" ||
+                userData.role == "deductor") && (
                   <MenuListItem onClick={() => handleNavigate("/progress")}>
                     My Progress
                   </MenuListItem>
-                ))}
+                )}
 
-              {userData?.role === "admin" ||
-                (userData?.role === "deductor" && (
+              {(userData?.role === "admin" ||
+                userData?.role === "deductor") && (
                   <MenuListItem onClick={() => handleNavigate("/deductions")}>
                     My Deductions
                   </MenuListItem>
-                ))}
+                )}
 
               <MenuListItem onClick={() => handleLogout()}>
                 <span role="img" aria-label="🔙">

@@ -29,10 +29,8 @@ const fetchGroups = async () => {
     .from("groups")
     .select("*");
   if (error) throw error;
-  // sort the groups by alphabetical order
-  data.sort((a, b) => a.name.localeCompare(b.name));
+  data.sort((a, b) => a.group_name.localeCompare(b.group_name));
   return data;
-  //
 };
 
 const fetchGroup = async () => {
@@ -42,17 +40,16 @@ const fetchGroup = async () => {
   } = await supabaseClient.auth.getUser();
   if (userError) throw userError;
 
-  console.log(user.id)
 
   const { data: fetchedGroupData, error: fetchDataError } =
     await supabaseClient.rpc("get_group_data", { user_id: user.id });
 
-  console.log(fetchedGroupData, fetchDataError)
 
   if (fetchDataError) throw fetchDataError;
 
   if (fetchedGroupData && fetchedGroupData.length > 0) {
     const group = fetchedGroupData[0]; // Assuming the first group is what you're interested in
+    console.log("Group", group);
     return group;
   }
 };
@@ -64,6 +61,8 @@ const fetchGroupActivities = async (group_id) => {
       current_group_id: group_id,
     }
   );
+
+  console.log("Activities", activityData, activityError)
 
   if (activityError) throw activityError;
   activityData.sort((a, b) => new Date(b.tm_created) - new Date(a.tm_created));
@@ -121,6 +120,7 @@ export {
   fetchGroupActivities,
   fetchHouses,
   fetchUser,
+
   fetchGroup,
   fetchGroups,
   fetchActivities,

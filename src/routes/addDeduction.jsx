@@ -175,7 +175,7 @@ const AddDeduction = () => {
         <GroupBox label="Select House to Deduct">
           <Select
             options={houses.map((house) => ({
-              label: house.name + ` (${house.total_points} points)`,
+              label: house.house_name + ` (${house.total_points} points)`,
               value: house,
             }))}
             width="100%"

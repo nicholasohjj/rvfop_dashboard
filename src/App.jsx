@@ -13,11 +13,12 @@ import Progress from "./routes/progress";
 import { supabaseClient } from "./supabase/supabaseClient";
 import { Update } from "./routes/update";
 import { Reset } from "./routes/reset";
-import AddActivity from "./routes/addActivity";
+import AddActivity from "./routes/gm/addActivity";
 import AddDeduction from "./routes/addDeduction";
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/react"
 import Deductions from "./routes/deductions";
+import { Signup } from "./routes/signup";
 const App = () => {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -91,6 +92,17 @@ const App = () => {
         <Loading />
       ) : !session ? (
         <Login />
+      ) : (
+        <Navigate to="/" replace />
+      ),
+      errorElement: <ErrorPage />,
+    },
+    {
+      path: "/signup",
+      element: loading ? (
+        <Loading />
+      ) : !session ? (
+        <Signup />
       ) : (
         <Navigate to="/" replace />
       ),
