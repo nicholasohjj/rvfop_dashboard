@@ -89,6 +89,7 @@ const fetchActivities = async () => {
 };
 
 const addActivity = async (activity) => {
+  console.log("Activity", activity)
   const { data, error } = await supabaseClient
     .from("activities")
     .insert([activity])

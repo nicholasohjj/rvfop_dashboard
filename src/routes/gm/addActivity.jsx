@@ -87,7 +87,7 @@ const AddActivity = () => {
   const [error, setError] = useState(null);
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [selectedGroup, setSelectedGroup] = useState(null);
-  const [newActivity, setNewActivity] = useState({ name: "", description: "" });
+  const [newActivity, setNewActivity] = useState({ activity_name: "", description: "" });
   const [newGroupActivity, setNewGroupActivity] = useState({
     group_id: "",
     activity_id: "",
@@ -99,7 +99,7 @@ const AddActivity = () => {
   const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
   const navigate = useNavigate();
   const storeGroups = useStore((state) => state.groups);
-  const groups = useMemo(() => [{name: "Select Group"}, ...storeGroups], [storeGroups]);
+  const groups = useMemo(() => [{group_name: "Select Group"}, ...storeGroups], [storeGroups]);
   const userData = useStore((state) => state.userData);
 
   useEffect(() => {
@@ -196,7 +196,7 @@ const AddActivity = () => {
 
     try {
       await addGroupActivity(newGroupActivity);
-      setNewActivity({ name: "", description: "" });
+      setNewActivity({ activity_name: "", description: "" });
       navigate("/progress");
     } catch (error) {
       console.error("Error adding group activity: ", error);
@@ -253,7 +253,7 @@ const AddActivity = () => {
               value={newActivity.activity_name}
               placeholder="Activity name"
               onChange={(e) =>
-                setNewActivity({ ...newActivity, name: e.target.value })
+                setNewActivity({ ...newActivity, activity_name: e.target.value })
               }
               style={{ marginBottom: "10px" }}
             />
@@ -283,7 +283,7 @@ const AddActivity = () => {
               </div>
               <div style={{ marginBottom: "5px" }}>
                 <strong>Group:</strong>{" "}
-                {selectedGroup ? selectedGroup.name : "Not selected"}
+                {selectedGroup ? selectedGroup.group_name : "Not selected"}
               </div>
             </div>
             <GroupBox
@@ -297,7 +297,7 @@ const AddActivity = () => {
           </div>
         )}
 
-        {selectedActivity && selectedActivity.activity_id != ""  && selectedGroup.group_id && (
+        {selectedActivity && selectedActivity.activity_id != ""  && selectedGroup?.group_id && (
           <PointsSection>
             <p>Points earned: </p>
             <NumberInput
