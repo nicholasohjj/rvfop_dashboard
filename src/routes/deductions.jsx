@@ -15,13 +15,9 @@ import {
 import styled from "styled-components";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import Loading from "./loading";
-import {
-  fetchGroup,
-  fetchDeductions
-} from "../supabase/services";
+import { fetchGroup, fetchDeductions } from "../supabase/services";
 import { useStore, initializeUserData } from "../context/userContext";
 import { useNavigate } from "react-router-dom";
-
 
 const CloseIcon = styled.div`
   display: inline-block;
@@ -65,7 +61,7 @@ const Deductions = () => {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDeduction, setSelectedDeduction] = useState(null);
-  const [deductionData, setDeductionData] = useState([])
+  const [deductionData, setDeductionData] = useState([]);
   const constraintsRef = useRef(null);
   const dragxError = useMotionValue(0);
   const userData = useStore((state) => state.userData);
@@ -74,20 +70,21 @@ const Deductions = () => {
 
   useEffect(() => {
     if (!userData) {
-      initializeUserData().then(() => {
-        if (!(userData.role === "deductor" || userData.role === "admin")) {
-          navigate("/");
-        }
-      }).catch(error => {
-        console.error("Failed to initialize user data:", error);
-      });
+      initializeUserData()
+        .then(() => {
+          if (!(userData.role === "deductor" || userData.role === "admin")) {
+            navigate("/");
+          }
+        })
+        .catch((error) => {
+          console.error("Failed to initialize user data:", error);
+        });
     } else {
       if (!(userData.role === "deductor" || userData.role === "admin")) {
         navigate("/");
       }
     }
   }, [userData, navigate]);
-  
 
   useEffect(() => {
     const handleResize = () => {
@@ -104,9 +101,8 @@ const Deductions = () => {
         const group = await fetchGroup();
         setGroupData(group);
 
-        const deductionData = await fetchDeductions(group.group_id)
-        setDeductionData(deductionData)
-        
+        const deductionData = await fetchDeductions(group.group_id);
+        setDeductionData(deductionData);
       } catch (error) {
         console.error("Failed to fetch data:", error);
       } finally {
@@ -170,44 +166,43 @@ const Deductions = () => {
       <WindowContent>
         <div style={{ marginTop: 10 }}>
           {groupData ? (
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableHeadCell>Day</TableHeadCell>
-                    <TableHeadCell>Points deducted</TableHeadCell>
-                    <TableHeadCell>House</TableHeadCell>
-                    <TableHeadCell>Details</TableHeadCell>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableHeadCell>Day</TableHeadCell>
+                  <TableHeadCell>Points deducted</TableHeadCell>
+                  <TableHeadCell>House</TableHeadCell>
+                  <TableHeadCell>Details</TableHeadCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {deductionData.map((deduction, index) => (
+                  <TableRow key={index}>
+                    <TableDataCell>
+                      {formatSGT(deduction.tm_created)}
+                    </TableDataCell>
+                    <TableDataCell>{deduction.points_deducted}</TableDataCell>
+                    <TableDataCell>{deduction.house_name}</TableDataCell>
+                    <TableDataCell
+                      style={{
+                        gap: 16,
+                        display: "flex",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Button onClick={() => handleViewButtonClick(deduction)}>
+                        View
+                      </Button>
+                    </TableDataCell>
                   </TableRow>
-                </TableHead>
-                <TableBody>
-                  {deductionData.map((deduction, index) => (
-                    <TableRow key={index}>
-                      <TableDataCell>
-                        {formatSGT(deduction.tm_created)}
-                      </TableDataCell>
-                      <TableDataCell>{deduction.points_deducted}</TableDataCell>
-                      <TableDataCell>{deduction.house_name}</TableDataCell>
-                      <TableDataCell
-                        style={{
-                          gap: 16,
-                          display: "flex",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Button onClick={() => handleViewButtonClick(deduction)}>
-                          View
-                        </Button>
-                      </TableDataCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            ) : (
-              <div style={{ textAlign: 'center', margin: '20px 0' }}>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <div style={{ textAlign: "center", margin: "20px 0" }}>
               No deductions found.
             </div>
-            )}
-
+          )}
         </div>
         {isModalOpen && (
           <div

@@ -19,7 +19,7 @@ const Scoreboard = () => {
   const [sortDirection, setSortDirection] = useState("desc"); // Start with points descending
 
   useEffect(() => {
-    fetchHouses().then(housesData => {
+    fetchHouses().then((housesData) => {
       // After fetching, sort the houses by overall_points in descending order
       const sortedHouses = sortHousesInitially(housesData);
       setHouses(sortedHouses);
@@ -43,7 +43,6 @@ const Scoreboard = () => {
     setSortDirection(direction);
 
     const sortedHouses = [...houses].sort((a, b) => {
-
       let aVal = a[key];
       let bVal = b[key];
 
@@ -79,7 +78,9 @@ const Scoreboard = () => {
               </TableHeadCell>
               <TableHeadCell
                 onClick={() => sortHouses("total_deductions")}
-                sort={sortKey === "total_deductions" ? sortDirection : undefined}
+                sort={
+                  sortKey === "total_deductions" ? sortDirection : undefined
+                }
               >
                 Deductions
               </TableHeadCell>
@@ -100,13 +101,11 @@ const Scoreboard = () => {
                 <TableDataCell>
                   {house.total_points - house.total_penalties}
                 </TableDataCell>
-
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </WindowContent>
-
     </Window>
   );
 };

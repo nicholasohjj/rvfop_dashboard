@@ -88,13 +88,15 @@ const AddDeduction = () => {
 
   useEffect(() => {
     if (!userData) {
-      initializeUserData().then(() => {
-        if (!(userData.role === "deductor" || userData.role === "admin")) {
-          navigate("/");
-        }
-      }).catch(error => {
-        console.error("Failed to initialize user data:", error);
-      });
+      initializeUserData()
+        .then(() => {
+          if (!(userData.role === "deductor" || userData.role === "admin")) {
+            navigate("/");
+          }
+        })
+        .catch((error) => {
+          console.error("Failed to initialize user data:", error);
+        });
     } else {
       if (!(userData.role === "deductor" || userData.role === "admin")) {
         navigate("/");

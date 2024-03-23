@@ -138,18 +138,17 @@ export const Login = () => {
       });
       return;
     }
-    
+
     try {
-      
-      const {data, error} = await supabaseClient.auth.signInWithPassword({
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
         email,
         password,
       });
 
-      console.log(data, error)
+      console.log(data, error);
 
       if (error) {
-        console.log("Error")
+        console.log("Error");
         throw error;
       }
 

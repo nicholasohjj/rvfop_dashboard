@@ -1,12 +1,12 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import original from 'react95/dist/themes/original';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import original from "react95/dist/themes/original";
 // original Windows95 font (optionally)
-import ms_sans_serif from 'react95/dist/fonts/ms_sans_serif.woff2';
-import ms_sans_serif_bold from 'react95/dist/fonts/ms_sans_serif_bold.woff2';
-import { createGlobalStyle, ThemeProvider } from 'styled-components';
-import {  styleReset } from 'react95';
-import App from './App';
+import ms_sans_serif from "react95/dist/fonts/ms_sans_serif.woff2";
+import ms_sans_serif_bold from "react95/dist/fonts/ms_sans_serif_bold.woff2";
+import { createGlobalStyle, ThemeProvider } from "styled-components";
+import { styleReset } from "react95";
+import App from "./App";
 
 const GlobalStyles = createGlobalStyle`
   ${styleReset}
@@ -27,13 +27,11 @@ const GlobalStyles = createGlobalStyle`
   }
 `;
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  
+ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-      <GlobalStyles />
-      <ThemeProvider theme={original}>
-    <App /> 
-  </ThemeProvider>
-
-  </React.StrictMode>,
-)
+    <GlobalStyles />
+    <ThemeProvider theme={original}>
+      <App />
+    </ThemeProvider>
+  </React.StrictMode>
+);

@@ -15,20 +15,19 @@ import { Update } from "./routes/update";
 import { Reset } from "./routes/reset";
 import AddActivity from "./routes/gm/addActivity";
 import AddDeduction from "./routes/addDeduction";
-import { Analytics } from "@vercel/analytics/react"
-import { SpeedInsights } from "@vercel/speed-insights/react"
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import Deductions from "./routes/deductions";
 import { Signup } from "./routes/signup";
 const App = () => {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
-  
 
   useEffect(() => {
-
     const checkSession = async () => {
       const {
-        data: { session } } = await supabaseClient.auth.getSession();
+        data: { session },
+      } = await supabaseClient.auth.getSession();
 
       setSession(session);
       // Set loading to false after the session check
@@ -144,13 +143,11 @@ const App = () => {
 
   return (
     <>
-  <RouterProvider router={router} />
-  <Analytics/>
-  <SpeedInsights/>
-  </>
-  
-  )
-  ;
+      <RouterProvider router={router} />
+      <Analytics />
+      <SpeedInsights />
+    </>
+  );
 };
 
 export default App;

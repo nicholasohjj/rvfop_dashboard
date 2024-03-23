@@ -15,10 +15,7 @@ import {
 import styled from "styled-components";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import Loading from "./loading";
-import {
-  fetchGroupActivities,
-  fetchGroup,
-} from "../supabase/services";
+import { fetchGroupActivities, fetchGroup } from "../supabase/services";
 import { useStore, initializeUserData } from "../context/userContext";
 import { useNavigate } from "react-router-dom";
 
@@ -73,20 +70,21 @@ const Progress = () => {
 
   useEffect(() => {
     if (!userData) {
-      initializeUserData().then(() => {
-        if (!(userData.role === "normal" || userData.role === "admin")) {
-          navigate("/");
-        }
-      }).catch(error => {
-        console.error("Failed to initialize user data:", error);
-      });
+      initializeUserData()
+        .then(() => {
+          if (!(userData.role === "normal" || userData.role === "admin")) {
+            navigate("/");
+          }
+        })
+        .catch((error) => {
+          console.error("Failed to initialize user data:", error);
+        });
     } else {
       if (!(userData.role === "normal" || userData.role === "admin")) {
         navigate("/");
       }
     }
   }, [userData, navigate]);
-  
 
   useEffect(() => {
     const handleResize = () => {
@@ -106,7 +104,6 @@ const Progress = () => {
 
         const activityData = await fetchGroupActivities(group.group_id);
         setActivityData(activityData);
-
       } catch (error) {
         console.error("Failed to fetch data:", error);
       } finally {
@@ -168,50 +165,50 @@ const Progress = () => {
     >
       <WindowHeader>My Progress</WindowHeader>
       <WindowContent>
-      {groupData && (
+        {groupData && (
           <GroupBox label={`Group: ${groupData.group_name}`}>
             Total Points Earned: {groupData.total_points}
           </GroupBox>
         )}
         <div style={{ marginTop: 10 }}>
-        {ActivityData.length > 0 ? (
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableHeadCell>Day</TableHeadCell>
-                <TableHeadCell>Activity</TableHeadCell>
-                <TableHeadCell>Points</TableHeadCell>
-                <TableHeadCell>Details</TableHeadCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {ActivityData.map((activity, index) => (
-                <TableRow key={index}>
-                  <TableDataCell>
-                    {formatSGT(activity.tm_created)}
-                  </TableDataCell>
-                  <TableDataCell>{activity.activity_name}</TableDataCell>
-                  <TableDataCell>{activity.points_earned}</TableDataCell>
-                  <TableDataCell
-                    style={{
-                      gap: 16,
-                      display: "flex",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Button onClick={() => handleViewButtonClick(activity)}>
-                      View
-                    </Button>
-                  </TableDataCell>
+          {ActivityData.length > 0 ? (
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableHeadCell>Day</TableHeadCell>
+                  <TableHeadCell>Activity</TableHeadCell>
+                  <TableHeadCell>Points</TableHeadCell>
+                  <TableHeadCell>Details</TableHeadCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        ) : (
-          <div style={{ textAlign: 'center', margin: '20px 0' }}>
-          No activities found.
-        </div>
-        )}
+              </TableHead>
+              <TableBody>
+                {ActivityData.map((activity, index) => (
+                  <TableRow key={index}>
+                    <TableDataCell>
+                      {formatSGT(activity.tm_created)}
+                    </TableDataCell>
+                    <TableDataCell>{activity.activity_name}</TableDataCell>
+                    <TableDataCell>{activity.points_earned}</TableDataCell>
+                    <TableDataCell
+                      style={{
+                        gap: 16,
+                        display: "flex",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Button onClick={() => handleViewButtonClick(activity)}>
+                        View
+                      </Button>
+                    </TableDataCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <div style={{ textAlign: "center", margin: "20px 0" }}>
+              No activities found.
+            </div>
+          )}
         </div>
         {isModalOpen && (
           <div

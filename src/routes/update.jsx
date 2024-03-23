@@ -59,7 +59,6 @@ export const Update = () => {
   const [error, setError] = useState(null);
   const dragX = useMotionValue(0);
   const dragxError = useMotionValue(0);
-  
 
   const rotateValue = useTransform(dragX, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
   const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees

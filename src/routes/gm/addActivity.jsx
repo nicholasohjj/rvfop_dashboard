@@ -87,7 +87,10 @@ const AddActivity = () => {
   const [error, setError] = useState(null);
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [selectedGroup, setSelectedGroup] = useState(null);
-  const [newActivity, setNewActivity] = useState({ activity_name: "", description: "" });
+  const [newActivity, setNewActivity] = useState({
+    activity_name: "",
+    description: "",
+  });
   const [newGroupActivity, setNewGroupActivity] = useState({
     group_id: "",
     activity_id: "",
@@ -99,7 +102,10 @@ const AddActivity = () => {
   const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
   const navigate = useNavigate();
   const storeGroups = useStore((state) => state.groups);
-  const groups = useMemo(() => [{group_name: "Select Group"}, ...storeGroups], [storeGroups]);
+  const groups = useMemo(
+    () => [{ group_name: "Select Group" }, ...storeGroups],
+    [storeGroups]
+  );
   const userData = useStore((state) => state.userData);
 
   useEffect(() => {
@@ -107,25 +113,25 @@ const AddActivity = () => {
       try {
         if (!userData) {
           await initializeUserData();
-          if (userData.role !== 'gm' && userData.role !== 'admin') {
-            navigate('/');
+          if (userData.role !== "gm" && userData.role !== "admin") {
+            navigate("/");
             return;
           }
-        } else if (userData.role !== 'gm' && userData.role !== 'admin') {
-          navigate('/');
-          return; 
+        } else if (userData.role !== "gm" && userData.role !== "admin") {
+          navigate("/");
+          return;
         }
 
         if (!groups) {
           await initialiseGroups();
         }
       } catch (error) {
-        console.error('Failed to initialize data:', error);
+        console.error("Failed to initialize data:", error);
       }
     };
 
     initializeData();
-  }, [userData, groups, navigate]); 
+  }, [userData, groups, navigate]);
 
   useEffect(() => {
     setLoading(true);
@@ -133,7 +139,7 @@ const AddActivity = () => {
     window.addEventListener("resize", handleResize);
     Promise.all([fetchActivities()]).then((data) => {
       setActivityData([
-        { activity_name: "Select Activity", activity_id: ""},
+        { activity_name: "Select Activity", activity_id: "" },
         ...data[0],
         { activity_name: "Create Activity", activity_id: "custom" },
       ]);
@@ -215,6 +221,7 @@ const AddActivity = () => {
       <WindowContent style={{ overflowX: "visible" }}>
         <GroupBox label="Select Activity">
           <Select
+            defaultValue={activityData[0]}
             options={activityData.map((activity) => ({
               label: activity.activity_name,
               value: activity,
@@ -234,6 +241,7 @@ const AddActivity = () => {
 
         <GroupBox label="Select Group">
           <Select
+            defaultValue={groups[0]}
             options={groups.map((group) => ({
               label: group.group_name,
               value: group,
@@ -253,7 +261,10 @@ const AddActivity = () => {
               value={newActivity.activity_name}
               placeholder="Activity name"
               onChange={(e) =>
-                setNewActivity({ ...newActivity, activity_name: e.target.value })
+                setNewActivity({
+                  ...newActivity,
+                  activity_name: e.target.value,
+                })
               }
               style={{ marginBottom: "10px" }}
             />
@@ -268,50 +279,54 @@ const AddActivity = () => {
             />
           </div>
         )}
-        {selectedActivity && selectedActivity.activity_id != "custom" && selectedActivity.activity_id != "" && (
-          <div style={{ marginTop: "20px" }}>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column", // Stack information vertically for clarity
-                alignItems: "center", // Center-align the items for a neat look
-                marginBottom: "10px", // Add some space before the description
-              }}
-            >
-              <div style={{ marginBottom: "5px" }}>
-                <strong>Activity:</strong> {selectedActivity.activity_name}
+        {selectedActivity &&
+          selectedActivity.activity_id != "custom" &&
+          selectedActivity.activity_id != "" && (
+            <div style={{ marginTop: "20px" }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column", // Stack information vertically for clarity
+                  alignItems: "center", // Center-align the items for a neat look
+                  marginBottom: "10px", // Add some space before the description
+                }}
+              >
+                <div style={{ marginBottom: "5px" }}>
+                  <strong>Activity:</strong> {selectedActivity.activity_name}
+                </div>
+                <div style={{ marginBottom: "5px" }}>
+                  <strong>Group:</strong>{" "}
+                  {selectedGroup ? selectedGroup.group_name : "Not selected"}
+                </div>
               </div>
-              <div style={{ marginBottom: "5px" }}>
-                <strong>Group:</strong>{" "}
-                {selectedGroup ? selectedGroup.group_name : "Not selected"}
-              </div>
+              <GroupBox
+                label="Description"
+                style={{ padding: "10px", margin: "0 auto", maxWidth: "90%" }}
+              >
+                <ScrollView style={{ maxHeight: "100px", padding: "5px" }}>
+                  {selectedActivity.description || "No description available."}
+                </ScrollView>
+              </GroupBox>
             </div>
-            <GroupBox
-              label="Description"
-              style={{ padding: "10px", margin: "0 auto", maxWidth: "90%" }}
-            >
-              <ScrollView style={{ maxHeight: "100px", padding: "5px" }}>
-                {selectedActivity.description || "No description available."}
-              </ScrollView>
-            </GroupBox>
-          </div>
-        )}
+          )}
 
-        {selectedActivity && selectedActivity.activity_id != ""  && selectedGroup?.group_id && (
-          <PointsSection>
-            <p>Points earned: </p>
-            <NumberInput
-              value={newGroupActivity.points_earned}
-              defaultValue={0}
-              step={20}
-              min={0}
-              max={200}
-              onChange={(e) =>
-                setNewGroupActivity({ ...newGroupActivity, points_earned: e })
-              }
-            />
-          </PointsSection>
-        )}
+        {selectedActivity &&
+          selectedActivity.activity_id != "" &&
+          selectedGroup?.group_id && (
+            <PointsSection>
+              <p>Points earned: </p>
+              <NumberInput
+                value={newGroupActivity.points_earned}
+                defaultValue={0}
+                step={20}
+                min={0}
+                max={200}
+                onChange={(e) =>
+                  setNewGroupActivity({ ...newGroupActivity, points_earned: e })
+                }
+              />
+            </PointsSection>
+          )}
         <div
           style={{
             display: "flex",
@@ -321,9 +336,11 @@ const AddActivity = () => {
           }}
         >
           <Button onClick={() => navigate("/")}>Go back</Button>
-          {selectedActivity && selectedActivity.activity_id != "" && selectedGroup?.group_id && (
-            <Button onClick={() => handleAddActivity()}>Add</Button>
-          )}
+          {selectedActivity &&
+            selectedActivity.activity_id != "" &&
+            selectedGroup?.group_id && (
+              <Button onClick={() => handleAddActivity()}>Add</Button>
+            )}
         </div>
         {isModalOpen && (
           <div

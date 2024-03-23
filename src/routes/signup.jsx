@@ -171,7 +171,7 @@ export const Signup = () => {
 
   const onRoleChange = (selectedOption) => {
     setSelectedRole(selectedOption.value);
-    console.log("Selected Role", selectedOption)
+    console.log("Selected Role", selectedOption);
   };
 
   return (
@@ -233,18 +233,16 @@ export const Signup = () => {
                   />
                 </GroupBox>
                 {(selectedRole === "deductor" || selectedRole === "normal") && (
-                               <GroupBox label="Select your Orientation Group">
-                               <Select
-                                 defaultValue={2}
-                                 options={groupOptions}
-                                 menuMaxHeight={160}
-                                 width="100%"
-                                 onChange={onGroupChange}
-                               />
-                             </GroupBox>
+                  <GroupBox label="Select your Orientation Group">
+                    <Select
+                      defaultValue={2}
+                      options={groupOptions}
+                      menuMaxHeight={160}
+                      width="100%"
+                      onChange={onGroupChange}
+                    />
+                  </GroupBox>
                 )}
-
-
 
                 <div
                   style={{

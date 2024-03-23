@@ -19,10 +19,10 @@ export const Layout = () => {
     <div style={{ flex: 1, maxWidth: "100vw", maxHeight: "100vh" }}>
       <Header />
       <motion.div
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              variants={modalVariants}
+        initial="hidden"
+        animate="visible"
+        exit="hidden"
+        variants={modalVariants}
       >
         <div
           style={{

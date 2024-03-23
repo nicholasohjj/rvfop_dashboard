@@ -1,9 +1,7 @@
 import { supabaseClient } from "./supabaseClient";
 
 const fetchHouses = async () => {
-  const { data, error } = await supabaseClient
-    .from("houses")
-    .select("*");
+  const { data, error } = await supabaseClient.from("houses").select("*");
   if (error) {
     throw new Error(error.message);
   }
@@ -11,23 +9,20 @@ const fetchHouses = async () => {
 };
 
 const fetchUser = async () => {
-  const {data: user}  = await supabaseClient.auth.getUser();
+  const { data: user } = await supabaseClient.auth.getUser();
   const userId = user.user.id;
 
   const { data, error } = await supabaseClient
-  .from('profiles')
-  .select('*')
-  .eq('id', userId)
-  .single();
-
+    .from("profiles")
+    .select("*")
+    .eq("id", userId)
+    .single();
 
   return data;
 };
 
 const fetchGroups = async () => {
-  const { data, error } = await supabaseClient
-    .from("groups")
-    .select("*");
+  const { data, error } = await supabaseClient.from("groups").select("*");
   if (error) throw error;
   data.sort((a, b) => a.group_name.localeCompare(b.group_name));
   return data;
@@ -40,10 +35,8 @@ const fetchGroup = async () => {
   } = await supabaseClient.auth.getUser();
   if (userError) throw userError;
 
-
   const { data: fetchedGroupData, error: fetchDataError } =
     await supabaseClient.rpc("get_group_data", { user_id: user.id });
-
 
   if (fetchDataError) throw fetchDataError;
 
@@ -62,7 +55,7 @@ const fetchGroupActivities = async (group_id) => {
     }
   );
 
-  console.log("Activities", activityData, activityError)
+  console.log("Activities", activityData, activityError);
 
   if (activityError) throw activityError;
   activityData.sort((a, b) => new Date(b.tm_created) - new Date(a.tm_created));
@@ -70,12 +63,10 @@ const fetchGroupActivities = async (group_id) => {
 };
 
 const fetchDeductions = async (group_id) => {
-  const { data: deductionData, error: deductionError } = await supabaseClient.rpc(
-    "get_deductions",
-    {
+  const { data: deductionData, error: deductionError } =
+    await supabaseClient.rpc("get_deductions", {
       current_group_id: group_id,
-    }
-  );
+    });
 
   if (deductionError) throw deductionError;
   deductionData.sort((a, b) => new Date(b.tm_created) - new Date(a.tm_created));
@@ -89,7 +80,7 @@ const fetchActivities = async () => {
 };
 
 const addActivity = async (activity) => {
-  console.log("Activity", activity)
+  console.log("Activity", activity);
   const { data, error } = await supabaseClient
     .from("activities")
     .insert([activity])
@@ -108,25 +99,23 @@ const addDeduction = async (deduction) => {
 };
 
 const addGroupActivity = async (groupactivity) => {
-  const { data, error } = await supabaseClient.from("groupactivities")
-  .insert([
-    {...groupactivity
-    }])
+  const { data, error } = await supabaseClient
+    .from("groupactivities")
+    .insert([{ ...groupactivity }]);
 
   if (error) throw error;
-return data;
+  return data;
 };
 
 export {
   fetchGroupActivities,
   fetchHouses,
   fetchUser,
-
   fetchGroup,
   fetchGroups,
   fetchActivities,
   addActivity,
   addDeduction,
   addGroupActivity,
-  fetchDeductions
+  fetchDeductions,
 };
