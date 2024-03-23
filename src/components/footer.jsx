@@ -2,9 +2,17 @@ import { useState, useEffect } from "react";
 import { AppBar, Toolbar, Button, MenuList, MenuListItem } from "react95";
 import { useNavigate } from "react-router-dom";
 import { supabaseClient } from "../supabase/supabaseClient";
+import { useStore, initializeUserData } from "../context/userContext";
 export const Footer = () => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const userData = useStore((state) => state.userData);
+
+  useEffect(() => {
+    if (!userData) {
+      initializeUserData();
+    }
+  }, [userData]);
 
   const handleNavigate = (path) => {
     navigate(path);
@@ -46,6 +54,12 @@ export const Footer = () => {
               <MenuListItem onClick={() => handleNavigate("/progress")}>
                 My Progress
               </MenuListItem>
+              {userData?.role === "admin" && (
+                <MenuListItem onClick={() => handleNavigate("/deductions")}>
+                  My Deductions
+                </MenuListItem>
+              )}
+
               <MenuListItem onClick={() => handleLogout()}>
                 <span role="img" aria-label="🔙">
                   🔙

@@ -1,11 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AppBar, Toolbar, Button, MenuList, MenuListItem } from "react95";
 import { useNavigate } from "react-router-dom";
-import { useStore } from "../context/userContext"
+import { useStore, initializeUserData } from "../context/userContext"
 export const Header = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const userData = useStore((state) => state.userData);
+  console.log("userData", userData);
+
+  useEffect(() => {
+    if (!userData) {
+      initializeUserData();
+    }
+
+    console.log("userData", userData);
+  }
+  , [userData]);
 
 
   return (
@@ -37,7 +47,7 @@ export const Header = () => {
               Add Activity
             </MenuListItem>
             )}
-            {(userData.role === "admin" || userData.role === "deductor") && (
+            {userData?.role == "admin" && (
               <MenuListItem onClick={() => navigate("/adddeduction")}>
                 Add Deduction 😈
               </MenuListItem>
