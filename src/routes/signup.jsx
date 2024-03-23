@@ -5,6 +5,8 @@ import {
   WindowContent,
   TextInput,
   Button,
+  Select,
+  GroupBox,
 } from "react95";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
@@ -53,6 +55,8 @@ const StyledWindowHeader = styled(WindowHeader)`
 export const Signup = () => {
   const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
+  const [selectedGroup, setSelectedGroup] = useState(null); // Add selectedGroup state
+  const [selectedRole, setSelectedRole] = useState(null); // Add selectedRole state
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState(null);
@@ -149,6 +153,27 @@ export const Signup = () => {
     margin: "0%",
   };
 
+  const groupOptions = groups.map((group) => ({
+    label: group.group_name,
+    value: group.group_id,
+  }));
+
+  const roleOptions = [
+    { label: "Normal OG", value: "normal" },
+    { label: "Pro-human OG", value: "deductor" },
+    { label: "Gamemaster", value: "gm" },
+    { label: "Admin", value: "admin" },
+  ];
+
+  const onGroupChange = (selectedOption) => {
+    setSelectedGroup(selectedOption);
+  };
+
+  const onRoleChange = (selectedOption) => {
+    setSelectedRole(selectedOption.value);
+    console.log("Selected Role", selectedOption)
+  };
+
   return (
     <div
       ref={constraintsRef}
@@ -180,7 +205,7 @@ export const Signup = () => {
                 <div style={{ display: "flex" }}>
                   <TextInput
                     placeholder="Email Address"
-                    fullWidth
+                    
                     value={email}
                     onChange={(e) => {
                       setemail(e.target.value);
@@ -198,8 +223,35 @@ export const Signup = () => {
                   }}
                 />
                 <br />
+                <GroupBox label="Select your Role">
+                  <Select
+                    defaultValue={2}
+                    options={roleOptions}
+                    menuMaxHeight={160}
+                    width="100%"
+                    onChange={onRoleChange}
+                  />
+                </GroupBox>
+                {(selectedRole === "deductor" || selectedRole === "normal") && (
+                               <GroupBox label="Select your Orientation Group">
+                               <Select
+                                 defaultValue={2}
+                                 options={groupOptions}
+                                 menuMaxHeight={160}
+                                 width="100%"
+                                 onChange={onGroupChange}
+                               />
+                             </GroupBox>
+                )}
+
+
+
                 <div
-                  style={{ display: "flex", justifyContent: "space-around" }}
+                  style={{
+                    marginTop: "20px",
+                    display: "flex",
+                    justifyContent: "space-around",
+                  }}
                 >
                   <Button type="submit" value="login">
                     Enter
