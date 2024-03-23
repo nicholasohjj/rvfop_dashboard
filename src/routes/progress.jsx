@@ -23,7 +23,8 @@ import {
   fetchGroup,
   fetchDeductions,
 } from "../supabase/services";
-import { useStore } from "../context/userContext";
+import { useStore, initializeUserData } from "../context/userContext";
+import { useNavigate } from "react-router-dom";
 
 const CloseIcon = styled.div`
   display: inline-block;
@@ -73,8 +74,25 @@ const Progress = () => {
   const constraintsRef = useRef(null);
   const dragxError = useMotionValue(0);
   const userData = useStore((state) => state.userData);
-
+  const navigate = useNavigate();
   const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
+
+  useEffect(() => {
+    if (!userData) {
+      initializeUserData().then(() => {
+        if (!(userData.role === "normal" || userData.role === "admin")) {
+          navigate("/");
+        }
+      }).catch(error => {
+        console.error("Failed to initialize user data:", error);
+      });
+    } else {
+      if (!(userData.role === "normal" || userData.role === "admin")) {
+        navigate("/");
+      }
+    }
+  }, [userData, navigate]);
+  
 
   useEffect(() => {
     const handleResize = () => {

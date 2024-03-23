@@ -9,11 +9,13 @@ export const Header = () => {
   console.log("userData", userData);
 
   useEffect(() => {
-    if (!userData) {
-      initializeUserData();
+    const initialise = async () => {
+      if (!userData) {
+        await initializeUserData();
+      }
     }
 
-    console.log("userData", userData);
+    initialise();
   }
   , [userData]);
 

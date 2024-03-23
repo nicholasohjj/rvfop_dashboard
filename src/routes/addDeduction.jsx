@@ -87,17 +87,20 @@ const AddDeduction = () => {
   const userData = useStore((state) => state.userData);
 
   useEffect(() => {
-    initializeUserData().then(() => {
-      const userData = useStore.getState().userData;
-      if (
-        userData &&
-        userData.role !== "admin" &&
-        userData.role !== "deductor"
-      ) {
-        navigate("/progress");
+    if (!userData) {
+      initializeUserData().then(() => {
+        if (!(userData.role === "deductor" || userData.role === "admin")) {
+          navigate("/");
+        }
+      }).catch(error => {
+        console.error("Failed to initialize user data:", error);
+      });
+    } else {
+      if (!(userData.role === "deductor" || userData.role === "admin")) {
+        navigate("/");
       }
-    });
-  }, [navigate]);
+    }
+  }, [userData, navigate]);
 
   useEffect(() => {
     setLoading(true); // Ensure loading is true at the start

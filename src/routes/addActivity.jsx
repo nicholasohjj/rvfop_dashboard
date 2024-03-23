@@ -103,16 +103,30 @@ const AddActivity = () => {
   const userData = useStore((state) => state.userData);
 
   useEffect(() => {
-    initializeUserData().then(() => {
-      if (userData && !(userData.role == "gm" || userData.role == "admin")) {
-        navigate("/progress");
-      }
-    });
+    const initializeData = async () => {
+      try {
+        // Initialize user data if not already present
+        if (!userData) {
+          await initializeUserData();
+          if (userData.role !== 'gm' && userData.role !== 'admin') {
+            navigate('/');
+            return;
+          }
+        } else if (userData.role !== 'gm' && userData.role !== 'admin') {
+          navigate('/');
+          return; 
+        }
 
-    if (!groups) {
-      initialiseGroups();
-    }
-  }, [groups, userData, navigate]);
+        if (!groups) {
+          await initialiseGroups();
+        }
+      } catch (error) {
+        console.error('Failed to initialize data:', error);
+      }
+    };
+
+    initializeData();
+  }, [userData, groups, navigate]); 
 
   useEffect(() => {
     setLoading(true);

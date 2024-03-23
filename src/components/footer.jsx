@@ -10,7 +10,7 @@ export const Footer = () => {
 
   useEffect(() => {
     if (!userData) {
-      initializeUserData();
+      Promise.all([initializeUserData()]);
     }
   }, [userData]);
 
@@ -51,14 +51,20 @@ export const Footer = () => {
               <MenuListItem onClick={() => handleNavigate("/scoreboard")}>
                 Scoreboard
               </MenuListItem>
-              <MenuListItem onClick={() => handleNavigate("/progress")}>
-                My Progress
-              </MenuListItem>
-              {userData?.role === "admin" && (
-                <MenuListItem onClick={() => handleNavigate("/deductions")}>
-                  My Deductions
-                </MenuListItem>
-              )}
+              {userData?.role === "admin" ||
+                userData?.role === "normal" ||
+                (userData?.role === "deductor" && (
+                  <MenuListItem onClick={() => handleNavigate("/progress")}>
+                    My Progress
+                  </MenuListItem>
+                ))}
+
+              {userData?.role === "admin" ||
+                (userData?.role === "deductor" && (
+                  <MenuListItem onClick={() => handleNavigate("/deductions")}>
+                    My Deductions
+                  </MenuListItem>
+                ))}
 
               <MenuListItem onClick={() => handleLogout()}>
                 <span role="img" aria-label="🔙">
