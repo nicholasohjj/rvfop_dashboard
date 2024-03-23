@@ -205,7 +205,7 @@ export const Signup = () => {
                 <div style={{ display: "flex" }}>
                   <TextInput
                     placeholder="Email Address"
-                    
+                    fullWidth
                     value={email}
                     onChange={(e) => {
                       setemail(e.target.value);
