@@ -11,6 +11,7 @@ import {
   WindowContent,
   WindowHeader,
   GroupBox,
+  ScrollView,
 } from "react95";
 import styled from "styled-components";
 import { motion, useMotionValue, useTransform } from "framer-motion";
@@ -77,7 +78,7 @@ const Games = () => {
           console.error("Initialization error:", error);
         }
       } else {
-        if (userData.role == "normal" || userData.role === "deductor") {
+        if (!(userData.role == "admin" || userData.role === "gm")) {
           navigate("/", { replace: true });
         }
         // Assuming `fetchAwardedGames` is an async function that needs a user ID
@@ -146,37 +147,44 @@ const Games = () => {
       <WindowContent>
         <div style={{ marginTop: 10 }}>
           {awardedGames.length > 0 ? (
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableHeadCell>Day</TableHeadCell>
-                  <TableHeadCell>Activity</TableHeadCell>
-                  <TableHeadCell>Group</TableHeadCell>
-                  <TableHeadCell>Points Awarded</TableHeadCell>
-                  <TableHeadCell>Details</TableHeadCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {awardedGames.map((game, index) => (
-                  <TableRow key={index}>
-                    <TableDataCell>{formatSGT(game.tm_created)}</TableDataCell>
-                    <TableDataCell>{game.activity_name}</TableDataCell>
-                    <TableDataCell>{game.points_earned}</TableDataCell>
-                    <TableDataCell
-                      style={{
-                        gap: 16,
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Button onClick={() => handleViewButtonClick(game)}>
-                        View
-                      </Button>
-                    </TableDataCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <div style={{ overflowX: "auto", width: "100%", height: "auto" }}>
+              <ScrollView style={{ width: "100%", height: "400px" }}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableHeadCell>Day</TableHeadCell>
+                      <TableHeadCell>Activity</TableHeadCell>
+                      <TableHeadCell>Group</TableHeadCell>
+                      <TableHeadCell>Points Awarded</TableHeadCell>
+                      <TableHeadCell>Details</TableHeadCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {awardedGames.map((game, index) => (
+                      <TableRow key={index}>
+                        <TableDataCell>
+                          {formatSGT(game.tm_created)}
+                        </TableDataCell>
+                        <TableDataCell>{game.activity_name}</TableDataCell>
+                        <TableDataCell>{game.group_name}</TableDataCell>
+                        <TableDataCell>{game.points_earned}</TableDataCell>
+                        <TableDataCell
+                          style={{
+                            gap: 16,
+                            display: "flex",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Button onClick={() => handleViewButtonClick(game)}>
+                            View
+                          </Button>
+                        </TableDataCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </ScrollView>
+            </div>
           ) : (
             <div style={{ textAlign: "center", margin: "20px 0" }}>
               No games awarded.
@@ -210,9 +218,9 @@ const Games = () => {
                 x: dragxError,
                 position: "absolute",
                 top: "50%",
-                left: "0%",
+                left: "50%",
                 width: "80%", // Responsive width
-                maxWidth: "90%", // Ensures it doesn't get too large on big screens
+                maxWidth: "80%", // Ensures it doesn't get too large on big screens
                 zIndex: 10,
               }}
             >
@@ -228,7 +236,10 @@ const Games = () => {
                     <GroupBox label="Description">
                       {selectedGame?.description}
                     </GroupBox>
-                    <GroupBox label="Points Earned">
+                    <GroupBox label="Group Awarded">
+                      {selectedGame?.group_name}
+                    </GroupBox>
+                    <GroupBox label="Points Awarded">
                       {selectedGame?.points_earned}
                     </GroupBox>
                   </div>

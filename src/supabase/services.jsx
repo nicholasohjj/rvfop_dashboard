@@ -82,6 +82,17 @@ const fetchActivities = async () => {
 const fetchAwardedGames = async (gm_id) => {
   const { data, error } = await supabaseClient.rpc("get_awarded_games", {gm_id});
   if (error) throw error;
+
+  console.log("Awarded Games", data);
+
+  // sort by date then group_name alphabetically
+  data.sort((a, b) => {
+    if (a.tm_created < b.tm_created) return 1;
+    if (a.tm_created > b.tm_created) return -1;
+    if (a.group_name < b.group_name) return -1;
+    if (a.group_name > b.group_name) return 1;
+    return 0;
+  });
   return data;
 }
 
