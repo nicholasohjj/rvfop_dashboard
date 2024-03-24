@@ -2,6 +2,9 @@ import { Footer } from "./components/footer";
 import { Header } from "./components/header";
 import { Outlet } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useStore, initializeUserData } from "./context/userContext";
+import { useEffect } from "react";
+
 
 const modalVariants = {
   hidden: {
@@ -14,7 +17,16 @@ const modalVariants = {
   },
 };
 
+
 export const Layout = () => {
+
+  const userData = useStore((state) => state.userData);
+
+  useEffect(() => {
+    if (!userData) {
+      initializeUserData()
+  }}, [userData]);
+  
   return (
     <div style={{ flex: 1, maxWidth: "100vw", maxHeight: "100vh" }}>
       <Header />

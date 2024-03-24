@@ -11,7 +11,7 @@ export const Footer = () => {
 
   useEffect(() => {
     if (!userData) {
-      Promise.all([initializeUserData()]);
+      initializeUserData();
     }
   }, [userData]);
 
@@ -55,14 +55,20 @@ export const Footer = () => {
                 userData.role == "normal" ||
                 userData.role == "deductor") && (
                 <MenuListItem onClick={() => handleNavigate("/progress")}>
-                  My Progress
+                  Progress
                 </MenuListItem>
               )}
 
               {(userData?.role === "admin" ||
                 userData?.role === "deductor") && (
                 <MenuListItem onClick={() => handleNavigate("/deductions")}>
-                  My Deductions
+                  Deductions
+                </MenuListItem>
+              )}
+                            {(userData?.role === "admin" ||
+                userData?.role === "gm") && (
+                <MenuListItem onClick={() => handleNavigate("/games")}>
+                  Awarded Games
                 </MenuListItem>
               )}
 

@@ -19,6 +19,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import Deductions from "./routes/deductions";
 import { Signup } from "./routes/signup";
+import Games from "./routes/gm/games";
 const App = () => {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -65,6 +66,10 @@ const App = () => {
         {
           path: "/scoreboard",
           element: <Scoreboard />,
+        },
+        {
+          path: "/games",
+          element: <Games />,
         },
         {
           path: "/progress",

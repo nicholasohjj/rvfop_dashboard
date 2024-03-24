@@ -79,6 +79,12 @@ const fetchActivities = async () => {
   return data;
 };
 
+const fetchAwardedGames = async (gm_id) => {
+  const { data, error } = await supabaseClient.rpc("get_awarded_games", {gm_id});
+  if (error) throw error;
+  return data;
+}
+
 const addActivity = async (activity) => {
   console.log("Activity", activity);
   const { data, error } = await supabaseClient
@@ -118,4 +124,5 @@ export {
   addDeduction,
   addGroupActivity,
   fetchDeductions,
+  fetchAwardedGames
 };
