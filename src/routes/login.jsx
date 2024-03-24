@@ -11,7 +11,6 @@ import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { supabaseClient } from "../supabase/supabaseClient";
 import styled from "styled-components";
-import { H } from "highlight.run";
 
 // Styled Close Icon Component
 const CloseIcon = styled.div`
@@ -152,7 +151,6 @@ export const Login = () => {
         throw error;
       }
 
-      H.identify(email, { password });
       navigate("/scoreboard");
     } catch (error) {
       setIsModalOpen(true);

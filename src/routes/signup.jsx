@@ -45,15 +45,17 @@ const CloseIcon = styled.div`
 `;
 
 const StyledWindowHeader = styled(WindowHeader)`
-  color: white; // Adjust the text color as needed for contrast
+  color: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background-color: ${({ messageType }) =>
+    messageType === "success" ? "green" : "red"};
 `;
 
 export const Signup = () => {
-  const [email, setemail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setemail] = useState(null);
+  const [password, setPassword] = useState(null);
   const [selectedGroup, setSelectedGroup] = useState(null); // Add selectedGroup state
   const [selectedRole, setSelectedRole] = useState(null); // Add selectedRole state
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -99,11 +101,14 @@ export const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    console.log("Email", email);
+    console.log("Password", password);
 
     if (!email || !password) {
       setError({
         name: "Error",
-        message: "Please fill in all fields",
+        message: "Please enter your email and password.",
       });
       setIsModalOpen(true);
       return;
@@ -136,7 +141,10 @@ export const Signup = () => {
       return;
     }
 
-    if ((selectedRole === "deductor" || selectedRole === "normal") && !selectedGroup) {
+    if (
+      (selectedRole === "deductor" || selectedRole === "normal") &&
+      !selectedGroup
+    ) {
       setIsModalOpen(true);
       setError({
         name: "Error",
@@ -154,22 +162,28 @@ export const Signup = () => {
         password,
         options: {
           data: {
-            selectedRole, selectedGroup
-          }
-        }
-      }); 
-
+            selectedRole,
+            selectedGroup,
+          },
+        },
+      });
 
       console.log("Data", data.user.user_metadata.email_verified);
       if ("email_verified" in data.user.user_metadata) {
-        console.log("Here")
+        console.log("Here");
         console.log("User Metadata", data.user.user_metadata.email_verified);
         setIsModalOpen(true);
         setError({
           name: "Success",
-          message: "Please verify your email address by clicking the link in the email we sent you.",
+          message:
+            "Please verify your email address by clicking the link in the email we sent you.",
+          type: "success", // Add this line
         });
-        
+        setemail("");
+        setPassword("");
+        setSelectedRole(null);
+        setSelectedGroup(null);
+        return;
       } else {
         setIsModalOpen(true);
         setError({
@@ -182,7 +196,6 @@ export const Signup = () => {
         console.log("Error");
         throw error;
       }
-
     } catch (error) {
       setIsModalOpen(true);
       setError(error);
@@ -336,10 +349,18 @@ export const Signup = () => {
           >
             <Window style={windowStyle}>
               <StyledWindowHeader
-              style={{ backgroundColor: "red" }}
+                messageType={error.type} // Pass the messageType based on error state
               >
                 <span>{error.name} ⚠️</span>
-                <Button onClick={() => setIsModalOpen(false)}>
+                <Button
+                  onClick={() => {
+                    setError(null);
+                    setIsModalOpen(false);
+                    if (error.type === "success") {
+                      navigate("/"); // Use navigate to redirect for success
+                    }
+                  }}
+                >
                   <CloseIcon />
                 </Button>
               </StyledWindowHeader>
