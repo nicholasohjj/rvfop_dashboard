@@ -45,7 +45,6 @@ const CloseIcon = styled.div`
 `;
 
 const StyledWindowHeader = styled(WindowHeader)`
-  background-color: #ff0000; // Change this hex code to your desired color
   color: white; // Adjust the text color as needed for contrast
   display: flex;
   justify-content: space-between;
@@ -128,20 +127,62 @@ export const Signup = () => {
       return;
     }
 
+    if (!selectedRole) {
+      setIsModalOpen(true);
+      setError({
+        name: "Error",
+        message: "Please select a role.",
+      });
+      return;
+    }
+
+    if ((selectedRole === "deductor" || selectedRole === "normal") && !selectedGroup) {
+      setIsModalOpen(true);
+      setError({
+        name: "Error",
+        message: "Please select a group.",
+      });
+      return;
+    }
+
+    console.log("Selected Group", selectedGroup);
+    console.log("Selected Role", selectedRole);
+
     try {
-      const { data, error } = await supabaseClient.auth.signInWithPassword({
+      const { data, error } = await supabaseClient.auth.signUp({
         email,
         password,
-      });
+        options: {
+          data: {
+            selectedRole, selectedGroup
+          }
+        }
+      }); 
 
-      console.log(data, error);
+
+      console.log("Data", data.user.user_metadata.email_verified);
+      if ("email_verified" in data.user.user_metadata) {
+        console.log("Here")
+        console.log("User Metadata", data.user.user_metadata.email_verified);
+        setIsModalOpen(true);
+        setError({
+          name: "Success",
+          message: "Please verify your email address by clicking the link in the email we sent you.",
+        });
+        
+      } else {
+        setIsModalOpen(true);
+        setError({
+          name: "Error",
+          message: "Email already registered",
+        });
+      }
 
       if (error) {
         console.log("Error");
         throw error;
       }
 
-      navigate("/scoreboard");
     } catch (error) {
       setIsModalOpen(true);
       setError(error);
@@ -294,7 +335,9 @@ export const Signup = () => {
             }}
           >
             <Window style={windowStyle}>
-              <StyledWindowHeader>
+              <StyledWindowHeader
+              style={{ backgroundColor: "red" }}
+              >
                 <span>{error.name} ⚠️</span>
                 <Button onClick={() => setIsModalOpen(false)}>
                   <CloseIcon />
