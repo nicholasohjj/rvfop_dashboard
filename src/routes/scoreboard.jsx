@@ -9,15 +9,18 @@ import {
   Window,
   WindowContent,
   WindowHeader,
+  Button,
 } from "react95";
 import Loading from "./loading";
 import { fetchHouses } from "../supabase/services";
+import styled from "styled-components";
 const Scoreboard = () => {
   const [houses, setHouses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortKey, setSortKey] = useState("overall_points"); // Default sort column to overall_points
   const [sortDirection, setSortDirection] = useState("desc"); // Start with points descending
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedHouse, setSelectedHouse] = useState(null);
   useEffect(() => {
     fetchHouses().then((housesData) => {
       // After fetching, sort the houses by overall_points in descending order
@@ -26,6 +29,65 @@ const Scoreboard = () => {
       setLoading(false);
     });
   }, []);
+
+  const CloseIcon = styled.div`
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    transform: rotateZ(45deg);
+    position: relative;
+    &:before,
+    &:after {
+      content: "";
+      position: absolute;
+      background: ${({ theme }) =>
+        theme.materialText}; // Adjust the color as needed
+    }
+    &:before {
+      height: 100%;
+      width: 3px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    &:after {
+      height: 3px;
+      width: 100%;
+      left: 0px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  `;
+
+  const StyledWindowHeader = styled(WindowHeader)`
+    color: white; // Adjust the text color as needed for contrast
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  `;
+
+  const FullScreenModal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.6); // Semi-transparent background
+`;
+
+// Mimics the Window component without size constraints
+const StyledModalContent = styled.div`
+  background: white;
+  padding: 16px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  max-width: 90%;
+  max-height: 90%;
+  overflow: auto;
+`;
 
   const sortHousesInitially = (housesData) => {
     return [...housesData].sort((a, b) => {
@@ -57,6 +119,11 @@ const Scoreboard = () => {
     });
 
     setHouses(sortedHouses);
+  };
+
+  const toggleModal = (house) => {
+    setSelectedHouse(house);
+    setIsModalOpen(!isModalOpen);
   };
 
   if (loading) return <Loading />;
@@ -94,7 +161,7 @@ const Scoreboard = () => {
           </TableHead>
           <TableBody>
             {houses.map((house) => (
-              <TableRow key={house.house_id}>
+              <TableRow key={house.house_id} onClick={() => toggleModal(house)}>
                 <TableDataCell>{house.house_name}</TableDataCell>
                 <TableDataCell>{house.total_points}</TableDataCell>
                 <TableDataCell>{house.total_penalties}</TableDataCell>

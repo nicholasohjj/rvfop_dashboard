@@ -23,12 +23,6 @@ export const Header = () => {
         <Button variant="menu" onClick={() => setOpen(!open)} active={open}>
           File
         </Button>
-        <Button variant="menu" disabled>
-          Edit
-        </Button>
-        <Button variant="menu" disabled>
-          Tools
-        </Button>
         {open && (
           <MenuList
             style={{

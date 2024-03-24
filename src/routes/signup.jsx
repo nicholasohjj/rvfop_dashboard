@@ -162,13 +162,16 @@ export const Signup = () => {
         password,
         options: {
           data: {
-            selectedRole,
-            selectedGroup,
+            group_id: selectedGroup,
+            role: selectedRole,
           },
         },
       });
 
-      console.log("Data", data.user.user_metadata.email_verified);
+      console.log("Data", data, error);
+
+      
+
       if ("email_verified" in data.user.user_metadata) {
         console.log("Here");
         console.log("User Metadata", data.user.user_metadata.email_verified);
@@ -220,7 +223,7 @@ export const Signup = () => {
   ];
 
   const onGroupChange = (selectedOption) => {
-    setSelectedGroup(selectedOption);
+    setSelectedGroup(selectedOption.value);
   };
 
   const onRoleChange = (selectedOption) => {
