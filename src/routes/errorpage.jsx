@@ -12,6 +12,7 @@ import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate, useRouteError } from "react-router-dom"; // Import useNavigate
 import { supabaseClient } from "../supabase/supabaseClient";
 import styled from "styled-components";
+import errorlogo from '../assets/404.png';
 
 // Styled Close Icon Component
 const CloseIcon = styled.div`
@@ -119,6 +120,15 @@ const ErrorPage = () => {
           <StyledWindowHeader>
             <span>Error</span>
           </StyledWindowHeader>
+          <div style={{ marginTop: 8 }}>
+            <Tooltip text="Woof! 🐶" enterDelay={100} leaveDelay={100}>
+              <img
+                src={errorlogo}
+                alt="rvrc-logo"
+                width={100}
+              />
+            </Tooltip>
+          </div>
           <WindowContent>
             <p>Oops! Something bad happened 😔</p>
             <Button style={{ margin: 10 }} onClick={() => navigate("/")}>
