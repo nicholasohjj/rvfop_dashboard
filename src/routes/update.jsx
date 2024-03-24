@@ -80,7 +80,7 @@ export const Update = () => {
 
   const handleReturnHome = () => {
     setPassword("");
-    navigate("/");
+    navigate("/", { replace: true });
   };
 
   const handleSubmit = async (e) => {
@@ -97,7 +97,7 @@ export const Update = () => {
 
       supabaseClient.auth.getSession().then(({ data: { session } }) => {});
 
-      navigate("/");
+      navigate("/", { replace: true });
     } catch (error) {
       setIsModalOpen(true);
       setError(error);

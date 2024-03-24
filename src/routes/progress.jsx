@@ -73,7 +73,7 @@ const Progress = () => {
       initializeUserData()
         .then(() => {
           if (!(userData.role === "normal" || userData.role === "admin")) {
-            navigate("/");
+            navigate("/", { replace: true });
           }
         })
         .catch((error) => {
@@ -81,7 +81,7 @@ const Progress = () => {
         });
     } else {
       if (!(userData.role === "normal" || userData.role === "admin")) {
-        navigate("/");
+        navigate("/", { replace: true });
       }
     }
   }, [userData, navigate]);

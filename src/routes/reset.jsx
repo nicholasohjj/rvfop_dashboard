@@ -81,11 +81,6 @@ export const Reset = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const handleReturnHome = () => {
-    setPassword("");
-    navigate("/");
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -100,7 +95,7 @@ export const Reset = () => {
 
       supabaseClient.auth.getSession().then(({ data: { session } }) => {});
 
-      navigate("/");
+      navigate("/", { replace: true });
     } catch (error) {
       setIsModalOpen(true);
       setError(error);

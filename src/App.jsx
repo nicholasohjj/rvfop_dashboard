@@ -60,7 +60,6 @@ const App = () => {
       children: [
         {
           path: "/",
-          //redirect to /scoreboard
           element: <Navigate to="/scoreboard" replace />,
         },
         {

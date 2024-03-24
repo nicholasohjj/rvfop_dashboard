@@ -73,7 +73,7 @@ const Deductions = () => {
       initializeUserData()
         .then(() => {
           if (!(userData.role === "deductor" || userData.role === "admin")) {
-            navigate("/");
+            navigate("/", { replace: true });
           }
         })
         .catch((error) => {
@@ -81,7 +81,7 @@ const Deductions = () => {
         });
     } else {
       if (!(userData.role === "deductor" || userData.role === "admin")) {
-        navigate("/");
+        navigate("/", { replace: true });
       }
     }
   }, [userData, navigate]);

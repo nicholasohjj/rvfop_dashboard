@@ -33,7 +33,7 @@ const Loading = () => {
 
   useEffect(() => {
     if (percent === 100) {
-      navigate("/"); // Replace '/next-route' with your actual route
+      navigate("/", {replace:true}); // Replace '/next-route' with your actual route
     }
   }, [percent, navigate]);
 

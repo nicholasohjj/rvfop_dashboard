@@ -152,7 +152,7 @@ export const Login = () => {
         throw error;
       }
 
-      navigate("/scoreboard");
+      navigate("/", { replace: true });
     } catch (error) {
       setIsModalOpen(true);
       setError(error);

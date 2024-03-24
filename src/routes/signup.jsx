@@ -101,7 +101,7 @@ export const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     console.log("Email", email);
     console.log("Password", password);
 
@@ -357,7 +357,7 @@ export const Signup = () => {
                     setError(null);
                     setIsModalOpen(false);
                     if (error.type === "success") {
-                      navigate("/"); // Use navigate to redirect for success
+                      navigate("/", { replace: true }); // Use navigate to redirect for success
                     }
                   }}
                 >

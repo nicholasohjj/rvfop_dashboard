@@ -114,7 +114,7 @@ const AddActivity = () => {
         if (!userData) {
           await initializeUserData();
           if (userData.role !== "gm" && userData.role !== "admin") {
-            navigate("/");
+            navigate("/", { replace: true });
             return;
           }
         } else if (userData.role !== "gm" && userData.role !== "admin") {

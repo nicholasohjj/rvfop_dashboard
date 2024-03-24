@@ -91,7 +91,7 @@ const AddDeduction = () => {
       initializeUserData()
         .then(() => {
           if (!(userData.role === "deductor" || userData.role === "admin")) {
-            navigate("/");
+            navigate("/", { replace: true });
           }
         })
         .catch((error) => {
@@ -99,7 +99,7 @@ const AddDeduction = () => {
         });
     } else {
       if (!(userData.role === "deductor" || userData.role === "admin")) {
-        navigate("/");
+        navigate("/", { replace: true });
       }
     }
   }, [userData, navigate]);
@@ -135,7 +135,7 @@ const AddDeduction = () => {
     try {
       const response = await addDeduction(deduction);
       console.log(response);
-      navigate("/progress");
+      navigate("/", { replace: true });
     } catch (error) {
       console.error("Error adding deduction: ", error);
       setError(error.message); // Set an error message to display in your modal
@@ -208,7 +208,9 @@ const AddDeduction = () => {
             width: "100%",
           }}
         >
-          <Button onClick={() => navigate("/")}>Go back</Button>
+          <Button onClick={() => navigate("/", { replace: true })}>
+            Go back
+          </Button>
           {selectedHouse && deductionPoints > 0 && (
             <Button onClick={() => handleAddDeduction()}>Deduct</Button>
           )}
