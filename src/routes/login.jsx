@@ -228,6 +228,9 @@ export const Login = () => {
                   <Button onClick={() => handleResetPassword()}>
                     Forgot your password?
                   </Button>
+                  <Button onClick={() => navigate("/signup")}>
+                    Sign up
+                  </Button>
                   <Button type="submit" value="login">
                     Sign in
                   </Button>
