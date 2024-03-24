@@ -11,6 +11,7 @@ import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { supabaseClient } from "../supabase/supabaseClient";
 import styled from "styled-components";
+import logo from '../assets/logo.png';
 
 // Styled Close Icon Component
 const CloseIcon = styled.div`
@@ -191,7 +192,7 @@ export const Login = () => {
           <div style={{ marginTop: 8 }}>
             <Tooltip text="Meow! 🐱‍" enterDelay={100} leaveDelay={100}>
               <img
-                src="https://insieme.s3.ap-southeast-1.amazonaws.com/logo.png"
+                src={logo}
                 alt="rvrc-logo"
                 width={100}
               />
