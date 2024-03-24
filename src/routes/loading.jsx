@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { ProgressBar } from "react95";
 import { useNavigate } from "react-router-dom";
-
+import logo from '../assets/logo.png'
 const Loading = () => {
   const [percent, setPercent] = useState(0);
   const navigate = useNavigate();
@@ -54,8 +54,8 @@ const Loading = () => {
       }}
     >
       <img
-        src="https://insieme.s3.ap-southeast-1.amazonaws.com/logo.png"
-        alt="Company Logo"
+        src={logo}
+        alt="RVRC Logo"
         style={{ marginBottom: "20px", width: "20%" }}
       />
       Loading ...

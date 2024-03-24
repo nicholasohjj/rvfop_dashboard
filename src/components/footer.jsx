@@ -3,6 +3,7 @@ import { AppBar, Toolbar, Button, MenuList, MenuListItem } from "react95";
 import { useNavigate } from "react-router-dom";
 import { supabaseClient } from "../supabase/supabaseClient";
 import { useStore, initializeUserData } from "../context/userContext";
+import logo from '../assets/logo.png';
 export const Footer = () => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ export const Footer = () => {
             style={{ fontWeight: "bold" }}
           >
             <img
-              src="https://insieme.s3.ap-southeast-1.amazonaws.com/logo.png"
+              src={logo}
               alt="rvrc-logo"
               style={{ height: "20px", marginRight: 4 }}
             />
