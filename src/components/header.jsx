@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { AppBar, Toolbar, Button, MenuList, MenuListItem } from "react95";
 import { useNavigate } from "react-router-dom";
-import { useStore, initializeUserData } from "../context/userContext"
+import { useStore, initializeUserData } from "../context/userContext";
 export const Header = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -12,12 +12,10 @@ export const Header = () => {
       if (!userData) {
         await initializeUserData();
       }
-    }
+    };
 
     initialise();
-  }
-  , [userData]);
-
+  }, [userData]);
 
   return (
     <AppBar style={{ zIndex: 1 }}>
@@ -44,9 +42,9 @@ export const Header = () => {
               Update Password
             </MenuListItem>
             {(userData.role === "admin" || userData.role === "gm") && (
-            <MenuListItem onClick={() => navigate("/addactivity")}>
-              Add Activity
-            </MenuListItem>
+              <MenuListItem onClick={() => navigate("/addactivity")}>
+                Add Activity
+              </MenuListItem>
             )}
             {userData?.role == "admin" && (
               <MenuListItem onClick={() => navigate("/adddeduction")}>

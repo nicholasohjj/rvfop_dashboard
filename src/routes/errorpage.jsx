@@ -4,45 +4,13 @@ import {
   Window,
   WindowHeader,
   WindowContent,
-  TextInput,
   Button,
   Tooltip,
 } from "react95";
 import { motion, useMotionValue, useTransform } from "framer-motion";
-import { useNavigate, useRouteError } from "react-router-dom"; // Import useNavigate
-import { supabaseClient } from "../supabase/supabaseClient";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import styled from "styled-components";
 import errorlogo from "../assets/404.png";
-
-// Styled Close Icon Component
-const CloseIcon = styled.div`
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-  transform: rotateZ(45deg);
-  position: relative;
-  &:before,
-  &:after {
-    content: "";
-    position: absolute;
-    background: ${({ theme }) =>
-      theme.materialText}; // Adjust the color as needed
-  }
-  &:before {
-    height: 100%;
-    width: 3px;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-  &:after {
-    height: 3px;
-    width: 100%;
-    left: 0px;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-`;
 
 const StyledWindowHeader = styled(WindowHeader)`
   background-color: #ff0000; // Change this hex code to your desired color
