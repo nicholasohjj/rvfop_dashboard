@@ -7,13 +7,14 @@ import {
   Button,
   Select,
   GroupBox,
+  Tooltip,
 } from "react95";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { supabaseClient } from "../supabase/supabaseClient";
 import styled from "styled-components";
 import { fetchGroups } from "../supabase/services";
-
+import signup from "../assets/signup.png";
 // Styled Close Icon Component
 const CloseIcon = styled.div`
   display: inline-block;
@@ -256,6 +257,15 @@ export const Signup = () => {
           <WindowHeader>
             <span>Sign up</span>
           </WindowHeader>
+          <div style={{ marginTop: 8 }}>
+            <Tooltip text="Purr! 🐱‍" enterDelay={100} leaveDelay={100}>
+              <img
+                src={signup}
+                alt="rvrc-logo"
+                width={100}
+              />
+            </Tooltip>
+          </div>
           <WindowContent>
             <form onSubmit={handleSubmit}>
               <div>
@@ -309,7 +319,7 @@ export const Signup = () => {
                   }}
                 >
                   <Button type="submit" value="login">
-                    Enter
+                    Submit!
                   </Button>
                 </div>
               </div>

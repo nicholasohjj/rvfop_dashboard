@@ -65,8 +65,8 @@ export const Footer = () => {
                   Deductions
                 </MenuListItem>
               )}
-                            {(userData?.role === "admin" ||
-                userData?.role === "gm") && (
+                            {(userData?.role == "admin" ||
+                userData?.role == "gm") && (
                 <MenuListItem onClick={() => handleNavigate("/games")}>
                   Awarded Games
                 </MenuListItem>
