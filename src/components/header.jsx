@@ -35,7 +35,7 @@ export const Header = () => {
             <MenuListItem onClick={() => navigate("/update")}>
               Update Password
             </MenuListItem>
-            {(userData.role === "admin" || userData.role === "gm") && (
+            {(userData.role == "admin" || userData.role == "gm") && (
               <MenuListItem onClick={() => navigate("/addactivity")}>
                 Add Activity
               </MenuListItem>

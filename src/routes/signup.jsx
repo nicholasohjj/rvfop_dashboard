@@ -178,7 +178,7 @@ export const Signup = () => {
         console.log("User Metadata", data.user.user_metadata.email_verified);
         setIsModalOpen(true);
         setError({
-          name: "Success",
+          name: "Account registered successfully!",
           message:
             "Please verify your email address by clicking the link in the email we sent you.",
           type: "success", // Add this line

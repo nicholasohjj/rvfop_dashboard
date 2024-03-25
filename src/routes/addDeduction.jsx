@@ -87,43 +87,24 @@ const AddDeduction = () => {
   const userData = useStore((state) => state.userData);
 
   useEffect(() => {
-    if (!userData) {
-      initializeUserData()
-        .then(() => {
-          if (!(userData.role === "deductor" || userData.role === "admin")) {
-            navigate("/", { replace: true });
-          }
-        })
-        .catch((error) => {
-          console.error("Failed to initialize user data:", error);
-        });
-    } else {
-      if (!(userData.role === "deductor" || userData.role === "admin")) {
-        navigate("/", { replace: true });
-      }
-    }
-  }, [userData, navigate]);
+    const init = async () => {
+      try {
+        await initializeUserData();
+        if (!(userData.role === 'deductor' || userData.role === 'admin')) {
+          navigate('/', { replace: true });
+        }
 
-  useEffect(() => {
-    setLoading(true); // Ensure loading is true at the start
-
-    Promise.all([fetchGroup(), fetchHouses()])
-      .then(([groupData, housesData]) => {
+        const [groupData, housesData] = await Promise.all([fetchGroup(), fetchHouses()]);
         setGroup(groupData);
-        setHouses(housesData);
-        setLoading(false); // Set loading to false once both promises resolve
-      })
-      .catch((error) => {
-        console.error("Failed to fetch data:", error);
-        setLoading(false); // Ensure loading is set to false even if there's an error
-      });
+        setHouses(housesData.sort((a, b) => b.total_points - a.total_points));
+        setLoading(false);
+      } catch (error) {
+        console.error("Initialization error:", error);
+      }
+    };
 
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener("resize", handleResize);
-
-    // Cleanup function to remove the event listener
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+    if (!userData) init();
+  }, [userData, navigate]); // Ensuring all dependencies are listed
 
   const handleAddDeduction = async () => {
     const deduction = {
@@ -170,10 +151,13 @@ const AddDeduction = () => {
         <span>Add Deduction 😈</span>
       </WindowHeader>
       <WindowContent style={{ overflowX: "visible" }}>
-        <GroupBox style={{ marginBottom: "10px" }}>
-          You have {group.total_points} points in total. You can deduct a
-          maximum of {group.total_points} points.
-        </GroupBox>
+        {'total_points' in group && (
+          <GroupBox style={{ marginBottom: "10px" }}>
+            You have {group.total_points} points in total. You can deduct a
+            maximum of {group.total_points} points.
+          </GroupBox>
+        )}
+
         <GroupBox label="Select House to Deduct">
           <Select
             options={houses.map((house) => ({
@@ -188,7 +172,7 @@ const AddDeduction = () => {
           />
         </GroupBox>
 
-        {selectedHouse && (
+        {'total_points' in group && selectedHouse && (
           <PointsSection>
             <p>Points to deduct: </p>
             <NumberInput

@@ -10,9 +10,14 @@ export const Footer = () => {
   const userData = useStore((state) => state.userData);
 
   useEffect(() => {
-    if (!userData) {
-      initializeUserData();
+
+    const init = async () => {
+      if (!userData) {
+        await initializeUserData();
+      }
     }
+
+    init()
   }, [userData]);
 
   const handleNavigate = (path) => {
