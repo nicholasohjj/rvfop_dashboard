@@ -103,7 +103,7 @@ const AddDeduction = () => {
       }
     };
 
-    if (!userData) init();
+    init();
   }, [userData, navigate]); // Ensuring all dependencies are listed
 
   const handleAddDeduction = async () => {
