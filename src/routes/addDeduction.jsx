@@ -90,13 +90,18 @@ const AddDeduction = () => {
     const init = async () => {
       try {
         await initializeUserData();
-        if (!(userData.role === 'deductor' || userData.role === 'admin')) {
-          navigate('/', { replace: true });
+        if (!(userData.role === "deductor" || userData.role === "admin")) {
+          navigate("/", { replace: true });
         }
 
-        const [groupData, housesData] = await Promise.all([fetchGroup(), fetchHouses()]);
-        setGroup(groupData);
-        setHouses(housesData.sort((a, b) => b.total_points - a.total_points));
+        if (!group || !houses) {
+          const [groupData, housesData] = await Promise.all([
+            fetchGroup(),
+            fetchHouses(),
+          ]);
+          setGroup(groupData);
+          setHouses(housesData.sort((a, b) => b.total_points - a.total_points));
+        }
         setLoading(false);
       } catch (error) {
         console.error("Initialization error:", error);
@@ -104,7 +109,7 @@ const AddDeduction = () => {
     };
 
     init();
-  }, [userData, navigate]); // Ensuring all dependencies are listed
+  }, [userData, navigate, group, houses]); // Ensuring all dependencies are listed
 
   const handleAddDeduction = async () => {
     const deduction = {
@@ -144,6 +149,11 @@ const AddDeduction = () => {
     margin: "0%",
   };
 
+  const handleSelectChange = (selectedOption) => {
+    setSelectedHouse(selectedOption.value); // Assuming `value` here is `house_id`
+    setDeductionPoints(0);
+  };
+
   houses.sort((a, b) => (a.total_points > b.total_points ? -1 : 1));
   return (
     <StyledWindow windowWidth={windowWidth}>
@@ -151,7 +161,7 @@ const AddDeduction = () => {
         <span>Add Deduction 😈</span>
       </WindowHeader>
       <WindowContent style={{ overflowX: "visible" }}>
-        {'total_points' in group && (
+        {"total_points" in group && (
           <GroupBox style={{ marginBottom: "10px" }}>
             You have {group.total_points} points in total. You can deduct a
             maximum of {group.total_points} points.
@@ -160,19 +170,17 @@ const AddDeduction = () => {
 
         <GroupBox label="Select House to Deduct">
           <Select
+            value={selectedHouse}
             options={houses.map((house) => ({
-              label: house.house_name + ` (${house.total_points} points)`,
-              value: house,
+              label: `${house.house_name} (${house.total_points} points)`,
+              value: house.house_id, // Use `house_id` as the value
             }))}
+            onChange={handleSelectChange}
             width="100%"
-            onChange={(e) => {
-              setSelectedHouse(e.value);
-              setDeductionPoints(0);
-            }}
           />
         </GroupBox>
 
-        {'total_points' in group && selectedHouse && (
+        {"total_points" in group && selectedHouse && (
           <PointsSection>
             <p>Points to deduct: </p>
             <NumberInput
