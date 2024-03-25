@@ -119,8 +119,7 @@ const AddDeduction = () => {
     };
 
     try {
-      const response = await addDeduction(deduction);
-      console.log(response);
+      await addDeduction(deduction);
       navigate("/", { replace: true });
     } catch (error) {
       console.error("Error adding deduction: ", error);
@@ -128,7 +127,6 @@ const AddDeduction = () => {
       setIsModalOpen(true); // Open the modal to display the error
     }
 
-    console.log(deduction);
   };
 
   if (loading) return <Loading />;
