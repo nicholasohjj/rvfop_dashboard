@@ -10,10 +10,10 @@ import {
 } from "react95";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import Loading from "./loading";
+import Loading from "../loading";
 import { motion, useMotionValue, useTransform } from "framer-motion";
-import { fetchHouses, fetchGroup, addDeduction } from "../supabase/services";
-import { useStore, initializeUserData } from "../context/userContext";
+import { fetchHouses, fetchGroup, addDeduction } from "../../supabase/services";
+import { useStore, initializeUserData } from "../../context/userContext";
 // Styled components
 const StyledWindow = styled(Window)`
   flex: 1;

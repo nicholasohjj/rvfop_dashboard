@@ -11,10 +11,10 @@ import {
   WindowHeader,
   Button,
 } from "react95";
-import Loading from "./loading";
-import { fetchHouses } from "../supabase/services";
+import Loading from "../loading";
+import { fetchHouses } from "../../supabase/services";
 import styled from "styled-components";
-import { supabaseClient } from "../supabase/supabaseClient";
+import { supabaseClient } from "../../supabase/supabaseClient";
 const Scoreboard = () => {
   const [houses, setHouses] = useState([]);
   const [loading, setLoading] = useState(true);

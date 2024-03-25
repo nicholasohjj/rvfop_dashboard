@@ -14,9 +14,9 @@ import {
 } from "react95";
 import styled from "styled-components";
 import { motion, useMotionValue, useTransform } from "framer-motion";
-import Loading from "./loading";
-import { fetchGroupActivities, fetchGroup } from "../supabase/services";
-import { useStore, initializeUserData } from "../context/userContext";
+import Loading from "../loading";
+import { fetchGroup, fetchDeductions } from "../../supabase/services";
+import { useStore, initializeUserData } from "../../context/userContext";
 import { useNavigate } from "react-router-dom";
 
 const CloseIcon = styled.div`
@@ -55,13 +55,13 @@ const StyledWindowHeader = styled(WindowHeader)`
   align-items: center;
 `;
 
-const Progress = () => {
+const Deductions = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [groupData, setGroupData] = useState(null); // Initialize to null for better checks
-  const [ActivityData, setActivityData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedActivity, setSelectedActivity] = useState(null);
+  const [selectedDeduction, setSelectedDeduction] = useState(null);
+  const [deductionData, setDeductionData] = useState([]);
   const constraintsRef = useRef(null);
   const dragxError = useMotionValue(0);
   const userData = useStore((state) => state.userData);
@@ -72,7 +72,7 @@ const Progress = () => {
     if (!userData) {
       initializeUserData()
         .then(() => {
-          if (!(userData.role === "normal" || userData.role === "admin")) {
+          if (!(userData.role === "deductor" || userData.role === "admin")) {
             navigate("/", { replace: true });
           }
         })
@@ -80,7 +80,7 @@ const Progress = () => {
           console.error("Failed to initialize user data:", error);
         });
     } else {
-      if (!(userData.role === "normal" || userData.role === "admin")) {
+      if (!(userData.role === "deductor" || userData.role === "admin")) {
         navigate("/", { replace: true });
       }
     }
@@ -99,11 +99,10 @@ const Progress = () => {
       setLoading(true);
       try {
         const group = await fetchGroup();
-        console.log("group", group);
         setGroupData(group);
 
-        const activityData = await fetchGroupActivities(group.group_id);
-        setActivityData(activityData);
+        const deductionData = await fetchDeductions(group.group_id);
+        setDeductionData(deductionData);
       } catch (error) {
         console.error("Failed to fetch data:", error);
       } finally {
@@ -144,9 +143,9 @@ const Progress = () => {
     }).format(sgtDate);
   };
 
-  const handleViewButtonClick = (activity) => {
+  const handleViewButtonClick = (deduction) => {
     setIsModalOpen(!isModalOpen);
-    setSelectedActivity(activity); // Set the selected activity
+    setSelectedDeduction(deduction); // Set the selected activity
   };
 
   const windowStyle = {
@@ -163,32 +162,27 @@ const Progress = () => {
         position: "relative",
       }}
     >
-      <WindowHeader>My Progress</WindowHeader>
+      <WindowHeader>My Deductions</WindowHeader>
       <WindowContent>
-        {groupData && (
-          <GroupBox label={`Group: ${groupData.group_name}`}>
-            Total Points Earned: {groupData.total_points}
-          </GroupBox>
-        )}
         <div style={{ marginTop: 10 }}>
-          {ActivityData.length > 0 ? (
+          {groupData ? (
             <Table>
               <TableHead>
                 <TableRow>
                   <TableHeadCell>Day</TableHeadCell>
-                  <TableHeadCell>Activity</TableHeadCell>
-                  <TableHeadCell>Points</TableHeadCell>
+                  <TableHeadCell>Points deducted</TableHeadCell>
+                  <TableHeadCell>House</TableHeadCell>
                   <TableHeadCell>Details</TableHeadCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {ActivityData.map((activity, index) => (
+                {deductionData.map((deduction, index) => (
                   <TableRow key={index}>
                     <TableDataCell>
-                      {formatSGT(activity.tm_created)}
+                      {formatSGT(deduction.tm_created)}
                     </TableDataCell>
-                    <TableDataCell>{activity.activity_name}</TableDataCell>
-                    <TableDataCell>{activity.points_earned}</TableDataCell>
+                    <TableDataCell>{deduction.points_deducted}</TableDataCell>
+                    <TableDataCell>{deduction.house_name}</TableDataCell>
                     <TableDataCell
                       style={{
                         gap: 16,
@@ -196,7 +190,7 @@ const Progress = () => {
                         justifyContent: "center",
                       }}
                     >
-                      <Button onClick={() => handleViewButtonClick(activity)}>
+                      <Button onClick={() => handleViewButtonClick(deduction)}>
                         View
                       </Button>
                     </TableDataCell>
@@ -206,7 +200,7 @@ const Progress = () => {
             </Table>
           ) : (
             <div style={{ textAlign: "center", margin: "20px 0" }}>
-              No activities found.
+              No deductions found.
             </div>
           )}
         </div>
@@ -245,18 +239,18 @@ const Progress = () => {
             >
               <Window style={windowStyle}>
                 <StyledWindowHeader>
-                  <span>{selectedActivity.activity_name}</span>
+                  <span>{selectedDeduction.house_name}</span>
                   <Button onClick={() => setIsModalOpen(false)}>
                     <CloseIcon />
                   </Button>
                 </StyledWindowHeader>
                 <WindowContent>
                   <div style={{ marginBottom: 10 }}>
-                    <GroupBox label="Description">
-                      {selectedActivity?.description}
+                    <GroupBox label="Date">
+                      {selectedDeduction?.tm_created}
                     </GroupBox>
-                    <GroupBox label="Points Earned">
-                      {selectedActivity?.points_earned}
+                    <GroupBox label="Points Deducted">
+                      {selectedDeduction?.points_deducted}
                     </GroupBox>
                   </div>
                 </WindowContent>
@@ -268,4 +262,4 @@ const Progress = () => {
     </Window>
   );
 };
-export default Progress;
+export default Deductions;

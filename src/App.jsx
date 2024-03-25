@@ -7,19 +7,20 @@ import {
 import ErrorPage from "./routes/errorpage";
 import { Login } from "./routes/login";
 import { Layout } from "./layout";
-import Scoreboard from "./routes/scoreboard";
+import Scoreboard from "./routes/normal/scoreboard";
 import Loading from "./routes/loading";
-import Progress from "./routes/progress";
+import Progress from "./routes/normal/progress";
 import { supabaseClient } from "./supabase/supabaseClient";
 import { Update } from "./routes/update";
 import { Reset } from "./routes/reset";
 import AddActivity from "./routes/gm/addActivity";
-import AddDeduction from "./routes/addDeduction";
+import AddDeduction from "./routes/deductor/addDeduction";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
-import Deductions from "./routes/deductions";
+import Deductions from "./routes/deductor/deductions";
 import { Signup } from "./routes/signup";
 import Games from "./routes/gm/games";
+import Messenger from "./routes/normal/messenger";
 const App = () => {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -66,6 +67,10 @@ const App = () => {
         {
           path: "/scoreboard",
           element: <Scoreboard />,
+        },
+        {
+          path: "/message",
+          element: <Messenger />,
         },
         {
           path: "/games",
