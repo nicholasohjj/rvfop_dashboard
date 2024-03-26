@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useLayoutEffect  } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import {
   Frame,
   Window,
@@ -8,20 +8,40 @@ import {
   TextInput,
   Button,
   Avatar,
+  Select,
+  GroupBox,
 } from "react95";
 import Loading from "../loading";
-import { fetchGroup } from "../../supabase/services";
 import { useStore, initializeUserData } from "../../context/userContext";
 import { supabaseClient } from "../../supabase/supabaseClient";
 import Filter from "bad-words";
+import styled from "styled-components"; // Import styled-components
+
+const StyledWindowHeader = styled(WindowHeader)`
+color: white; // Adjust the text color as needed for contrast
+display: flex;
+justify-content: space-between;
+align-items: center;
+`;
+
+const StyledWindow = styled(Window)`
+  flex: 1;
+  width: 320px; // Example width, you can adjust as needed
+  margin: 0 auto; // Center the window if its width is less than the container
+  // Add more custom styles here
+`;
+
 const Messenger = () => {
   const [loading, setLoading] = useState(true);
   const [channel, setChannel] = useState(null);
+  const [channels, setChannels] = useState(["General", "Random", "Help"]); // Example channel names
+  const [selectedChannel, setSelectedChannel] = useState("general"); // Default channel
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const userData = useStore((state) => state.userData);
-  const scrollViewRef = useRef(); // Step 1: Create a ref for the ScrollView
+  const scrollViewRef = useRef();
   const filter = new Filter();
+
   useEffect(() => {
     const init = async () => {
       // Assuming initializeUserData() updates the user context with the fetched data
@@ -34,50 +54,48 @@ const Messenger = () => {
   }, [userData]); // Add userData and navigate to dependency array
 
   useEffect(() => {
-    const initChannel = async () => {
-      const newChannel = supabaseClient.channel("test_channel");
+    const initChannel = async (channelName) => {
+      if (channel) channel.unsubscribe(); // Unsubscribe from the previous channel
+
+      // Initialize and subscribe to the new channel
+      const newChannel = supabaseClient.channel(channelName);
       console.log("Channel created", newChannel);
+
+      console.log("Selected channel here:", selectedChannel);
       newChannel
         .on("broadcast", { event: "chat" }, (payload) => {
+          // Filter or directly set messages for the selected channel
           console.log("New message received", payload.payload);
           setMessages((prevMessages) => [...prevMessages, payload.payload]);
         })
         .subscribe();
 
       setChannel(newChannel);
-
-      return () => newChannel.unsubscribe();
+      setLoading(false);
     };
 
-    initChannel();
-  }, []); // Empty dependency array to run only once on mount
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-      } catch (error) {
-        console.error("Failed to fetch data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+    setMessages([]); // Clear messages from the previous channel
+    initChannel(selectedChannel.toLowerCase()); // Re-initialize channel subscription
+  }, [selectedChannel]); // Dependency array includes selectedChannel
 
   useLayoutEffect(() => {
     if (scrollViewRef.current) {
       const scrollElement = scrollViewRef.current;
+      // This line ensures the scroll position is moved to the bottom
       scrollElement.scrollTop = scrollElement.scrollHeight;
     }
-  }, [messages]); // Ensure this runs after messages update and DOM mutations
+  }, [messages]); // Runs this effect after messages update
 
   const handleChange = (e) => setMessage(e.target.value);
 
   const handleSend = async () => {
-    if (!message.trim()) return; // Prevents sending empty messages
+    if (!message.trim()) return;
 
     const sanitizedMessage = filter.clean(message);
+
+    console.log("Sending message:", sanitizedMessage);
+    console.log("User data:", userData);
+    console.log("Selected channel:", selectedChannel);
 
     const { error } = await channel.send({
       type: "broadcast",
@@ -104,6 +122,11 @@ const Messenger = () => {
     }
   };
 
+  const handleChannelChange = (e) => {
+    setSelectedChannel(e.value);
+    setMessages([]); // Clear messages when changing channels
+  };
+
   const generateColorFromName = (name) => {
     let hash = 0;
     for (let i = 0; i < name.length; i++) {
@@ -116,26 +139,37 @@ const Messenger = () => {
   if (loading) return <Loading />;
 
   return (
-    <Window
-      style={{
-        flex: 1,
-        maxWidth: "100vw",
-        margin: "0 auto",
-        position: "relative",
-      }}
-    >
-      <WindowHeader>Insieme Live Messenger</WindowHeader>
+    <StyledWindow style={{ flex: 1, width: 320 }}>
+
+      <StyledWindowHeader>Insieme Live Messenger</StyledWindowHeader>
       <WindowContent
         style={{
+          overflow: "auto",
           flex: 1, // Make WindowContent fill the available space
           display: "flex", // Enable flex layout
           flexDirection: "column", // Stack children vertically
         }}
       >
+        <GroupBox
+          label="Select Channel"
+          style={{
+            marginBottom: "10px",
+          }}
+        >
+          <Select
+            value={selectedChannel}
+            onChange={handleChannelChange}
+            options={channels.map((channel) => ({
+              label: channel,
+              value: channel,
+            }))}
+            width="100%"
+          />
+        </GroupBox>
         Chat with anyone here from RVFOP! Please note that your messages will
         not be preserved; they will be automatically deleted once you leave this
         page.
-        <div style={{ marginTop: 10 }}>
+        <div>
           <Frame
             variant="field"
             style={{
@@ -215,7 +249,7 @@ const Messenger = () => {
           </Frame>
         </div>
       </WindowContent>
-    </Window>
+    </StyledWindow>
   );
 };
 export default Messenger;

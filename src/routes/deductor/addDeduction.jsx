@@ -31,26 +31,10 @@ const StyledWindowHeader = styled(WindowHeader)`
   background-color: #ff0000; // Change this hex code to your desired color
 `;
 
-const StyledWindowContent = styled(WindowContent)`
-  overflow-x: visible;
-`;
-
 const ActionButtonsContainer = styled.div`
   display: flex;
   justify-content: space-around;
   margin-top: 20px;
-`;
-
-const ModalBackdrop = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
 `;
 
 const CloseIcon = styled.div`
