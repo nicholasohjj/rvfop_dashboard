@@ -148,7 +148,8 @@ const AddDeduction = () => {
   };
 
   const handleSelectChange = (selectedOption) => {
-    setSelectedHouse(selectedOption); // Assuming `value` here is `house_id`
+    console.log(selectedOption);
+    setSelectedHouse(selectedOption.value); // Assuming `value` here is `house_id`
     setDeductionPoints(0);
   };
 
@@ -167,16 +168,15 @@ const AddDeduction = () => {
         )}
 
         <GroupBox label="Select House to Deduct">
-          <Select
-            value={selectedHouse}
-            options={houses.map((house) => ({
-              label: `${house.house_name} (${house.total_points} points)`,
-              house_id: house.house_id,
-              total_points: house.total_points,
-            }))}
-            onChange={handleSelectChange}
-            width="100%"
-          />
+        <Select
+  value={selectedHouse ? selectedHouse.house_id : ''}
+  onChange={handleSelectChange}
+  options={houses.map((house) => ({
+    label: `${house.house_name} (${house.total_points} points)`,
+    value: house, // Ensure that the 'value' field is used for a unique identifier
+  }))}
+  width="100%"
+/>
         </GroupBox>
 
         {"total_points" in group && selectedHouse && (
