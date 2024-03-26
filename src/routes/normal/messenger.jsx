@@ -151,11 +151,12 @@ const Messenger = () => {
                   >
                     <Avatar size={40} src={message.avatar || logo} />
                     <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column", // Stack name and message content vertically
-                      }}
-                    >
+      style={{
+        display: "flex",
+        flexDirection: "column", // Stack name and message content vertically
+        alignItems: message.user_id === userData.id ? "flex-end" : "flex-start", // Align items to the end if it's the user's message
+      }}
+    >
                       <div>
                         <strong>{message.name}</strong>
                       </div>
