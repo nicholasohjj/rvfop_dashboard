@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import { AppBar, Toolbar, Button, MenuList, MenuListItem } from "react95";
 import { useNavigate } from "react-router-dom";
 import { useStore, initializeUserData } from "../context/userContext";
+import passwordLogo from "../assets/password.png";
+import addactivityLogo from "../assets/addactivity.png";
+import adddeductionLogo from "../assets/adddeduction.png";
 export const Header = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -33,16 +36,31 @@ export const Header = () => {
             onClick={() => setOpen(false)}
           >
             <MenuListItem onClick={() => navigate("/update")}>
+              <img
+                src={passwordLogo}
+                alt="password"
+                style={{ height: "20px", marginRight: 4 }}
+              />
               Update Password
             </MenuListItem>
             {(userData.role == "admin" || userData.role == "gm") && (
               <MenuListItem onClick={() => navigate("/addactivity")}>
+                <img
+                  src={addactivityLogo}
+                  alt="add_activity"
+                  style={{ height: "20px", marginRight: 4 }}
+                />
                 Add Activity
               </MenuListItem>
             )}
             {userData?.role == "admin" && (
               <MenuListItem onClick={() => navigate("/adddeduction")}>
-                Add Deduction 😈
+                <img
+                  src={adddeductionLogo}
+                  alt="add_activity"
+                  style={{ height: "20px", marginRight: 4 }}
+                />
+                Add Deduction
               </MenuListItem>
             )}
           </MenuList>
