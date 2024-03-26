@@ -8,46 +8,55 @@ import {
   ScrollView,
   TextInput,
   Button,
+  Avatar,
 } from "react95";
 import Loading from "../loading";
 import { fetchGroup } from "../../supabase/services";
 import { useStore, initializeUserData } from "../../context/userContext";
-import { useNavigate } from "react-router-dom";
 import { supabaseClient } from "../../supabase/supabaseClient";
+import logo from "../../assets/logo.png";
 
 const Messenger = () => {
-  const [groupData, setGroupData] = useState(null); // Initialize to null for better checks
+  const [groupData, setGroupData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [channel, setChannel] = useState(null);
   const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState([]);
   const userData = useStore((state) => state.userData);
-  const navigate = useNavigate();
 
-  const initializeAndNavigate = useCallback(async () => {
-    if (
-      !userData ||
-      !(userData.role === "normal" || userData.role === "admin")
-    ) {
-      try {
-        await initializeUserData();
-        if (!(userData.role === "normal" || userData.role === "admin")) {
-          navigate("/", { replace: true });
-        }
-      } catch (error) {
-        console.error("Failed to initialize user data:", error);
-      }
+  useEffect(() => {
+    const init = async () => {
+      // Assuming initializeUserData() updates the user context with the fetched data
+      await initializeUserData(); // Fetch and initialize user data
+    };
+
+    if (!userData) {
+      init();
     }
-  }, [userData, navigate]);
+  }, [userData]); // Add userData and navigate to dependency array
 
   useEffect(() => {
-    initializeAndNavigate();
+    const initChannel = async () => {
+      const newChannel = supabaseClient.channel("test_channel", {
+        config: {
+          broadcast: { self: true },
+        },
+      });
+      console.log("Channel created", newChannel);
+      newChannel
+        .on("broadcast", { event: "chat" }, (payload) => {
+          console.log("New message received", payload.payload);
+          setMessages((prevMessages) => [...prevMessages, payload.payload]);
+        })
+        .subscribe();
 
-    setChannel(supabaseClient.channel("test_channel"));
-  }, [initializeAndNavigate]);
+      setChannel(newChannel);
 
-  useEffect(() => {
-    initializeAndNavigate();
-  }, [initializeAndNavigate]);
+      return () => newChannel.unsubscribe();
+    };
+
+    initChannel();
+  }, []); // Empty dependency array to run only once on mount
 
   useEffect(() => {
     const fetchData = async () => {
@@ -64,28 +73,27 @@ const Messenger = () => {
     fetchData();
   }, []);
 
-  if (loading) return <Loading />;
-
-  const handleChange = (e) => {
-    setMessage(e.target.value);
-  };
+  const handleChange = (e) => setMessage(e.target.value);
 
   const handleSend = async () => {
-    if (!message) return;
+    if (!message.trim()) return; // Prevents sending empty messages
 
-    channel.subscribe((status) => {
-      if (status !== "SUBSCRIBED") {
-        return null;
-      }
-
-      channel.send({
-        type: "broadcast",
-        event: "test",
-        payload: { message },
-      });
+    console.log("Message", message);
+    console.log("User data", userData);
+    const { error } = await channel.send({
+      type: "broadcast",
+      event: "chat",
+      payload: { user_id: userData.id, name: "Name", message },
     });
-    setMessage("");
+
+    if (error) {
+      console.error("Sending message error:", error);
+    } else {
+      setMessage("");
+    }
   };
+
+  if (loading) return <Loading />;
 
   return (
     <Window
@@ -118,18 +126,44 @@ const Messenger = () => {
               flex: 1,
               height: "60vh",
               width: "100%",
-              overflow: "auto", // Add scrollbars if content overflows
             }}
           >
             <div>
               <ScrollView
                 style={{
                   height: "50vh",
+                  overflow: "auto", // Add scrollbars if content overflows
                 }}
               >
-                A field frame variant is used to display content.
+                {messages.map((message, index) => (
+                  <div
+                    key={index} // It's better to use a unique identifier like message.id if available
+                    style={{
+                      display: "flex", // Aligns avatar and message content horizontally
+                      flexDirection:
+                        message.user_id === userData.id ? "row-reverse" : "row", // Conditionally change direction
+                      alignItems: "flex-start", // Align items at the start of the cross axis
+                      gap: "10px", // Adds space between avatar and text
+                      marginBottom: "10px", // Adds space between messages
+                      textAlign:
+                        message.user_id === userData.id ? "right" : "left", // Align text to the right for user's messages
+                    }}
+                  >
+                    <Avatar size={40} src={message.avatar || logo} />
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column", // Stack name and message content vertically
+                      }}
+                    >
+                      <div>
+                        <strong>{message.name}</strong>
+                      </div>
+                      <div>{message.message}</div>
+                    </div>
+                  </div>
+                ))}
               </ScrollView>
-
               <div style={{ display: "flex" }}>
                 <TextInput
                   value={message}
