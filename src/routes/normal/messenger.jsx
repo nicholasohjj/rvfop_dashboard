@@ -14,7 +14,7 @@ import Loading from "../loading";
 import { fetchGroup } from "../../supabase/services";
 import { useStore, initializeUserData } from "../../context/userContext";
 import { supabaseClient } from "../../supabase/supabaseClient";
-import Filter from 'bad-words';
+import Filter from "bad-words";
 const Messenger = () => {
   const [groupData, setGroupData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -74,11 +74,15 @@ const Messenger = () => {
     if (!message.trim()) return; // Prevents sending empty messages
 
     const sanitizedMessage = filter.clean(message);
-  
+
     const { error } = await channel.send({
       type: "broadcast",
       event: "chat",
-      payload: { user_id: userData.id, name: userData.profile_name, message: sanitizedMessage},
+      payload: {
+        user_id: userData.id,
+        name: userData.profile_name,
+        message: sanitizedMessage,
+      },
     });
 
     if (error) {
@@ -86,7 +90,11 @@ const Messenger = () => {
     } else {
       setMessages((prevMessages) => [
         ...prevMessages,
-        { user_id: userData.id, name: userData.profile_name, message: sanitizedMessage },
+        {
+          user_id: userData.id,
+          name: userData.profile_name,
+          message: sanitizedMessage,
+        },
       ]);
       setMessage("");
     }
@@ -101,7 +109,6 @@ const Messenger = () => {
     return color;
   };
 
-
   if (loading) return <Loading />;
 
   return (
@@ -113,9 +120,7 @@ const Messenger = () => {
         position: "relative",
       }}
     >
-      <WindowHeader>Insieme Live Messenger
-        
-      </WindowHeader>
+      <WindowHeader>Insieme Live Messenger</WindowHeader>
       <WindowContent
         style={{
           flex: 1, // Make WindowContent fill the available space
@@ -123,11 +128,9 @@ const Messenger = () => {
           flexDirection: "column", // Stack children vertically
         }}
       >
-        {groupData && (
-          <GroupBox label={`Description`}>
-            Chat here with anyone in RVFOP! Messages will not be saved and will be deleted after the session ends.
-          </GroupBox>
-        )}
+        Chat with anyone here from RVFOP! Please note that your messages will
+        not be preserved; they will be automatically deleted once you leave this
+        page.
         <div style={{ marginTop: 10 }}>
           <Frame
             variant="field"
@@ -160,16 +163,24 @@ const Messenger = () => {
                         message.user_id === userData.id ? "right" : "left", // Align text to the right for user's messages
                     }}
                   >
-        <Avatar style={{ background: generateColorFromName(message.user_id) }} size={40}>
+                    <Avatar
+                      style={{
+                        background: generateColorFromName(message.user_id),
+                      }}
+                      size={40}
+                    >
                       {message.name[0]}
                     </Avatar>
                     <div
-      style={{
-        display: "flex",
-        flexDirection: "column", // Stack name and message content vertically
-        alignItems: message.user_id === userData.id ? "flex-end" : "flex-start", // Align items to the end if it's the user's message
-      }}
-    >
+                      style={{
+                        display: "flex",
+                        flexDirection: "column", // Stack name and message content vertically
+                        alignItems:
+                          message.user_id === userData.id
+                            ? "flex-end"
+                            : "flex-start", // Align items to the end if it's the user's message
+                      }}
+                    >
                       <div>
                         <strong>{message.name}</strong>
                       </div>
@@ -183,6 +194,12 @@ const Messenger = () => {
                   value={message}
                   placeholder="Type here..."
                   onChange={handleChange}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") {
+                      handleSend();
+                      e.preventDefault(); // Prevent the default action to stop the form from submitting
+                    }
+                  }}
                   fullWidth
                 />
                 <Button onClick={handleSend} style={{ marginLeft: 4 }}>
