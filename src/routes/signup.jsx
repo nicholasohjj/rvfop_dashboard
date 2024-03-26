@@ -55,6 +55,7 @@ const StyledWindowHeader = styled(WindowHeader)`
 `;
 
 export const Signup = () => {
+  const [name, setName] = useState(""); 
   const [email, setemail] = useState(null);
   const [password, setPassword] = useState(null);
   const [selectedGroup, setSelectedGroup] = useState(null); // Add selectedGroup state
@@ -63,6 +64,7 @@ export const Signup = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState(null);
   const [groups, setGroups] = useState([]); // Add groups state
+  const [isSending, setIsSending] = useState(false); // Add isSending state
   const constraintsRef = useRef(null);
   const navigate = useNavigate(); // Hook for navigation
   const dragX = useMotionValue(0);
@@ -106,10 +108,10 @@ export const Signup = () => {
     console.log("Email", email);
     console.log("Password", password);
 
-    if (!email || !password) {
+    if (!email || !password || !name) {
       setError({
         name: "Error",
-        message: "Please enter your email and password.",
+        message: "Please enter your name, email and password.",
       });
       setIsModalOpen(true);
       return;
@@ -154,10 +156,8 @@ export const Signup = () => {
       return;
     }
 
-    console.log("Selected Group", selectedGroup);
-    console.log("Selected Role", selectedRole);
-
     try {
+
       const { data, error } = await supabaseClient.auth.signUp({
         email,
         password,
@@ -165,6 +165,7 @@ export const Signup = () => {
           data: {
             group_id: selectedGroup,
             role: selectedRole,
+            profile_name: name,
           },
         },
       });
@@ -174,8 +175,6 @@ export const Signup = () => {
       
 
       if ("email_verified" in data.user.user_metadata) {
-        console.log("Here");
-        console.log("User Metadata", data.user.user_metadata.email_verified);
         setIsModalOpen(true);
         setError({
           name: "Account registered successfully!",
@@ -197,7 +196,6 @@ export const Signup = () => {
       }
 
       if (error) {
-        console.log("Error");
         throw error;
       }
     } catch (error) {
@@ -269,6 +267,17 @@ export const Signup = () => {
           <WindowContent>
             <form onSubmit={handleSubmit}>
               <div>
+              <div style={{ display: "flex" }}>
+                  <TextInput
+                    placeholder="Profile Name (E.g John Doe)"
+                    fullWidth
+                    value={name}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                    }}
+                  />
+                </div>
+                <br />
                 <div style={{ display: "flex" }}>
                   <TextInput
                     placeholder="Email Address"

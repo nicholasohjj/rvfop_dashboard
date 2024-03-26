@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import {
   Frame,
   Window,
@@ -83,7 +83,7 @@ const Messenger = () => {
     const { error } = await channel.send({
       type: "broadcast",
       event: "chat",
-      payload: { user_id: userData.id, name: "Name", message },
+      payload: { user_id: userData.id, name: userData.profile_name, message },
     });
 
     if (error) {
@@ -113,8 +113,8 @@ const Messenger = () => {
         }}
       >
         {groupData && (
-          <GroupBox label={`Group: ${groupData.group_name}`}>
-            Total Points Earned: {groupData.total_points}
+          <GroupBox label={`Description`}>
+            Chat here with anyone in RVFOP! Messages will not be saved and will be deleted after the session ends.
           </GroupBox>
         )}
         <div style={{ marginTop: 10 }}>
@@ -149,7 +149,9 @@ const Messenger = () => {
                         message.user_id === userData.id ? "right" : "left", // Align text to the right for user's messages
                     }}
                   >
-                    <Avatar size={40} src={message.avatar || logo} />
+                    <Avatar style={{ background: 'palevioletred' }} size={40}>
+                      {message.name[0]}
+                    </Avatar>
                     <div
       style={{
         display: "flex",
