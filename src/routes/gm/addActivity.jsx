@@ -102,10 +102,14 @@ const AddActivity = () => {
   const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
   const navigate = useNavigate();
   const storeGroups = useStore((state) => state.groups);
-  const groups = useMemo(
-    () => [{ group_name: "Select Group" }, ...storeGroups],
-    [storeGroups]
-  );
+  const groups = useMemo(() => {
+    const initialOption = [{ group_name: "Select Group", group_id: null }];
+    const updatedGroups = [...initialOption, ...storeGroups];
+    
+    return updatedGroups;
+  }, [storeGroups]);
+
+  const activities = useMemo(() => [{ activity_name: "Select Activity" }, ...activityData], [activityData]);
   const userData = useStore((state) => state.userData);
 
   useEffect(() => {
@@ -117,36 +121,41 @@ const AddActivity = () => {
             navigate("/", { replace: true });
             return;
           }
-        } else if (userData.role !== "gm" && userData.role !== "admin") {
-          navigate("/");
-          return;
         }
 
-        if (!groups) {
-          await initialiseGroups();
-        }
+        await initialiseGroups();
       } catch (error) {
         console.error("Failed to initialize data:", error);
       }
     };
 
     initializeData();
-  }, [userData, groups, navigate]);
+  }, [userData, navigate]);
 
+  // New useEffect hook for fetching activities
   useEffect(() => {
     setLoading(true);
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener("resize", handleResize);
-    Promise.all([fetchActivities()]).then((data) => {
-      setActivityData([
-        { activity_name: "Select Activity", activity_id: "" },
-        ...data[0],
-        { activity_name: "Create Activity", activity_id: "custom" },
-      ]);
+    const fetchActivityData = async () => {
+      try {
+        const activities = await fetchActivities();
+        setActivityData([
+          ...activities,
+          { activity_name: "Create Activity", activity_id: "custom" },
+        ]);
+      } catch (error) {
+        console.error("Failed to fetch activities:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (storeGroups.length > 0) {
+      fetchActivityData();
+    } else {
       setLoading(false);
-    });
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+    }
+    
+  }, [storeGroups.length]);
 
   const modalVariants = {
     hidden: {
@@ -221,8 +230,8 @@ const AddActivity = () => {
       <WindowContent style={{ overflowX: "visible" }}>
         <GroupBox label="Select Activity">
           <Select
-            defaultValue={activityData[0]}
-            options={activityData.map((activity) => ({
+            defaultValue={activities[0]}
+            options={activities.map((activity) => ({
               label: activity.activity_name,
               value: activity,
             }))}

@@ -95,9 +95,18 @@ const AddDeduction = () => {
         }
       });
 
-        const [groupData, housesData] = await Promise.all([fetchGroup(), fetchHouses()]);
+      if (!group) {
+        const groupData = await fetchGroup();
         setGroup(groupData);
-        if (houses.length < 2) setHouses(housesData.sort((a, b) => b.total_points - a.total_points))
+      }
+
+      if (houses.length == 1) {
+        console.log(houses)
+        const housesData = await fetchHouses();
+
+        console.log(housesData)
+        setHouses([{ house_id: "", house_name: "Select a house", total_points: 0}, ...housesData.sort((a, b) => b.total_points - a.total_points)]);
+      }
         setLoading(false);
       } catch (error) {
         setError(error.message);
@@ -109,6 +118,11 @@ const AddDeduction = () => {
   }, [group, houses.length, userData]); // Update dependencies
 
   const handleAddDeduction = async () => {
+    if (!selectedHouse) {
+      setError("Please select a house to deduct points from.");
+      setIsModalOpen(true);
+      return;
+    }
     const deduction = {
       house_id: selectedHouse.house_id,
       group_id: group.group_id,
@@ -165,21 +179,20 @@ const AddDeduction = () => {
 
         <GroupBox label="Select House to Deduct">
         <Select
-  value={selectedHouse ? JSON.stringify(selectedHouse) : 'Select a house'}
+  value={selectedHouse}
   onChange={handleSelectChange}
   options={houses.map((house) => ({
-    label: `${house.house_name} (${house.total_points} points)`,
+    label: house.house_id ? `${house.house_name} (${house.total_points} points)` : house.house_name,
     value: house, // Ensure that the 'value' field is used for a unique identifier
   }))}
   width="100%"
 />
         </GroupBox>
 
-        {"total_points" in group && selectedHouse && (
+        {"total_points" in group && selectedHouse && selectedHouse.house_id && (
           <PointsSection>
             <p>Points to deduct: </p>
             {group.total_points}
-            {JSON.stringify(selectedHouse)}
             <NumberInput
               value={deductionPoints}
               onChange={(value) => setDeductionPoints(Number(value))} // Ensure value is a number
