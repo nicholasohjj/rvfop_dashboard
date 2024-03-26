@@ -14,7 +14,7 @@ import Loading from "../loading";
 import { fetchGroup } from "../../supabase/services";
 import { useStore, initializeUserData } from "../../context/userContext";
 import { supabaseClient } from "../../supabase/supabaseClient";
-import logo from "../../assets/logo.png";
+import logo from '../../assets/messenger.png'
 
 const Messenger = () => {
   const [groupData, setGroupData] = useState(null);
@@ -114,7 +114,9 @@ const Messenger = () => {
         position: "relative",
       }}
     >
-      <WindowHeader>Insieme Live Messenger</WindowHeader>
+      <WindowHeader>Insieme Live Messenger
+        
+      </WindowHeader>
       <WindowContent
         style={{
           flex: 1, // Make WindowContent fill the available space
