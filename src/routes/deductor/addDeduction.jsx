@@ -31,6 +31,28 @@ const StyledWindowHeader = styled(WindowHeader)`
   background-color: #ff0000; // Change this hex code to your desired color
 `;
 
+const StyledWindowContent = styled(WindowContent)`
+  overflow-x: visible;
+`;
+
+const ActionButtonsContainer = styled.div`
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+`;
+
+const ModalBackdrop = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+`;
+
 const CloseIcon = styled.div`
   display: inline-block;
   width: 16px;
@@ -89,11 +111,12 @@ const AddDeduction = () => {
   useEffect(() => {
     const init = async () => {
       try {
-        await initializeUserData().then(() => {
-        if (!['deductor', 'admin'].includes(userData.role)) {
-          navigate('/', { replace: true });
+        if (!userData) {
+          await initializeUserData();
+          if (!['deductor', 'admin'].includes(userData.role)) {
+            navigate('/', { replace: true });
+          }
         }
-      });
 
       if (!group) {
         const groupData = await fetchGroup();
@@ -107,22 +130,28 @@ const AddDeduction = () => {
         console.log(housesData)
         setHouses([{ house_id: "", house_name: "Select a house", total_points: 0}, ...housesData.sort((a, b) => b.total_points - a.total_points)]);
       }
-        setLoading(false);
       } catch (error) {
         setError(error.message);
         console.error("Initialization error:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    if (!group || !houses.length > 1) init(); // Prevents refetching if already fetched
-  }, [group, houses.length, userData]); // Update dependencies
+    if (!group || !houses.length > 1) {
+      init();
+    } else {
+      setLoading(false);
+    }
+  }, [group, houses, userData]); // Update dependencies
 
   const handleAddDeduction = async () => {
-    if (!selectedHouse) {
-      setError("Please select a house to deduct points from.");
+    if (!selectedHouse || deductionPoints <= 0) {
+      setError('Please select a house and specify the points to deduct.');
       setIsModalOpen(true);
       return;
     }
+
     const deduction = {
       house_id: selectedHouse.house_id,
       group_id: group.group_id,
@@ -167,56 +196,45 @@ const AddDeduction = () => {
   return (
     <StyledWindow windowWidth={windowWidth}>
       <WindowHeader>
-        <span>Add Deduction 😈</span>
+        <span>Add Deduction</span>
       </WindowHeader>
       <WindowContent style={{ overflowX: "visible" }}>
-        {"total_points" in group && (
-          <GroupBox style={{ marginBottom: "10px" }}>
-            You have {group.total_points} points in total. You can deduct a
-            maximum of {group.total_points} points.
+      {group?.total_points && (
+          <GroupBox marginBottom="10px">
+            You have {group.total_points} points in total. You can deduct a maximum of {group.total_points} points.
           </GroupBox>
         )}
 
         <GroupBox label="Select House to Deduct">
         <Select
-  value={selectedHouse}
-  onChange={handleSelectChange}
-  options={houses.map((house) => ({
-    label: house.house_id ? `${house.house_name} (${house.total_points} points)` : house.house_name,
-    value: house, // Ensure that the 'value' field is used for a unique identifier
-  }))}
-  width="100%"
-/>
+            value={selectedHouse}
+            onChange={handleSelectChange}
+            options={houses.map(house => ({
+              label: house.house_id ? `${house.house_name} (${house.total_points} points)` : house.house_name,
+              value: house,
+            }))}
+            width="100%"
+          />
         </GroupBox>
 
-        {"total_points" in group && selectedHouse && selectedHouse.house_id && (
+        {group?.total_points && selectedHouse && selectedHouse.house_id && (
           <PointsSection>
             <p>Points to deduct: </p>
-            {group.total_points}
             <NumberInput
               value={deductionPoints}
-              onChange={(value) => setDeductionPoints(Number(value))} // Ensure value is a number
+              onChange={value => setDeductionPoints(Number(value))}
               step={20}
               min={0}
               max={Math.min(group.total_points, selectedHouse.total_points)}
             />
           </PointsSection>
         )}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-around",
-            marginTop: "20px",
-            width: "100%",
-          }}
-        >
-          <Button onClick={() => navigate("/", { replace: true })}>
-            Go back
-          </Button>
+        <ActionButtonsContainer>
+          <Button onClick={() => navigate("/")}>Go back</Button>
           {selectedHouse && deductionPoints > 0 && (
-            <Button onClick={() => handleAddDeduction()}>Deduct</Button>
+            <Button onClick={handleAddDeduction}>Deduct</Button>
           )}
-        </div>
+        </ActionButtonsContainer>
         {isModalOpen && (
           <div
             ref={constraintsRef}
