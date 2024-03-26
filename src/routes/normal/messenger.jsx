@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useLayoutEffect  } from "react";
 import {
   Frame,
   Window,
   WindowContent,
   WindowHeader,
-  GroupBox,
   ScrollView,
   TextInput,
   Button,
@@ -16,12 +15,12 @@ import { useStore, initializeUserData } from "../../context/userContext";
 import { supabaseClient } from "../../supabase/supabaseClient";
 import Filter from "bad-words";
 const Messenger = () => {
-  const [groupData, setGroupData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [channel, setChannel] = useState(null);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const userData = useStore((state) => state.userData);
+  const scrollViewRef = useRef(); // Step 1: Create a ref for the ScrollView
   const filter = new Filter();
   useEffect(() => {
     const init = async () => {
@@ -57,8 +56,6 @@ const Messenger = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const group = await fetchGroup();
-        setGroupData(group);
       } catch (error) {
         console.error("Failed to fetch data:", error);
       } finally {
@@ -67,6 +64,13 @@ const Messenger = () => {
     };
     fetchData();
   }, []);
+
+  useLayoutEffect(() => {
+    if (scrollViewRef.current) {
+      const scrollElement = scrollViewRef.current;
+      scrollElement.scrollTop = scrollElement.scrollHeight;
+    }
+  }, [messages]); // Ensure this runs after messages update and DOM mutations
 
   const handleChange = (e) => setMessage(e.target.value);
 
@@ -144,9 +148,10 @@ const Messenger = () => {
           >
             <div>
               <ScrollView
+                ref={scrollViewRef} // Attach the ref to the ScrollView
                 style={{
                   height: "50vh",
-                  overflow: "auto", // Add scrollbars if content overflows
+                  overflow: "auto", // Keep existing styles
                 }}
               >
                 {messages.map((message, index) => (
