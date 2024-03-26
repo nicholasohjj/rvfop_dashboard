@@ -36,11 +36,7 @@ const Messenger = () => {
 
   useEffect(() => {
     const initChannel = async () => {
-      const newChannel = supabaseClient.channel("test_channel", {
-        config: {
-          broadcast: { self: true },
-        },
-      });
+      const newChannel = supabaseClient.channel("test_channel");
       console.log("Channel created", newChannel);
       newChannel
         .on("broadcast", { event: "chat" }, (payload) => {
@@ -88,6 +84,10 @@ const Messenger = () => {
     if (error) {
       console.error("Sending message error:", error);
     } else {
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { user_id: userData.id, name: userData.profile_name, message: sanitizedMessage },
+      ]);
       setMessage("");
     }
   };
