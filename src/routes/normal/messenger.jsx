@@ -14,8 +14,7 @@ import Loading from "../loading";
 import { fetchGroup } from "../../supabase/services";
 import { useStore, initializeUserData } from "../../context/userContext";
 import { supabaseClient } from "../../supabase/supabaseClient";
-import logo from '../../assets/messenger.png'
-
+import Filter from 'bad-words';
 const Messenger = () => {
   const [groupData, setGroupData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -23,7 +22,7 @@ const Messenger = () => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const userData = useStore((state) => state.userData);
-
+  const filter = new Filter();
   useEffect(() => {
     const init = async () => {
       // Assuming initializeUserData() updates the user context with the fetched data
@@ -78,12 +77,12 @@ const Messenger = () => {
   const handleSend = async () => {
     if (!message.trim()) return; // Prevents sending empty messages
 
-    console.log("Message", message);
-    console.log("User data", userData);
+    const sanitizedMessage = filter.clean(message);
+  
     const { error } = await channel.send({
       type: "broadcast",
       event: "chat",
-      payload: { user_id: userData.id, name: userData.profile_name, message },
+      payload: { user_id: userData.id, name: userData.profile_name, message: sanitizedMessage},
     });
 
     if (error) {
