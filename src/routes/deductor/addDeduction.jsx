@@ -148,7 +148,7 @@ const AddDeduction = () => {
   };
 
   const handleSelectChange = (selectedOption) => {
-    setSelectedHouse(selectedOption.value); // Assuming `value` here is `house_id`
+    setSelectedHouse(selectedOption); // Assuming `value` here is `house_id`
     setDeductionPoints(0);
   };
 
@@ -171,7 +171,8 @@ const AddDeduction = () => {
             value={selectedHouse}
             options={houses.map((house) => ({
               label: `${house.house_name} (${house.total_points} points)`,
-              value: house.house_id, // Use `house_id` as the value
+              house_id: house.house_id,
+              total_points: house.total_points,
             }))}
             onChange={handleSelectChange}
             width="100%"
@@ -181,6 +182,8 @@ const AddDeduction = () => {
         {"total_points" in group && selectedHouse && (
           <PointsSection>
             <p>Points to deduct: </p>
+            {group.total_points}
+            {JSON.stringify(selectedHouse)}
             <NumberInput
               value={deductionPoints}
               onChange={(value) => setDeductionPoints(Number(value))} // Ensure value is a number
