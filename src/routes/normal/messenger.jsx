@@ -93,6 +93,16 @@ const Messenger = () => {
     }
   };
 
+  const generateColorFromName = (name) => {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const color = `hsl(${hash % 360}, 75%, 60%)`;
+    return color;
+  };
+
+
   if (loading) return <Loading />;
 
   return (
@@ -149,7 +159,7 @@ const Messenger = () => {
                         message.user_id === userData.id ? "right" : "left", // Align text to the right for user's messages
                     }}
                   >
-                    <Avatar style={{ background: 'palevioletred' }} size={40}>
+        <Avatar style={{ background: generateColorFromName(message.user_id) }} size={40}>
                       {message.name[0]}
                     </Avatar>
                     <div
