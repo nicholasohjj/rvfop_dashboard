@@ -71,7 +71,7 @@ const PointsSection = styled.div`
 // Main component
 const AddDeduction = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const [houses, setHouses] = useState([]);
+  const [houses, setHouses] = useState([{ house_id: "", house_name: "Select a house", total_points: 0}]);
   const [loading, setLoading] = useState(true);
   const [group, setGroup] = useState(null);
   const [selectedHouse, setSelectedHouse] = useState(null);
@@ -89,27 +89,24 @@ const AddDeduction = () => {
   useEffect(() => {
     const init = async () => {
       try {
-        await initializeUserData();
-        if (!(userData.role === "deductor" || userData.role === "admin")) {
-          navigate("/", { replace: true });
+        await initializeUserData().then(() => {
+        if (!['deductor', 'admin'].includes(userData.role)) {
+          navigate('/', { replace: true });
         }
+      });
 
-        if (!group || !houses) {
-          const [groupData, housesData] = await Promise.all([
-            fetchGroup(),
-            fetchHouses(),
-          ]);
-          setGroup(groupData);
-          setHouses(housesData.sort((a, b) => b.total_points - a.total_points));
-        }
+        const [groupData, housesData] = await Promise.all([fetchGroup(), fetchHouses()]);
+        setGroup(groupData);
+        if (houses.length < 2) setHouses(housesData.sort((a, b) => b.total_points - a.total_points))
         setLoading(false);
       } catch (error) {
+        setError(error.message);
         console.error("Initialization error:", error);
       }
     };
 
-    init();
-  }, [userData, navigate, group, houses]); // Ensuring all dependencies are listed
+    if (!group || !houses.length > 1) init(); // Prevents refetching if already fetched
+  }, [group, houses.length, userData]); // Update dependencies
 
   const handleAddDeduction = async () => {
     const deduction = {
@@ -153,7 +150,6 @@ const AddDeduction = () => {
     setDeductionPoints(0);
   };
 
-  houses.sort((a, b) => (a.total_points > b.total_points ? -1 : 1));
   return (
     <StyledWindow windowWidth={windowWidth}>
       <WindowHeader>
@@ -169,7 +165,7 @@ const AddDeduction = () => {
 
         <GroupBox label="Select House to Deduct">
         <Select
-  value={selectedHouse ? selectedHouse.house_id : ''}
+  value={selectedHouse ? JSON.stringify(selectedHouse) : 'Select a house'}
   onChange={handleSelectChange}
   options={houses.map((house) => ({
     label: `${house.house_name} (${house.total_points} points)`,
