@@ -208,13 +208,13 @@ const Messenger = () => {
             style={{
               marginTop: "1rem",
               flex: 1,
-              height: "50vh",
               width: "100%",
             }}
           >
               <ScrollView
                 ref={scrollViewRef} 
                 style={{
+                  height: "50vh",
                   maxHeight: "50vh", 
                   overflow: "auto", 
                 }}
