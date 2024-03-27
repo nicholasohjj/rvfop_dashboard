@@ -35,7 +35,7 @@ const Messenger = () => {
   const [loading, setLoading] = useState(true);
   const [channel, setChannel] = useState(null);
   const [channels, setChannels] = useState(["General", "Random", "Help"]); // Example channel names
-  const [selectedChannel, setSelectedChannel] = useState("general"); // Default channel
+  const [selectedChannel, setSelectedChannel] = useState("General"); // Default channel
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const userData = useStore((state) => state.userData);
@@ -47,33 +47,56 @@ const Messenger = () => {
   }, [userData]);
 
   useEffect(() => {
-    let mounted = true;
+    let isSubscribed = true;
+
     const fetchMessages = async () => {
+      if (!selectedChannel) return;
+
+      console.log("Fetching messages for channel:", selectedChannel);
       const { data, error } = await supabaseClient
         .from("messages")
         .select("*")
         .eq("channel", selectedChannel.toLowerCase())
         .order("tm_created", { ascending: true })
-        .limit(50);
-      if (mounted) {
-        setMessages(data || []);
-        if (error) console.error("Error fetching messages:", error);
+        .limit(50); // Example limit, adjust based on your needs
+
+      console.log("Fetched messages", data);
+
+      if (error) {
+        console.error("Fetching messages error:", error);
+      } else if (isSubscribed) {
+        setMessages(data);
       }
     };
 
-    const subscribeToChannel = (channelName) => {
-      const channel = supabaseClient.channel(channelName).on("broadcast", { event: "chat" }, (payload) => {
-        setMessages((prev) => [...prev, payload.payload]);
-      }).subscribe();
+    const initChannel = async (channelName) => {
+      if (channel) channel.unsubscribe(); // Unsubscribe from the previous channel
 
-      return () => channel.unsubscribe();
+      // Initialize and subscribe to the new channel
+      const newChannel = supabaseClient.channel(channelName);
+      console.log("Channel created", newChannel);
+
+      console.log("Selected channel here:", selectedChannel);
+      await fetchMessages(); // Fetch messages for the selected channel
+      newChannel
+        .on("broadcast", { event: "chat" }, (payload) => {
+          // Filter or directly set messages for the selected channel
+          console.log("New message received", payload.payload);
+          setMessages((prevMessages) => [...prevMessages, payload.payload]);
+        })
+        .subscribe();
+
+      setChannel(newChannel);
+      setLoading(false);
     };
 
-    fetchMessages().then(() => setLoading(false));
-    return subscribeToChannel(selectedChannel.toLowerCase());
+    setMessages([]); // Clear messages from the previous channel
+    initChannel(selectedChannel.toLowerCase()); // Re-initialize channel subscription
 
-  }, [selectedChannel]);
-
+    return () => {
+      isSubscribed = false;
+    };
+  }, [selectedChannel]); // Dependency array includes selectedChannel
 
   useLayoutEffect(() => {
     if (scrollViewRef.current) {
@@ -140,15 +163,14 @@ const Messenger = () => {
   if (loading) return <Loading />;
 
   return (
-    <StyledWindow style={{ flex: 1, width: 320, overflow:"auto" }}>
+    <StyledWindow style={{ flex: 1, width: 320 }}>
       <StyledWindowHeader>Insieme Live Messenger</StyledWindowHeader>
       <WindowContent
         style={{
-          overflowY: "auto",
+          overflow: "auto",
           flex: 1, // Make WindowContent fill the available space
           display: "flex", // Enable flex layout
           flexDirection: "column", // Stack children vertically
-          marginBottom: "10px"
         }}
       >
         <GroupBox
@@ -158,7 +180,7 @@ const Messenger = () => {
           }}
         >
           <Select
-          defaultValue={1}
+          defaultValue={selectedChannel}
             value={selectedChannel}
             onChange={handleChannelChange}
             options={channels.map((channel) => ({
@@ -168,8 +190,7 @@ const Messenger = () => {
             width="100%"
           />
         </GroupBox>
-        Chat with anyone here from RVFOP. Messages are broadcasted to everyone on this. You can select a channel from the dropdown above to view messages from that channel. You can also send messages to the selected channel from this
-        page.
+        Chat with anyone here from RVFOP! Note: This is a public chat.
         <div>
           <Frame
             variant="field"
@@ -240,7 +261,7 @@ const Messenger = () => {
                       e.preventDefault(); // Prevent the default action to stop the form from submitting
                     }
                   }}
-                  style={{ flex: 1 }}
+                  fullWidth
                 />
                 <Button onClick={handleSend} style={{ marginLeft: 4 }}>
                   Send
