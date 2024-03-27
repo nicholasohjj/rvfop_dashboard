@@ -18,10 +18,10 @@ import Filter from "bad-words";
 import styled from "styled-components"; // Import styled-components
 
 const StyledWindowHeader = styled(WindowHeader)`
-color: white; // Adjust the text color as needed for contrast
-display: flex;
-justify-content: space-between;
-align-items: center;
+  color: white; // Adjust the text color as needed for contrast
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 const StyledWindow = styled(Window)`
@@ -43,40 +43,37 @@ const Messenger = () => {
   const filter = new Filter();
 
   useEffect(() => {
-    const init = async () => {
-      // Assuming initializeUserData() updates the user context with the fetched data
-      await initializeUserData(); // Fetch and initialize user data
-    };
-
-    if (!userData) {
-      init();
-    }
-  }, [userData]); // Add userData and navigate to dependency array
+    if (!userData) initializeUserData();
+  }, [userData]);
 
   useEffect(() => {
-    const initChannel = async (channelName) => {
-      if (channel) channel.unsubscribe(); // Unsubscribe from the previous channel
-
-      // Initialize and subscribe to the new channel
-      const newChannel = supabaseClient.channel(channelName);
-      console.log("Channel created", newChannel);
-
-      console.log("Selected channel here:", selectedChannel);
-      newChannel
-        .on("broadcast", { event: "chat" }, (payload) => {
-          // Filter or directly set messages for the selected channel
-          console.log("New message received", payload.payload);
-          setMessages((prevMessages) => [...prevMessages, payload.payload]);
-        })
-        .subscribe();
-
-      setChannel(newChannel);
-      setLoading(false);
+    let mounted = true;
+    const fetchMessages = async () => {
+      const { data, error } = await supabaseClient
+        .from("messages")
+        .select("*")
+        .eq("channel", selectedChannel.toLowerCase())
+        .order("tm_created", { ascending: true })
+        .limit(50);
+      if (mounted) {
+        setMessages(data || []);
+        if (error) console.error("Error fetching messages:", error);
+      }
     };
 
-    setMessages([]); // Clear messages from the previous channel
-    initChannel(selectedChannel.toLowerCase()); // Re-initialize channel subscription
-  }, [selectedChannel]); // Dependency array includes selectedChannel
+    const subscribeToChannel = (channelName) => {
+      const channel = supabaseClient.channel(channelName).on("broadcast", { event: "chat" }, (payload) => {
+        setMessages((prev) => [...prev, payload.payload]);
+      }).subscribe();
+
+      return () => channel.unsubscribe();
+    };
+
+    fetchMessages().then(() => setLoading(false));
+    return subscribeToChannel(selectedChannel.toLowerCase());
+
+  }, [selectedChannel]);
+
 
   useLayoutEffect(() => {
     if (scrollViewRef.current) {
@@ -97,27 +94,31 @@ const Messenger = () => {
     console.log("User data:", userData);
     console.log("Selected channel:", selectedChannel);
 
+    const payload = {
+      user_id: userData.id,
+      name: userData.profile_name,
+      message: sanitizedMessage,
+      tm_created: new Date().toLocaleString("en-US", {
+        timeZone: "Asia/Singapore",
+      }),
+    };
+
     const { error } = await channel.send({
       type: "broadcast",
       event: "chat",
-      payload: {
-        user_id: userData.id,
-        name: userData.profile_name,
-        message: sanitizedMessage,
-      },
+      payload,
     });
 
-    if (error) {
-      console.error("Sending message error:", error);
+    // post the message on messages table
+    const { data, error: postError } = await supabaseClient
+      .from("messages")
+      .insert([{ ...payload, channel: selectedChannel.toLowerCase() }])
+      .single();
+
+    if (error || postError) {
+      console.error("Sending message error:", error, postError);
     } else {
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          user_id: userData.id,
-          name: userData.profile_name,
-          message: sanitizedMessage,
-        },
-      ]);
+      setMessages((prevMessages) => [...prevMessages, payload]);
       setMessage("");
     }
   };
@@ -139,15 +140,15 @@ const Messenger = () => {
   if (loading) return <Loading />;
 
   return (
-    <StyledWindow style={{ flex: 1, width: 320 }}>
-
+    <StyledWindow style={{ flex: 1, width: 320, overflow:"auto" }}>
       <StyledWindowHeader>Insieme Live Messenger</StyledWindowHeader>
       <WindowContent
         style={{
-          overflow: "auto",
+          overflowY: "auto",
           flex: 1, // Make WindowContent fill the available space
           display: "flex", // Enable flex layout
           flexDirection: "column", // Stack children vertically
+          marginBottom: "10px"
         }}
       >
         <GroupBox
@@ -157,6 +158,7 @@ const Messenger = () => {
           }}
         >
           <Select
+          defaultValue={1}
             value={selectedChannel}
             onChange={handleChannelChange}
             options={channels.map((channel) => ({
@@ -166,8 +168,7 @@ const Messenger = () => {
             width="100%"
           />
         </GroupBox>
-        Chat with anyone here from RVFOP! Please note that your messages will
-        not be preserved; they will be automatically deleted once you leave this
+        Chat with anyone here from RVFOP. Messages are broadcasted to everyone on this. You can select a channel from the dropdown above to view messages from that channel. You can also send messages to the selected channel from this
         page.
         <div>
           <Frame
@@ -239,7 +240,7 @@ const Messenger = () => {
                       e.preventDefault(); // Prevent the default action to stop the form from submitting
                     }
                   }}
-                  fullWidth
+                  style={{ flex: 1 }}
                 />
                 <Button onClick={handleSend} style={{ marginLeft: 4 }}>
                   Send
