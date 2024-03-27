@@ -31,6 +31,18 @@ const StyledWindow = styled(Window)`
   // Add more custom styles here
 `;
 
+const MessageBubble = styled.div`
+  padding: 10px;
+  border-radius: 20px;
+  max-width: 80%;
+  background-color: ${({ isUser }) => (isUser ? "#DCF8C6" : "#ECECEC")};
+  margin-bottom: 10px;
+  text-align: left;
+  align-self: ${({ isUser }) => (isUser ? "flex-end" : "flex-start")};
+  display: inline-block;
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
+`;
+
 const Messenger = () => {
   const [loading, setLoading] = useState(true);
   const [channel, setChannel] = useState(null);
@@ -121,9 +133,7 @@ const Messenger = () => {
       user_id: userData.id,
       name: userData.profile_name,
       message: sanitizedMessage,
-      tm_created: new Date().toLocaleString("en-US", {
-        timeZone: "Asia/Singapore",
-      }),
+      tm_created: new Date().toISOString(),
     };
 
     const { error } = await channel.send({
@@ -180,7 +190,7 @@ const Messenger = () => {
           }}
         >
           <Select
-          defaultValue={selectedChannel}
+            defaultValue={selectedChannel}
             value={selectedChannel}
             onChange={handleChannelChange}
             options={channels.map((channel) => ({
@@ -232,21 +242,28 @@ const Messenger = () => {
                     >
                       {message.name[0]}
                     </Avatar>
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column", // Stack name and message content vertically
-                        alignItems:
-                          message.user_id === userData.id
-                            ? "flex-end"
-                            : "flex-start", // Align items to the end if it's the user's message
-                      }}
-                    >
+                    <MessageBubble isUser={message.user_id === userData.id}>
                       <div>
                         <strong>{message.name}</strong>
                       </div>
                       <div>{message.message}</div>
-                    </div>
+                      <div
+                        style={{
+                          fontSize: "0.75rem",
+                          marginTop: "5px",
+                          opacity: 0.6,
+                        }}
+                      >
+                        {new Date(message.tm_created).toLocaleTimeString(
+                          "en-US",
+                          {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: false, // Use `true` for AM/PM format, `false` for 24-hour format
+                          }
+                        )}{" "}
+                      </div>
+                    </MessageBubble>
                   </div>
                 ))}
               </ScrollView>
