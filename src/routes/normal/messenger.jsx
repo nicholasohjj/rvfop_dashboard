@@ -34,7 +34,8 @@ const StyledWindow = styled(Window)`
 const MessageBubble = styled.div`
   padding: 10px;
   border-radius: 20px;
-  max-width: 80%;
+  max-width: 80%; /* Adjust based on your layout */
+  word-break: break-word; /* Ensure long words do not overflow */
   background-color: ${({ isUser }) => (isUser ? "#DCF8C6" : "#ECECEC")};
   margin-bottom: 10px;
   text-align: left;
@@ -214,29 +215,30 @@ const Messenger = () => {
           >
             <div>
               <ScrollView
-                ref={scrollViewRef} // Attach the ref to the ScrollView
+                ref={scrollViewRef} 
                 style={{
-                  height: "50vh",
-                  overflow: "auto", // Keep existing styles
+                  maxHeight: "50vh", 
+                  overflow: "auto", 
                 }}
               >
                 {messages.map((message, index) => (
                   <div
-                    key={index} // It's better to use a unique identifier like message.id if available
+                    key={index} 
                     style={{
-                      display: "flex", // Aligns avatar and message content horizontally
+                      display: "flex", 
                       flexDirection:
-                        message.user_id === userData.id ? "row-reverse" : "row", // Conditionally change direction
-                      alignItems: "flex-start", // Align items at the start of the cross axis
-                      gap: "10px", // Adds space between avatar and text
-                      marginBottom: "10px", // Adds space between messages
+                        message.user_id === userData.id ? "row-reverse" : "row",
+                      alignItems: "flex-start",
+                      gap: "10px", 
+                      marginBottom: "10px", 
                       textAlign:
-                        message.user_id === userData.id ? "right" : "left", // Align text to the right for user's messages
+                        message.user_id === userData.id ? "right" : "left",
                     }}
                   >
                     <Avatar
                       style={{
                         background: generateColorFromName(message.user_id),
+                        flexShrink: 0, 
                       }}
                       size={40}
                     >
@@ -259,7 +261,7 @@ const Messenger = () => {
                           {
                             hour: "2-digit",
                             minute: "2-digit",
-                            hour12: false, // Use `true` for AM/PM format, `false` for 24-hour format
+                            hour12: false, 
                           }
                         )}{" "}
                       </div>
@@ -275,7 +277,7 @@ const Messenger = () => {
                   onKeyPress={(e) => {
                     if (e.key === "Enter") {
                       handleSend();
-                      e.preventDefault(); // Prevent the default action to stop the form from submitting
+                      e.preventDefault(); 
                     }
                   }}
                   fullWidth
