@@ -182,6 +182,7 @@ const Messenger = () => {
           flex: 1, // Make WindowContent fill the available space
           display: "flex", // Enable flex layout
           flexDirection: "column", // Stack children vertically
+          marginBottom: "20px",
         }}
       >
         <GroupBox
@@ -202,18 +203,15 @@ const Messenger = () => {
           />
         </GroupBox>
         Chat with anyone here from RVFOP! Note: This is a public chat.
-        <div>
           <Frame
             variant="field"
             style={{
               marginTop: "1rem",
-              padding: "1rem",
               flex: 1,
-              height: "60vh",
+              height: "50vh",
               width: "100%",
             }}
           >
-            <div>
               <ScrollView
                 ref={scrollViewRef} 
                 style={{
@@ -286,9 +284,7 @@ const Messenger = () => {
                   Send
                 </Button>
               </div>
-            </div>
           </Frame>
-        </div>
       </WindowContent>
     </StyledWindow>
   );
