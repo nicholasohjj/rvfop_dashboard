@@ -145,52 +145,62 @@ const Games = () => {
     >
       <WindowHeader>Awarded Games</WindowHeader>
       <WindowContent>
-        <div style={{ marginTop: 10 }}>
-          {awardedGames.length > 0 ? (
-            <div style={{ overflowX: "auto", width: "100%", height: "auto" }}>
-              <ScrollView style={{ width: "100%", height: "400px" }}>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableHeadCell>Day</TableHeadCell>
-                      <TableHeadCell>Activity</TableHeadCell>
-                      <TableHeadCell>Group</TableHeadCell>
-                      <TableHeadCell>Points Awarded</TableHeadCell>
-                      <TableHeadCell>Details</TableHeadCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {awardedGames.map((game, index) => (
-                      <TableRow key={index}>
-                        <TableDataCell>
-                          {formatSGT(game.tm_created)}
-                        </TableDataCell>
-                        <TableDataCell>{game.activity_name}</TableDataCell>
-                        <TableDataCell>{game.group_name}</TableDataCell>
-                        <TableDataCell>{game.points_earned}</TableDataCell>
-                        <TableDataCell
-                          style={{
-                            gap: 16,
-                            display: "flex",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <Button onClick={() => handleViewButtonClick(game)}>
-                            View
-                          </Button>
-                        </TableDataCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </ScrollView>
-            </div>
-          ) : (
-            <div style={{ textAlign: "center", margin: "20px 0" }}>
-              No games awarded.
-            </div>
-          )}
-        </div>
+        {awardedGames.length > 0 ? (
+          <ScrollView
+            style={{ maxWidth: "100vw", maxHeight: "70vh", overflow: "auto" }}
+          >
+            <Table
+              style={{ maxWidth: "100vw", maxHeight: "70vh", overflow: "auto" }}
+            >
+              <TableHead
+                style={{
+                  maxWidth: "100vw",
+                  maxHeight: "70vh",
+                  overflow: "auto",
+                }}
+              >
+                <TableRow>
+                  <TableHeadCell>Day</TableHeadCell>
+                  <TableHeadCell>Activity</TableHeadCell>
+                  <TableHeadCell>Group</TableHeadCell>
+                  <TableHeadCell>Points Awarded</TableHeadCell>
+                  <TableHeadCell>Details</TableHeadCell>
+                </TableRow>
+              </TableHead>
+              <TableBody
+                style={{
+                  maxWidth: "100vw",
+                  maxHeight: "70vh",
+                  overflow: "auto",
+                }}
+              >
+                {awardedGames.map((game, index) => (
+                  <TableRow key={index}>
+                    <TableDataCell>{formatSGT(game.tm_created)}</TableDataCell>
+                    <TableDataCell>{game.activity_name}</TableDataCell>
+                    <TableDataCell>{game.group_name}</TableDataCell>
+                    <TableDataCell>{game.points_earned}</TableDataCell>
+                    <TableDataCell
+                      style={{
+                        gap: 16,
+                        display: "flex",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Button onClick={() => handleViewButtonClick(game)}>
+                        View
+                      </Button>
+                    </TableDataCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </ScrollView>
+        ) : (
+          <div style={{ textAlign: "center", margin: "20px 0" }}>
+            No games awarded.
+          </div>
+        )}
         {isModalOpen && (
           <div
             ref={constraintsRef}
