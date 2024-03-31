@@ -224,7 +224,6 @@ const Messenger = () => {
             ref={scrollViewRef}
             style={{
               height: "50vh",
-              maxHeight: "50vh",
               overflow: "auto",
             }}
           >
