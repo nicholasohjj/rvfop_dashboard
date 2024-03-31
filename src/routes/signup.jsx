@@ -15,6 +15,7 @@ import { supabaseClient } from "../supabase/supabaseClient";
 import styled from "styled-components";
 import { fetchGroups } from "../supabase/services";
 import signup from "../assets/signup.png";
+import help from "../assets/help.png";
 // Styled Close Icon Component
 const CloseIcon = styled.div`
   display: inline-block;
@@ -56,13 +57,13 @@ const StyledWindowHeader = styled(WindowHeader)`
 
 export const Signup = () => {
   const [name, setName] = useState(""); 
-  const [email, setemail] = useState(null);
-  const [password, setPassword] = useState(null);
+  const [email, setemail] = useState("");
+  const [password, setPassword] = useState("");
   const [selectedGroup, setSelectedGroup] = useState(null); // Add selectedGroup state
   const [selectedRole, setSelectedRole] = useState(null); // Add selectedRole state
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState("");
   const [groups, setGroups] = useState([]); // Add groups state
   const [isSending, setIsSending] = useState(false); // Add isSending state
   const constraintsRef = useRef(null);
@@ -253,7 +254,8 @@ export const Signup = () => {
       >
         <Window style={windowStyle}>
           <WindowHeader>
-            <span>Sign up</span>
+            <span>Sign up
+            </span>
           </WindowHeader>
           <div style={{ marginTop: 8 }}>
             <Tooltip text="Purr! 🐱‍" enterDelay={100} leaveDelay={100}>
@@ -299,6 +301,7 @@ export const Signup = () => {
                   }}
                 />
                 <br />
+                
                 <GroupBox label="Select your Role">
                   <Select
                     defaultValue={2}
@@ -376,7 +379,7 @@ export const Signup = () => {
                 <span>{error.name} ⚠️</span>
                 <Button
                   onClick={() => {
-                    setError(null);
+                    setError("");
                     setIsModalOpen(false);
                     if (error.type === "success") {
                       navigate("/", { replace: true }); // Use navigate to redirect for success

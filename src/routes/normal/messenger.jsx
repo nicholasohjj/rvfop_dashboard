@@ -71,7 +71,6 @@ const Messenger = () => {
         .select("*")
         .eq("channel", selectedChannel.toLowerCase())
         .order("tm_created", { ascending: true })
-        .limit(50); // Example limit, adjust based on your needs
 
       console.log("Fetched messages", data);
 
@@ -112,12 +111,16 @@ const Messenger = () => {
   }, [selectedChannel]); // Dependency array includes selectedChannel
 
   useLayoutEffect(() => {
-    if (scrollViewRef.current) {
-      const scrollElement = scrollViewRef.current;
-      // This line ensures the scroll position is moved to the bottom
-      scrollElement.scrollTop = scrollElement.scrollHeight;
-    }
-  }, [messages]); // Runs this effect after messages update
+    const scroll = () => {
+      if (scrollViewRef.current) {
+        const scrollElement = scrollViewRef.current;
+        scrollElement.scrollTop = scrollElement.scrollHeight;
+      }
+    };
+
+    // Execute scroll to bottom on component mount and messages update
+    scroll();
+  }, [messages.length]); // Dependency on messages.length ensures scroll updates with new messages
 
   const handleChange = (e) => setMessage(e.target.value);
 
@@ -171,6 +174,13 @@ const Messenger = () => {
     return color;
   };
 
+  const isNewDay = (currentMessageDate, previousMessageDate) => {
+    const currentDate = new Date(currentMessageDate).setHours(0, 0, 0, 0);
+    const previousDate = new Date(previousMessageDate).setHours(0, 0, 0, 0);
+    return currentDate > previousDate;
+  };
+  
+
   if (loading) return <Loading />;
 
   return (
@@ -219,53 +229,66 @@ const Messenger = () => {
                   overflow: "auto", 
                 }}
               >
-                {messages.map((message, index) => (
-                  <div
-                    key={index} 
-                    style={{
-                      display: "flex", 
-                      flexDirection:
-                        message.user_id === userData.id ? "row-reverse" : "row",
-                      alignItems: "flex-start",
-                      gap: "10px", 
-                      marginBottom: "10px", 
-                      textAlign:
-                        message.user_id === userData.id ? "right" : "left",
-                    }}
-                  >
-                    <Avatar
-                      style={{
-                        background: generateColorFromName(message.user_id),
-                        flexShrink: 0, 
-                      }}
-                      size={40}
-                    >
-                      {message.name[0]}
-                    </Avatar>
-                    <MessageBubble isUser={message.user_id === userData.id}>
-                      <div>
-                        <strong>{message.name}</strong>
-                      </div>
-                      <div>{message.message}</div>
-                      <div
-                        style={{
-                          fontSize: "0.75rem",
-                          marginTop: "5px",
-                          opacity: 0.6,
-                        }}
-                      >
-                        {new Date(message.tm_created).toLocaleTimeString(
-                          "en-US",
-                          {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            hour12: false, 
-                          }
-                        )}{" "}
-                      </div>
-                    </MessageBubble>
-                  </div>
-                ))}
+{messages.map((message, index) => {
+  const previousMessage = messages[index - 1];
+  const isStartOfNewDay = index === 0 || (previousMessage && isNewDay(message.tm_created, previousMessage.tm_created));
+
+  // Format the date as "30 March"
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return `${date.getDate()} ${date.toLocaleString('default', { month: 'long' })}`;
+  };
+
+  return (
+    <React.Fragment key={index}>
+      {isStartOfNewDay && (
+        <div style={{ width: "100%", textAlign: "center", margin: "10px 0" }}>
+          <strong>{formatDate(message.tm_created)}</strong>
+        </div>
+      )}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: message.user_id === userData.id ? "row-reverse" : "row",
+          alignItems: "flex-start",
+          gap: "10px",
+          marginBottom: "10px",
+          textAlign: message.user_id === userData.id ? "right" : "left",
+        }}
+      >
+        <Avatar
+          style={{
+            background: generateColorFromName(message.user_id),
+            flexShrink: 0,
+          }}
+          size={40}
+        >
+          {message.name[0]}
+        </Avatar>
+        <MessageBubble isUser={message.user_id === userData.id}>
+          <div>
+            <strong>{message.name}</strong>
+          </div>
+          <div>{message.message}</div>
+          <div
+            style={{
+              fontSize: "0.75rem",
+              marginTop: "5px",
+              opacity: 0.6,
+            }}
+          >
+            {new Date(message.tm_created).toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+            })}{" "}
+          </div>
+        </MessageBubble>
+      </div>
+    </React.Fragment>
+  );
+})}
+
               </ScrollView>
               <div style={{ display: "flex" }}>
                 <TextInput
