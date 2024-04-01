@@ -185,7 +185,7 @@ const Messenger = () => {
     <StyledWindow style={{ flex: 1, width: 320 }}>
       <StyledWindowHeader
       onClick={() => {
-        navigate("/match")
+        navigate("/match", { replace: true })
       }}
       >Insieme Live Messenger</StyledWindowHeader>
       <WindowContent

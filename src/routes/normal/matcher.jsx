@@ -17,6 +17,7 @@ import { useStore, initializeUserData } from "../../context/userContext";
 import { supabaseClient } from "../../supabase/supabaseClient";
 import Filter from "bad-words";
 import styled from "styled-components"; // Import styled-components
+import { useNavigate } from "react-router-dom";
 
 const StyledWindowHeader = styled(WindowHeader)`
   color: white; // Adjust the text color as needed for contrast
@@ -56,6 +57,7 @@ const Matcher = () => {
   const userData = useStore((state) => state.userData);
   const scrollViewRef = useRef();
   const filter = new Filter();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!userData) initializeUserData();
@@ -196,7 +198,11 @@ const Matcher = () => {
 
   return (
     <StyledWindow style={{ flex: 1, width: 320 }}>
-      <StyledWindowHeader>Insieme Live Messenger (Matcher)</StyledWindowHeader>
+      <StyledWindowHeader
+      onClick={
+        () => {
+          navigate("/message", { replace: true });
+      }}>Insieme Live Messenger (Matcher)</StyledWindowHeader>
       <WindowContent
         style={{
           overflow: "auto",
