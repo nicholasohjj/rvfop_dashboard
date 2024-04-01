@@ -202,7 +202,7 @@ const Matcher = () => {
       onClick={
         () => {
           navigate("/message", { replace: true });
-      }}>Insieme Live Messenger (Matcher)</StyledWindowHeader>
+      }}>Insieme Live Messenger ❤️</StyledWindowHeader>
       <WindowContent
         style={{
           overflow: "auto",
