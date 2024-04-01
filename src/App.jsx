@@ -21,6 +21,7 @@ import Deductions from "./routes/deductor/deductions";
 import { Signup } from "./routes/signup";
 import Games from "./routes/gm/games";
 import Messenger from "./routes/normal/messenger";
+import Matcher from "./routes/normal/matcher";
 const App = () => {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -63,6 +64,10 @@ const App = () => {
         {
           path: "/",
           element: <Navigate to="/scoreboard" replace />,
+        },
+        {
+          path: "/match",
+          element: <Matcher />,
         },
         {
           path: "/scoreboard",
