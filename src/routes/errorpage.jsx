@@ -10,7 +10,6 @@ import {
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import styled from "styled-components";
-import errorlogo from "../assets/404.png";
 
 const StyledWindowHeader = styled(WindowHeader)`
   background-color: #ff0000; // Change this hex code to your desired color
@@ -90,7 +89,7 @@ const ErrorPage = () => {
           </StyledWindowHeader>
           <div style={{ marginTop: 8 }}>
             <Tooltip text="Woof! 🐶" enterDelay={100} leaveDelay={100}>
-              <img src={errorlogo} alt="rvrc-logo" width={100} />
+              <img src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/error.png" alt="rvrc-logo" width={100} />
             </Tooltip>
           </div>
           <WindowContent>

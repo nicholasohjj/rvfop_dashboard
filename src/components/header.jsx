@@ -2,9 +2,7 @@ import { useState, useEffect } from "react";
 import { AppBar, Toolbar, Button, MenuList, MenuListItem } from "react95";
 import { useNavigate } from "react-router-dom";
 import { useStore, initializeUserData } from "../context/userContext";
-import passwordLogo from "../assets/password.png";
-import addactivityLogo from "../assets/addactivity.png";
-import adddeductionLogo from "../assets/adddeduction.png";
+
 export const Header = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -37,7 +35,7 @@ export const Header = () => {
           >
             <MenuListItem onClick={() => navigate("/update")}>
               <img
-                src={passwordLogo}
+                src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/password.png"
                 alt="password"
                 style={{ height: "20px", marginRight: 4 }}
               />
@@ -46,7 +44,7 @@ export const Header = () => {
             {(userData.role == "admin" || userData.role == "gm") && (
               <MenuListItem onClick={() => navigate("/addactivity")}>
                 <img
-                  src={addactivityLogo}
+                  src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/sign/rvfop/addactivity.png?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJydmZvcC9hZGRhY3Rpdml0eS5wbmciLCJpYXQiOjE3MTE5NDc5NTIsImV4cCI6MjAyNzMwNzk1Mn0.tBntdvbPBIdWB9Ho16a18nbwW167CwdlYnRAMIq4efw"
                   alt="add_activity"
                   style={{ height: "20px", marginRight: 4 }}
                 />
@@ -56,7 +54,7 @@ export const Header = () => {
             {userData?.role == "admin" && (
               <MenuListItem onClick={() => navigate("/adddeduction")}>
                 <img
-                  src={adddeductionLogo}
+                  src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/adddeduction.png"
                   alt="add_activity"
                   style={{ height: "20px", marginRight: 4 }}
                 />

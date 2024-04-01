@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { ProgressBar } from "react95";
 import { useNavigate } from "react-router-dom";
-import logo from '../assets/logo.png'
 const Loading = () => {
   const [percent, setPercent] = useState(0);
   const navigate = useNavigate();
@@ -48,13 +47,13 @@ const Loading = () => {
         height: "100vh", // Ensure it covers full height
         padding: 0, // Remove any default padding
         boxSizing: "border-box", // Ensure padding and border are included in total width and height
-        minHeight: "90vh",
+        minHeight: "90vh",  
         maxHeight: "90vh",
         paddingTop: "48px",
       }}
     >
       <img
-        src={logo}
+        src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/logo.png"
         alt="RVRC Logo"
         style={{ marginBottom: "20px", width: "20%" }}
       />

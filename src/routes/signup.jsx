@@ -14,8 +14,6 @@ import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { supabaseClient } from "../supabase/supabaseClient";
 import styled from "styled-components";
 import { fetchGroups } from "../supabase/services";
-import signup from "../assets/signup.png";
-import help from "../assets/help.png";
 // Styled Close Icon Component
 const CloseIcon = styled.div`
   display: inline-block;
@@ -260,7 +258,7 @@ export const Signup = () => {
           <div style={{ marginTop: 8 }}>
             <Tooltip text="Purr! 🐱‍" enterDelay={100} leaveDelay={100}>
               <img
-                src={signup}
+                src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/signup.png"
                 alt="rvrc-logo"
                 width={100}
               />

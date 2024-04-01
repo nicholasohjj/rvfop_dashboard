@@ -16,6 +16,7 @@ import { useStore, initializeUserData } from "../../context/userContext";
 import { supabaseClient } from "../../supabase/supabaseClient";
 import Filter from "bad-words";
 import styled from "styled-components"; // Import styled-components
+import { useNavigate } from "react-router-dom";
 
 const StyledWindowHeader = styled(WindowHeader)`
   color: white; // Adjust the text color as needed for contrast
@@ -54,6 +55,7 @@ const Messenger = () => {
   const userData = useStore((state) => state.userData);
   const scrollViewRef = useRef();
   const filter = new Filter();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!userData) initializeUserData();
@@ -86,14 +88,11 @@ const Messenger = () => {
 
       // Initialize and subscribe to the new channel
       const newChannel = supabaseClient.channel(channelName);
-      console.log("Channel created", newChannel);
 
-      console.log("Selected channel here:", selectedChannel);
       await fetchMessages(); // Fetch messages for the selected channel
       newChannel
         .on("broadcast", { event: "chat" }, (payload) => {
           // Filter or directly set messages for the selected channel
-          console.log("New message received", payload.payload);
           setMessages((prevMessages) => [...prevMessages, payload.payload]);
         })
         .subscribe();
@@ -184,7 +183,11 @@ const Messenger = () => {
 
   return (
     <StyledWindow style={{ flex: 1, width: 320 }}>
-      <StyledWindowHeader>Insieme Live Messenger</StyledWindowHeader>
+      <StyledWindowHeader
+      onClick={() => {
+        navigate("/match")
+      }}
+      >Insieme Live Messenger</StyledWindowHeader>
       <WindowContent
         style={{
           overflow: "auto",

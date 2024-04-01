@@ -3,13 +3,7 @@ import { AppBar, Toolbar, Button, MenuList, MenuListItem } from "react95";
 import { useNavigate } from "react-router-dom";
 import { supabaseClient } from "../supabase/supabaseClient";
 import { useStore, initializeUserData } from "../context/userContext";
-import logo from "../assets/logo.png";
-import messengerLogo from "../assets/messenger.png";
-import deductionLogo from "../assets/deduction.png";
-import gamesLogo from "../assets/games.png";
-import scoreboardLogo from "../assets/leaderboard.png";
-import progressLogo from "../assets/progress.png";
-import logoutLogo from "../assets/logout.png";
+
 export const Footer = () => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
@@ -44,7 +38,7 @@ export const Footer = () => {
             style={{ fontWeight: "bold" }}
           >
             <img
-              src={logo}
+              src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/logo.png"
               alt="rvrc-logo"
               style={{ height: "20px", marginRight: 4 }}
             />
@@ -60,7 +54,7 @@ export const Footer = () => {
             >
               <MenuListItem onClick={() => handleNavigate("/scoreboard")}>
                 <img
-                  src={scoreboardLogo}
+                  src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/scoreboard.png"
                   alt="scoreboard_logo"
                   style={{ height: "20px", marginRight: 4 }}
                 />
@@ -71,7 +65,7 @@ export const Footer = () => {
                 userData.role == "deductor") && (
                 <MenuListItem onClick={() => handleNavigate("/progress")}>
                   <img
-                    src={progressLogo}
+                    src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/progress.png"
                     alt="progress_logo"
                     style={{ height: "20px", marginRight: 4 }}
                   />
@@ -83,7 +77,7 @@ export const Footer = () => {
                 userData?.role === "deductor") && (
                 <MenuListItem onClick={() => handleNavigate("/deductions")}>
                   <img
-                    src={deductionLogo}
+                    src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/deduction.png"
                     alt="deduction_logo"
                     style={{ height: "20px", marginRight: 4 }}
                   />
@@ -93,7 +87,7 @@ export const Footer = () => {
               {(userData?.role == "admin" || userData?.role == "gm") && (
                 <MenuListItem onClick={() => handleNavigate("/games")}>
                   <img
-                    src={gamesLogo}
+                    src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/games.png"
                     alt="game_logo"
                     style={{ height: "20px", marginRight: 4 }}
                   />
@@ -102,7 +96,7 @@ export const Footer = () => {
               )}
               <MenuListItem onClick={() => handleNavigate("/message")}>
                 <img
-                  src={messengerLogo}
+                  src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/messenger.png"
                   alt="messenger_logo"
                   style={{ height: "20px", marginRight: 4 }}
                 />
@@ -111,7 +105,7 @@ export const Footer = () => {
 
               <MenuListItem onClick={() => handleLogout()}>
               <img
-                    src={logoutLogo}
+                    src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/logout.png"
                     alt="logout_logo"
                     style={{ height: "20px", marginRight: 4 }}
                   />

@@ -6,7 +6,6 @@ import { useStore, initializeUserData } from "./context/userContext";
 import { useEffect, useCallback, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import './style.css'; // Make sure this points to your CSS file
-import cat from './assets/404.png'
 
 const modalVariants = {
   hidden: {
@@ -88,7 +87,7 @@ export const Layout = () => {
       <ContentArea>
           {showCat && (
             <CatAnimation>
-              <img src={cat} alt="Dashing Cat" style={{ width: "100px" }} />
+              <img src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/error.png" alt="Dashing Cat" style={{ width: "100px" }} />
             </CatAnimation>
           )}
           <Outlet />

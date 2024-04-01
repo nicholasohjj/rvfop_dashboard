@@ -206,7 +206,16 @@ const Matcher = () => {
           marginBottom: "20px",
         }}
       >
+        <div
+        style={{
+          margin: "10px",
+        }}>
+        Love is in the air! Find your match and start chatting.
+        </div>
         <Button
+          style={{
+            margin: "10px",
+          }}
         onClick={handleMatch}
         >
           {!matching ? "Match me!" : "Stop matching"}
