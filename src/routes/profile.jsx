@@ -1,42 +1,9 @@
 import { useState, useRef, useEffect } from "react";
-import { Window, WindowHeader, WindowContent, Avatar, Button } from "react95";
+import { Window, Hourglass, WindowHeader, WindowContent, Avatar, Button } from "react95";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { supabaseClient } from "../supabase/supabaseClient";
 import styled from "styled-components";
 import { fetchUser } from "../supabase/services";
-
-// Styled Close Icon Component
-const CloseIcon = styled.div`
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-  transform: rotateZ(45deg);
-  position: relative;
-
-  &:before,
-  &:after {
-    content: "";
-    position: absolute;
-    background: ${({ theme }) => theme.materialText}; 
-  }
-
-  &:before {
-    height: 100%;
-    width: 3px;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  &:after {
-    height: 3px;
-    width: 100%;
-    left: 0px;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-`;
 
 const StyledWindowHeader = styled(WindowHeader)`
   background-color: #ff0000;
@@ -110,10 +77,21 @@ export const Profile = () => {
         <Window style={windowStyle}>
           <StyledWindowHeader>
             <span>My Profile</span>
-            <CloseIcon />
           </StyledWindowHeader>
           <WindowContent>
-            {!user && <div>Loading...</div>}
+            {!user && (
+                      <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      Loading...
+                      <Hourglass size={32} style={{ margin: 20 }} />
+                    </div>
+            )}
             {user && (
               <div
                 style={{
