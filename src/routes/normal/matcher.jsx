@@ -129,12 +129,51 @@ const Matcher = () => {
   const handleChange = (e) => setMessage(e.target.value);
 
   const handleMatch = async () => {
-    if (matching == false) {
-      setMatching(true);
-      console.log("Matching user:", userData);
-    } else {
-      setMatching(false);
-      console.log("Stopping matching user:", userData);
+    try {
+      if (!matching) {
+        setMatching(true);
+        setTimeout(() => {
+          console.log("Navigating to the video");
+          window.location.href =
+            "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/Rick%20Astley%20-%20Never%20Gonna%20Give%20You%20Up%20(Official%20Music%20Video).mp4?t=2024-04-08T06%3A12%3A18.440Z";
+        }, 1000);
+        
+        const { data: matches, error: selectError } = await supabaseClient
+          .from("matches")
+          .select("*")
+          .or("user1_id.is.null,user2_id.is.null")
+          .neq("user1_id", userData.id)
+          .neq("user2_id", userData.id)
+          .limit(1);
+
+        if (selectError) {
+          throw new Error(
+            "Error while fetching matches: " + selectError.message
+          );
+        }
+
+        if (matches.length === 0) {
+          const { data: insertedData, error: insertError } =
+            await supabaseClient
+              .from("matches")
+              .insert([{ user1_id: userData.id }])
+              .single();
+          if (insertError) {
+            throw new Error(
+              "Error while inserting match: " + insertError.message
+            );
+          }
+          console.log("No matches found");
+        } else {
+          setMatched(true);
+
+        }
+      } else {
+        setMatching(false);
+        console.log("Stopping matching user:", userData);
+      }
+    } catch (error) {
+      console.error("Error:", error);
     }
   };
 
@@ -174,11 +213,6 @@ const Matcher = () => {
     }
   };
 
-  const handleChannelChange = (e) => {
-    setSelectedChannel(e.value);
-    setMessages([]); // Clear messages when changing channels
-  };
-
   const generateColorFromName = (name) => {
     let hash = 0;
     for (let i = 0; i < name.length; i++) {
@@ -199,10 +233,12 @@ const Matcher = () => {
   return (
     <StyledWindow style={{ flex: 1, width: 320 }}>
       <StyledWindowHeader
-      onClick={
-        () => {
+        onClick={() => {
           navigate("/message", { replace: true });
-      }}>Insieme Live Messenger ❤️</StyledWindowHeader>
+        }}
+      >
+        Insieme Live Messenger ❤️
+      </StyledWindowHeader>
       <WindowContent
         style={{
           overflow: "auto",
@@ -213,146 +249,35 @@ const Matcher = () => {
         }}
       >
         <div
-        style={{
-          margin: "10px",
-        }}>
-        Love is in the air! Find your match and start chatting.
+          style={{
+            margin: "10px",
+          }}
+        >
+          Love is in the air! Find your match and start chatting.
         </div>
         <Button
           style={{
             margin: "10px",
           }}
-        onClick={handleMatch}
+          onClick={handleMatch}
         >
           {!matching ? "Match me!" : "Stop matching"}
         </Button>
         {!matched && matching && (
           <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            height: "50vh",
-          
-          }}>
-          Finding a match for you...
-          <Hourglass size={32} style={{ margin: 20 }} />
-          </div>
-        )}
-        {matched && (
-          
-        <Frame
-          variant="field"
-          style={{
-            marginTop: "1rem",
-            flex: 1,
-            width: "100%",
-          }}
-        >
-          <ScrollView
-            ref={scrollViewRef}
             style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
               height: "50vh",
-              overflow: "auto",
             }}
           >
-            {messages.map((message, index) => {
-              const previousMessage = messages[index - 1];
-              const isStartOfNewDay =
-                index === 0 ||
-                (previousMessage &&
-                  isNewDay(message.tm_created, previousMessage.tm_created));
-
-              // Format the date as "30 March"
-              const formatDate = (dateString) => {
-                const date = new Date(dateString);
-                return `${date.getDate()} ${date.toLocaleString("default", {
-                  month: "long",
-                })}`;
-              };
-
-              return (
-                <React.Fragment key={index}>
-                  {isStartOfNewDay && (
-                    <div
-                      style={{
-                        width: "100%",
-                        textAlign: "center",
-                        margin: "10px 0",
-                      }}
-                    >
-                      <strong>{formatDate(message.tm_created)}</strong>
-                    </div>
-                  )}
-                  <div
-                    style={{
-                      padding: "10px",
-                      display: "flex",
-                      flexDirection:
-                        message.user_id === userData.id ? "row-reverse" : "row",
-                      alignItems: "flex-start",
-                      gap: "10px",
-                      marginBottom: "10px",
-                      textAlign:
-                        message.user_id === userData.id ? "right" : "left",
-                    }}
-                  >
-                    <Avatar
-                      style={{
-                        background: generateColorFromName(message.user_id),
-                        flexShrink: 0,
-                      }}
-                      size={40}
-                    >
-                      {message.name[0]}
-                    </Avatar>
-                    <MessageBubble isUser={message.user_id === userData.id}>
-                      <div>
-                        <strong>{message.name}</strong>
-                      </div>
-                      <div>{message.message}</div>
-                      <div
-                        style={{
-                          fontSize: "0.75rem",
-                          marginTop: "5px",
-                          opacity: 0.6,
-                        }}
-                      >
-                        {new Date(message.tm_created).toLocaleTimeString(
-                          "en-US",
-                          {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            hour12: false,
-                          }
-                        )}{" "}
-                      </div>
-                    </MessageBubble>
-                  </div>
-                </React.Fragment>
-              );
-            })}
-          </ScrollView>
-          <div style={{ display: "flex" }}>
-            <TextInput
-              value={message}
-              placeholder="Type here..."
-              onChange={handleChange}
-              onKeyPress={(e) => {
-                if (e.key === "Enter") {
-                  handleSend();
-                  e.preventDefault();
-                }
-              }}
-              fullWidth
-            />
-            <Button onClick={handleSend} style={{ marginLeft: 4 }}>
-              Send
-            </Button>
+            Finding a match for you...
+            <Hourglass size={32} style={{ margin: 20 }} />
           </div>
-        </Frame>
         )}
+      
       </WindowContent>
     </StyledWindow>
   );
