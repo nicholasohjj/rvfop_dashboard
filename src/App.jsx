@@ -22,6 +22,7 @@ import { Signup } from "./routes/signup";
 import Games from "./routes/gm/games";
 import Messenger from "./routes/normal/messenger";
 import Matcher from "./routes/normal/matcher";
+import { Profile } from "./routes/profile";
 const App = () => {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -131,6 +132,16 @@ const App = () => {
         <Loading />
       ) : session ? (
         <Update />
+      ) : (
+        <Navigate to="/login" replace />
+      ),
+    },
+    {
+      path: "/profile",
+      element: loading ? (
+        <Loading />
+      ) : session ? (
+        <Profile />
       ) : (
         <Navigate to="/login" replace />
       ),

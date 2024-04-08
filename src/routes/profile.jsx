@@ -1,0 +1,167 @@
+import { useState, useRef, useEffect } from "react";
+import { Window, WindowHeader, WindowContent, Avatar, Button } from "react95";
+import { motion, useMotionValue, useTransform } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { supabaseClient } from "../supabase/supabaseClient";
+import styled from "styled-components";
+import { fetchUser } from "../supabase/services";
+
+// Styled Close Icon Component
+const CloseIcon = styled.div`
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  transform: rotateZ(45deg);
+  position: relative;
+
+  &:before,
+  &:after {
+    content: "";
+    position: absolute;
+    background: ${({ theme }) => theme.materialText}; 
+  }
+
+  &:before {
+    height: 100%;
+    width: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  &:after {
+    height: 3px;
+    width: 100%;
+    left: 0px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+`;
+
+const StyledWindowHeader = styled(WindowHeader)`
+  background-color: #ff0000;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+export const Profile = () => {
+  const [user, setUser] = useState("");
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [error, setError] = useState(null);
+  const dragX = useMotionValue(0);
+  const dragxError = useMotionValue(0);
+
+  const rotateValue = useTransform(dragX, [-100, 100], [-10, 10]);
+  const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]);
+
+  const constraintsRef = useRef(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+    Promise.all([fetchUser()]).then(([user]) => {
+      setUser(user);
+    });
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const handleReturnHome = () => {
+    navigate("/");
+  };
+
+  const windowStyle = {
+    width: windowWidth > 500 ? 500 : "90%",
+    margin: "0%",
+  };
+
+  const generateColorFromName = (name) => {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const color = `hsl(${hash % 360}, 75%, 60%)`;
+    return color;
+  };
+
+  return (
+    <div
+      ref={constraintsRef}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        textAlign: "center",
+        minHeight: "100vh",
+        backgroundColor: "rgb(0, 128, 128)",
+      }}
+    >
+      <motion.div
+        drag
+        dragConstraints={constraintsRef}
+        style={{ rotate: rotateValue, x: dragX }} 
+      >
+        <Window style={windowStyle}>
+          <StyledWindowHeader>
+            <span>My Profile</span>
+            <CloseIcon />
+          </StyledWindowHeader>
+          <WindowContent>
+            {!user && <div>Loading...</div>}
+            {user && (
+              <div
+                style={{
+                  padding: "10px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "10px",
+                  marginBottom: "10px",
+                }}
+              >
+                <div
+                  style={{
+                    padding: "10px",
+                    display: "flex",
+                    flexDirection: "row",
+                    gap: "10px",
+                    marginBottom: "10px",
+                  }}
+                >
+                  <Avatar
+                    style={{
+                      background: generateColorFromName(
+                        JSON.stringify(user.id)
+                      ),
+                      flexShrink: 0,
+                    }}
+                    size={40}
+                  >
+                    {user.profile_name[0]}
+                  </Avatar>
+                  <div>
+                    <strong>{user.profile_name}</strong>
+                  </div>
+                </div>
+                <div>Email: {user.email}</div>
+                <div>Role: {user.role}</div>
+              </div>
+            )}
+                            <div
+                  style={{ display: "flex", justifyContent: "space-around" }}
+                >
+            <Button onClick={() => navigate("/update")}>Update Password</Button>
+            <Button onClick={() => handleReturnHome()}>Return home</Button>
+ 
+            </div>
+          </WindowContent>
+        </Window>
+      </motion.div>
+    </div>
+  );
+};

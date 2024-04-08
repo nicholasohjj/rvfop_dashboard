@@ -299,7 +299,7 @@ const Messenger = () => {
                             minute: "2-digit",
                             hour12: false,
                           }
-                        )}{" "}
+                        )}
                       </div>
                     </MessageBubble>
                   </div>

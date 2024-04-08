@@ -33,13 +33,13 @@ export const Header = () => {
             }}
             onClick={() => setOpen(false)}
           >
-            <MenuListItem onClick={() => navigate("/update")}>
+            <MenuListItem onClick={() => navigate("/profile")}>
               <img
                 src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/password.png"
                 alt="password"
                 style={{ height: "20px", marginRight: 4 }}
               />
-              Update Password
+              My Profile
             </MenuListItem>
             {(userData.role == "admin" || userData.role == "gm") && (
               <MenuListItem onClick={() => navigate("/addactivity")}>

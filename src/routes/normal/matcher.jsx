@@ -277,7 +277,6 @@ const Matcher = () => {
             <Hourglass size={32} style={{ margin: 20 }} />
           </div>
         )}
-      
       </WindowContent>
     </StyledWindow>
   );
