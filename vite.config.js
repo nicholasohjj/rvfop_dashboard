@@ -14,23 +14,23 @@ export default defineConfig({
         theme_color: '#008080',
         icons: [
             {
-                src: './public/favicon-16x16.png',
+                src: 'https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/favicon-16x16.png?t=2024-04-09T14%3A18%3A03.854Z',
                 sizes: '64x64',
                 type: 'image/png'
             },
             {
-                src: './public/android-chrome-192x192.png',
+                src: 'https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/android-chrome-192x192.png',
                 sizes: '192x192',
                 type: 'image/png'
             },
             {
-                src: './public/android-chrome-512x512.png',
+                src: 'https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/android-chrome-512x512.png',
                 sizes: '512x512',
                 type: 'image/png',
                 purpose: 'any'
             },
             {
-                src: './public/android-chrome-512x512.png',
+                src: 'https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/android-chrome-512x512.png',
                 sizes: '512x512',
                 type: 'image/png',
                 purpose: 'maskable'
