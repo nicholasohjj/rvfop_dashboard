@@ -155,7 +155,8 @@ const Scoreboard = () => {
 
   if (loading) return <Loading />;
   return (
-    <Window style={{ flex: 1, width: 320 }}>
+    <div style={{ flex: 1 ,display:"flex", minHeight: "100vh"  }}>
+    <Window style={{ flex: 1 }}>
       <WindowHeader>Scoreboard</WindowHeader>
       <WindowContent>
         <Table>
@@ -201,6 +202,7 @@ const Scoreboard = () => {
         </Table>
       </WindowContent>
     </Window>
+    </div>
   );
 };
 export default Scoreboard;

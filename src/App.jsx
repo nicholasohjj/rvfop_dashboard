@@ -23,6 +23,7 @@ import Games from "./routes/gm/games";
 import Messenger from "./routes/normal/messenger";
 import Matcher from "./routes/normal/matcher";
 import { Profile } from "./routes/profile";
+import { Home } from "./home";
 const App = () => {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -58,7 +59,7 @@ const App = () => {
       ) : session ? (
         <Layout />
       ) : (
-        <Navigate to="/login" replace />
+        <Navigate to="/home" replace />
       ),
       errorElement: <ErrorPage />,
       children: [
@@ -121,6 +122,10 @@ const App = () => {
         <Navigate to="/" replace />
       ),
       errorElement: <ErrorPage />,
+    },
+    {
+      path: "/home",
+      element: <Home />,
     },
     {
       path: "/error",

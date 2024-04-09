@@ -52,6 +52,8 @@ export const Footer = () => {
               }}
               onClick={() => setOpen(false)}
             >
+              {userData && (
+                
               <MenuListItem onClick={() => handleNavigate("/scoreboard")}>
                 <img
                   src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/scoreboard.png"
@@ -60,9 +62,10 @@ export const Footer = () => {
                 />
                 Scoreboard
               </MenuListItem>
-              {(userData.role == "admin" ||
-                userData.role == "normal" ||
-                userData.role == "deductor") && (
+              )}
+              {(userData?.role == "admin" ||
+                userData?.role == "normal" ||
+                userData?.role == "deductor") && (
                 <MenuListItem onClick={() => handleNavigate("/progress")}>
                   <img
                     src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/progress.png"
@@ -94,7 +97,7 @@ export const Footer = () => {
                   Awarded Games
                 </MenuListItem>
               )}
-              <MenuListItem onClick={() => handleNavigate("/message")}>
+                <MenuListItem onClick={userData ? () => handleNavigate("/message") :() => handleNavigate("/login")}>
                 <img
                   src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/messenger.png"
                   alt="messenger_logo"
@@ -102,7 +105,8 @@ export const Footer = () => {
                 />
                 Messenger
               </MenuListItem>
-
+              {userData && (
+                <div>
               <MenuListItem onClick={() => handleLogout()}>
               <img
                     src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/logout.png"
@@ -111,6 +115,19 @@ export const Footer = () => {
                   />
                 Logout
               </MenuListItem>
+              </div>
+              )}
+              {!userData && (
+                <MenuListItem onClick={() => handleNavigate("/login")}>
+                  <img
+                    src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/login.png"
+                    alt="login_logo"
+                    style={{ height: "20px", marginRight: 4 }}
+                  />
+                  Login
+                </MenuListItem>
+              )}
+              
             </MenuList>
           )}
         </div>
