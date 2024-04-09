@@ -4,6 +4,7 @@ import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { fetchUser } from "../supabase/services";
+import { supabaseClient } from "../supabase/supabaseClient";
 
 const StyledWindowHeader = styled(WindowHeader)`
   background-color: #ff0000;
@@ -33,6 +34,7 @@ export const Profile = () => {
     };
 
     window.addEventListener("resize", handleResize);
+
     Promise.all([fetchUser()]).then(([user]) => {
       setUser(user);
     });
@@ -127,7 +129,7 @@ export const Profile = () => {
                   </div>
                 </div>
                 <div>Email: {user.email}</div>
-                <div>Role: {user.role}</div>
+                <div>Role: {user.role_name}</div>
               </div>
             )}
                             <div

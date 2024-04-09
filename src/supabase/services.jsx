@@ -12,12 +12,10 @@ const fetchUser = async () => {
   const { data: user } = await supabaseClient.auth.getUser();
   const userId = user.user.id;
 
-  const { data, error } = await supabaseClient
-    .from("profiles")
-    .select("*")
-    .eq("id", userId)
-    .single();
+  
+  const {data, error} = await supabaseClient.rpc("get_profile")
 
+  console.log("User", data, error);
   return data;
 };
 
