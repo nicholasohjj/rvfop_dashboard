@@ -119,7 +119,7 @@ const App = () => {
       ) : !session ? (
         <Signup />
       ) : (
-        <Navigate to="/" replace />
+        <Navigate to="/home" replace />
       ),
       errorElement: <ErrorPage />,
     },
