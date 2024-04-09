@@ -145,7 +145,7 @@ export const Reset = () => {
                 <div style={{ display: "flex" }}>
                   <TextInput
                     placeholder="Email Address"
-                    fullWidth
+                    style={{ flex: 1}}
                     value={email}
                     disabled
                     onChange={(e) => {
@@ -156,7 +156,7 @@ export const Reset = () => {
                 <br />
                 <TextInput
                   placeholder="Password"
-                  fullWidth
+                  style={{ flex: 1}}
                   type="password"
                   value={password}
                   onChange={(e) => {

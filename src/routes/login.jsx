@@ -202,8 +202,8 @@ export const Login = () => {
               <div>
                 <div style={{ display: "flex" }}>
                   <TextInput
+                  style={{ flex: 1}}
                     placeholder="Email Address"
-                    fullWidth
                     value={email}
                     onChange={(e) => {
                       setemail(e.target.value);
@@ -213,7 +213,7 @@ export const Login = () => {
                 <br />
                 <TextInput
                   placeholder="Password"
-                  fullWidth
+                  style={{ flex: 1}}
                   type="password"
                   value={password}
                   onChange={(e) => {

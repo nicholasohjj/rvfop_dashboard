@@ -318,8 +318,8 @@ const Messenger = () => {
                   e.preventDefault();
                 }
               }}
-              fullWidth
-            />
+              style={{ flex: 1}}
+              />
             <Button onClick={handleSend} style={{ marginLeft: 4 }}>
               Send
             </Button>

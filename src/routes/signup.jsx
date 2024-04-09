@@ -270,7 +270,7 @@ export const Signup = () => {
               <div style={{ display: "flex" }}>
                   <TextInput
                     placeholder="Profile Name (E.g John Doe)"
-                    fullWidth
+                    style={{ flex: 1}}
                     value={name}
                     onChange={(e) => {
                       setName(e.target.value);
@@ -281,7 +281,7 @@ export const Signup = () => {
                 <div style={{ display: "flex" }}>
                   <TextInput
                     placeholder="Email Address"
-                    fullWidth
+                    style={{ flex: 1}}
                     value={email}
                     onChange={(e) => {
                       setemail(e.target.value);
@@ -291,8 +291,8 @@ export const Signup = () => {
                 <br />
                 <TextInput
                   placeholder="Password"
-                  fullWidth
-                  type="password"
+                  style={{ flex: 1}}
+                    type="password"
                   value={password}
                   onChange={(e) => {
                     setPassword(e.target.value);
