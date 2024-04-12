@@ -160,20 +160,12 @@ export const Signup = () => {
       const { data, error } = await supabaseClient.auth.signUp({
         email,
         password,
-        options: {
-          data: {
-            group_id: selectedGroup,
-            role: selectedRole,
-            profile_name: name,
-          },
-        },
       });
 
       console.log("Data", data, error);
 
       
-
-      if ("email_verified" in data.user.user_metadata) {
+      if (data.user && "email_verified" in data.user.user_metadata) {
         setIsModalOpen(true);
         setError({
           name: "Account registered successfully!",
