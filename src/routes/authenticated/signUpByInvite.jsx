@@ -11,9 +11,9 @@ import {
 } from "react95";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
-import { supabaseClient } from "../supabase/supabaseClient";
+import { supabaseClient } from "../../supabase/supabaseClient";
 import styled from "styled-components";
-import { fetchGroups } from "../supabase/services";
+import { fetchGroups, fetchUser } from "../../supabase/services";
 // Styled Close Icon Component
 const CloseIcon = styled.div`
   display: inline-block;
@@ -53,7 +53,7 @@ const StyledWindowHeader = styled(WindowHeader)`
     messageType === "success" ? "green" : "red"};
 `;
 
-export const Signup = () => {
+export const SignupByInvite = () => {
   const [name, setName] = useState(""); 
   const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
@@ -63,7 +63,8 @@ export const Signup = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState("");
   const [groups, setGroups] = useState([]); // Add groups state
-  const [isSending, setIsSending] = useState(false); // Add isSending state
+  const [user, setUser] = useState(null);
+
   const constraintsRef = useRef(null);
   const navigate = useNavigate(); // Hook for navigation
   const dragX = useMotionValue(0);
@@ -73,10 +74,16 @@ export const Signup = () => {
   const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
 
   useEffect(() => {
-    fetchGroups().then((data) => {
-      setGroups(data);
-      console.log("Groups", data);
+
+    const fetch = async () => {
+      Promise.all([fetchUser(), fetchGroups()]).then((values) => {
+        setUser(values[0]);
+        console.log("User", values[0]);
+        setGroups(values[1]);
     });
+  }
+
+    fetch();
   }, []);
 
   useEffect(() => {
@@ -157,8 +164,7 @@ export const Signup = () => {
 
     try {
 
-      const { data, error } = await supabaseClient.auth.signUp({
-        email,
+      const { data, error } = await supabaseClient.auth.update({
         password,
         options: {
           data: {
@@ -166,7 +172,7 @@ export const Signup = () => {
             role: selectedRole,
             profile_name: name,
           },
-        }
+        },
       });
 
       console.log("Data", data, error);
@@ -251,7 +257,7 @@ export const Signup = () => {
       >
         <Window style={windowStyle}>
           <WindowHeader>
-            <span>Sign up
+            <span>Sign up (By Invite Only)
             </span>
           </WindowHeader>
           <div style={{ marginTop: 8 }}>
@@ -279,9 +285,10 @@ export const Signup = () => {
                 <br />
                 <div style={{ display: "flex" }}>
                   <TextInput
+                  value={user?.email}
                     placeholder="Email Address"
+                    disabled
                     style={{ flex: 1}}
-                    value={email}
                     onChange={(e) => {
                       setemail(e.target.value);
                     }}

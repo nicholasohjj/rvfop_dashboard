@@ -7,23 +7,24 @@ import {
 import ErrorPage from "./routes/errorpage";
 import { Login } from "./routes/login";
 import { Layout } from "./layout";
-import Scoreboard from "./routes/normal/scoreboard";
+import Scoreboard from "./routes/authenticated/normal/scoreboard";
 import Loading from "./routes/loading";
-import Progress from "./routes/normal/progress";
+import Progress from "./routes/authenticated/normal/progress";
 import { supabaseClient } from "./supabase/supabaseClient";
-import { Update } from "./routes/update";
-import { Reset } from "./routes/reset";
+import { Update } from "./routes/authenticated/update";
+import { Reset } from "./routes/authenticated/reset";
 import AddActivity from "./routes/gm/addActivity";
 import AddDeduction from "./routes/deductor/addDeduction";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import Deductions from "./routes/deductor/deductions";
-import { Signup } from "./routes/signup";
 import Games from "./routes/gm/games";
-import Messenger from "./routes/normal/messenger";
-import Matcher from "./routes/normal/matcher";
-import { Profile } from "./routes/profile";
+import Messenger from "./routes/authenticated/normal/messenger";
+import Matcher from "./routes/authenticated/normal/matcher";
+import { Profile } from "./routes/authenticated/profile";
+import { Signup } from "./routes/signup";
 import { Home } from "./home";
+import { SignupByInvite } from "./routes/authenticated/signUpByInvite";
 const App = () => {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -87,6 +88,7 @@ const App = () => {
           path: "/progress",
           element: <Progress />,
         },
+
         {
           path: "/deductions",
           element: <Deductions />,
@@ -120,6 +122,17 @@ const App = () => {
         <Signup />
       ) : (
         <Navigate to="/home" replace />
+      ),
+      errorElement: <ErrorPage />,
+    },
+    {
+      path: "/invite",
+      element: loading ? (
+        <Loading />
+      ) : session ? (
+        <SignupByInvite />
+      ) : (
+        <Navigate to="/" replace />
       ),
       errorElement: <ErrorPage />,
     },

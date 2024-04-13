@@ -7,11 +7,11 @@ import {
   TextInput,
   Button,
 } from "react95";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
-import { supabaseClient } from "../supabase/supabaseClient";
-import styled from "styled-components";
 import { motion, useMotionValue, useTransform } from "framer-motion";
-
+import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { supabaseClient } from "../../supabase/supabaseClient";
+import styled from "styled-components";
+import { fetchUser } from "../../supabase/services";
 // Styled Close Icon Component
 const CloseIcon = styled.div`
   display: inline-block;
@@ -50,7 +50,7 @@ const StyledWindowHeader = styled(WindowHeader)`
   align-items: center;
 `;
 
-export const Reset = () => {
+export const Update = () => {
   const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -66,20 +66,21 @@ export const Reset = () => {
   const navigate = useNavigate(); // Hook for navigation
 
   useEffect(() => {
-    const getEmail = async () => {
-      const { data } = await supabaseClient.auth.getUser();
-      setemail(data.user.email);
-    };
-
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
     };
 
     window.addEventListener("resize", handleResize);
-    getEmail();
-    // Cleanup the event listener on component unmount
+    Promise.all([fetchUser()]).then(([user]) => {
+      setemail(user.email);
+    });
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const handleReturnHome = () => {
+    setPassword("");
+    navigate("/", { replace: true });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -137,7 +138,7 @@ export const Reset = () => {
       >
         <Window style={windowStyle}>
           <WindowHeader>
-            <span>Reset your password</span>
+            <span>Update your password</span>
           </WindowHeader>
           <WindowContent>
             <form onSubmit={handleSubmit}>
@@ -164,10 +165,16 @@ export const Reset = () => {
                   }}
                 />
                 <br />
-
-                <Button type="submit" value="login">
-                  Update
-                </Button>
+                <div
+                  style={{ display: "flex", justifyContent: "space-around" }}
+                >
+                  <Button onClick={() => handleReturnHome()}>
+                    Return home
+                  </Button>
+                  <Button type="submit" value="login">
+                    Update
+                  </Button>
+                </div>
               </div>
             </form>
           </WindowContent>

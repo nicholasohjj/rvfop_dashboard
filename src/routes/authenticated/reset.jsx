@@ -7,11 +7,11 @@ import {
   TextInput,
   Button,
 } from "react95";
-import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
-import { supabaseClient } from "../supabase/supabaseClient";
+import { supabaseClient } from "../../supabase/supabaseClient";
 import styled from "styled-components";
-import { fetchUser } from "../supabase/services";
+import { motion, useMotionValue, useTransform } from "framer-motion";
+
 // Styled Close Icon Component
 const CloseIcon = styled.div`
   display: inline-block;
@@ -50,7 +50,7 @@ const StyledWindowHeader = styled(WindowHeader)`
   align-items: center;
 `;
 
-export const Update = () => {
+export const Reset = () => {
   const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -66,21 +66,20 @@ export const Update = () => {
   const navigate = useNavigate(); // Hook for navigation
 
   useEffect(() => {
+    const getEmail = async () => {
+      const { data } = await supabaseClient.auth.getUser();
+      setemail(data.user.email);
+    };
+
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
     };
 
     window.addEventListener("resize", handleResize);
-    Promise.all([fetchUser()]).then(([user]) => {
-      setemail(user.email);
-    });
+    getEmail();
+    // Cleanup the event listener on component unmount
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
-  const handleReturnHome = () => {
-    setPassword("");
-    navigate("/", { replace: true });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -138,7 +137,7 @@ export const Update = () => {
       >
         <Window style={windowStyle}>
           <WindowHeader>
-            <span>Update your password</span>
+            <span>Reset your password</span>
           </WindowHeader>
           <WindowContent>
             <form onSubmit={handleSubmit}>
@@ -165,16 +164,10 @@ export const Update = () => {
                   }}
                 />
                 <br />
-                <div
-                  style={{ display: "flex", justifyContent: "space-around" }}
-                >
-                  <Button onClick={() => handleReturnHome()}>
-                    Return home
-                  </Button>
-                  <Button type="submit" value="login">
-                    Update
-                  </Button>
-                </div>
+
+                <Button type="submit" value="login">
+                  Update
+                </Button>
               </div>
             </form>
           </WindowContent>

@@ -3,8 +3,8 @@ import { Window, Hourglass, WindowHeader, WindowContent, Avatar, Button } from "
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { fetchUser } from "../supabase/services";
-import { supabaseClient } from "../supabase/supabaseClient";
+import { fetchUser } from "../../supabase/services";
+import { supabaseClient } from "../../supabase/supabaseClient";
 
 const StyledWindowHeader = styled(WindowHeader)`
   background-color: #ff0000;
