@@ -6,7 +6,7 @@ import { useStore, initializeUserData } from "./context/userContext";
 import { useEffect, useCallback, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import './style.css'; // Make sure this points to your CSS file
-
+import { supabaseClient } from "./supabase/supabaseClient";
 const modalVariants = {
   hidden: {
     opacity: 0,
@@ -50,6 +50,8 @@ export const Layout = () => {
   const konamiCode = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a"];
   const [inputSequence, setInputSequence] = useState([]);
   const [showCat, setShowCat] = useState(false);
+  const [session, setSession] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const handleKeyPress = useCallback((event) => {
     setInputSequence((seq) => {
@@ -75,6 +77,18 @@ export const Layout = () => {
   const userData = useStore((state) => state.userData);
 
   useEffect(() => {
+    const checkSession = async () => {
+      const {
+        data: { session },
+      } = await supabaseClient.auth.getSession();
+      console.log("Session: ", session)
+      setSession(session);
+      // Set loading to false after the session check
+      setLoading(false);
+    };
+
+    checkSession();
+
     if (!userData) {
       initializeUserData();
     }

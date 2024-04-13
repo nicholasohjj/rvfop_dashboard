@@ -6,17 +6,32 @@ import { useStore, initializeUserData } from "../context/userContext";
 
 export const Footer = () => {
   const [open, setOpen] = useState(false);
+  const [session, setSession] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const userData = useStore((state) => state.userData);
 
   useEffect(() => {
+    const checkSession = async () => {
+      const {
+        data: { session },
+      } = await supabaseClient.auth.getSession();
+
+      setSession(session);
+      // Set loading to false after the session check
+      setLoading(false);
+    };
+
     const init = async () => {
+      await checkSession();
+
       if (!userData) {
         await initializeUserData();
       }
     };
 
     init();
+    checkSession();
   }, [userData]);
 
   const handleNavigate = (path) => {
@@ -52,31 +67,31 @@ export const Footer = () => {
               }}
               onClick={() => setOpen(false)}
             >
-              {userData && (
-                
-              <MenuListItem onClick={() => handleNavigate("/scoreboard")}>
-                <img
-                  src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/scoreboard.png"
-                  alt="scoreboard_logo"
-                  style={{ height: "20px", marginRight: 4 }}
-                />
-                Scoreboard
-              </MenuListItem>
-              )}
-              {(userData?.role == "admin" ||
-                userData?.role == "normal" ||
-                userData?.role == "deductor") && (
-                <MenuListItem onClick={() => handleNavigate("/progress")}>
+              {session && (
+                <MenuListItem onClick={() => handleNavigate("/scoreboard")}>
                   <img
-                    src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/progress.png"
-                    alt="progress_logo"
+                    src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/scoreboard.png"
+                    alt="scoreboard_logo"
                     style={{ height: "20px", marginRight: 4 }}
                   />
-                  Progress
+                  Scoreboard
                 </MenuListItem>
               )}
+              {session &&
+                (userData?.role == "admin" ||
+                  userData?.role == "normal" ||
+                  userData?.role == "deductor") && (
+                  <MenuListItem onClick={() => handleNavigate("/progress")}>
+                    <img
+                      src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/progress.png"
+                      alt="progress_logo"
+                      style={{ height: "20px", marginRight: 4 }}
+                    />
+                    Progress
+                  </MenuListItem>
+                )}
 
-              {(userData?.role === "admin" ||
+              {session && (userData?.role === "admin" ||
                 userData?.role === "deductor") && (
                 <MenuListItem onClick={() => handleNavigate("/deductions")}>
                   <img
@@ -87,7 +102,7 @@ export const Footer = () => {
                   Deductions
                 </MenuListItem>
               )}
-              {(userData?.role == "admin" || userData?.role == "gm") && (
+              {session && (userData?.role == "admin" || userData?.role == "gm") && (
                 <MenuListItem onClick={() => handleNavigate("/games")}>
                   <img
                     src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/games.png"
@@ -97,7 +112,13 @@ export const Footer = () => {
                   Awarded Games
                 </MenuListItem>
               )}
-                <MenuListItem onClick={userData ? () => handleNavigate("/message") :() => handleNavigate("/login")}>
+              <MenuListItem
+                onClick={
+                  userData
+                    ? () => handleNavigate("/message")
+                    : () => handleNavigate("/login")
+                }
+              >
                 <img
                   src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/messenger.png"
                   alt="messenger_logo"
@@ -105,19 +126,19 @@ export const Footer = () => {
                 />
                 Messenger
               </MenuListItem>
-              {userData && (
+              {session && (
                 <div>
-              <MenuListItem onClick={() => handleLogout()}>
-              <img
-                    src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/logout.png"
-                    alt="logout_logo"
-                    style={{ height: "20px", marginRight: 4 }}
-                  />
-                Logout
-              </MenuListItem>
-              </div>
+                  <MenuListItem onClick={() => handleLogout()}>
+                    <img
+                      src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/logout.png"
+                      alt="logout_logo"
+                      style={{ height: "20px", marginRight: 4 }}
+                    />
+                    Logout
+                  </MenuListItem>
+                </div>
               )}
-              {!userData && (
+              {!session && (
                 <MenuListItem onClick={() => handleNavigate("/login")}>
                   <img
                     src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/login.png"
@@ -127,7 +148,6 @@ export const Footer = () => {
                   Login
                 </MenuListItem>
               )}
-              
             </MenuList>
           )}
         </div>

@@ -9,6 +9,18 @@ export const Header = () => {
   const userData = useStore((state) => state.userData);
 
   useEffect(() => {
+
+    const checkSession = async () => {
+      const {
+        data: { session },
+      } = await supabaseClient.auth.getSession();
+
+      setSession(session);
+      // Set loading to false after the session check
+      setLoading(false);
+    };
+
+    checkSession();
     const initialise = async () => {
       if (!userData) {
         await initializeUserData();
