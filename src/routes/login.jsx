@@ -89,6 +89,14 @@ export const Login = () => {
   };
 
   const handleResetPassword = async () => {
+    if (!email) {
+      setIsModalOpen(true);
+      setError({
+        name: "Error",
+        message: "Please enter your email address.",
+      });
+      return;
+    }
     
     try {
       setIsLoading(true);
