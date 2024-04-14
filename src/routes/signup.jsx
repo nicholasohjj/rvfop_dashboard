@@ -8,6 +8,7 @@ import {
   Select,
   GroupBox,
   Tooltip,
+  Hourglass,
 } from "react95";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
@@ -63,7 +64,7 @@ export const Signup = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState("");
   const [groups, setGroups] = useState([]); // Add groups state
-  const [isSending, setIsSending] = useState(false); // Add isSending state
+  const [isLoading, setIsLoading] = useState(false); // Add isLoading state
   const constraintsRef = useRef(null);
   const navigate = useNavigate(); // Hook for navigation
   const dragX = useMotionValue(0);
@@ -155,7 +156,10 @@ export const Signup = () => {
       return;
     }
 
+
     try {
+      setIsLoading(true);
+
       const { data, error } = await supabaseClient.auth.signUp({
         email,
         password,
@@ -168,7 +172,8 @@ export const Signup = () => {
         },
       });
 
-      console.log("Data", data, error);
+      setIsLoading(false);
+
 
       if (data.user && "email_verified" in data.user.user_metadata) {
         setIsModalOpen(true);
@@ -184,6 +189,7 @@ export const Signup = () => {
         setSelectedGroup(null);
         return;
       } else {
+        setIsLoading(false);
         setIsModalOpen(true);
         setError({
           name: "Error",
@@ -261,6 +267,19 @@ export const Signup = () => {
             </Tooltip>
           </div>
           <WindowContent>
+          {isLoading ? (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                Loading...
+                <Hourglass size={32} style={{ margin: 20 }} />
+              </div>
+          ) : (
             <form onSubmit={handleSubmit}>
               <div>
                 <div style={{ display: "flex" }}>
@@ -330,6 +349,7 @@ export const Signup = () => {
                 </div>
               </div>
             </form>
+          )}
           </WindowContent>
         </Window>
       </motion.div>

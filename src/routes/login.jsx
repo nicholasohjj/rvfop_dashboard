@@ -6,6 +6,7 @@ import {
   TextInput,
   Button,
   Tooltip,
+  Hourglass,
 } from "react95";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
@@ -52,6 +53,7 @@ const StyledWindowHeader = styled(WindowHeader)`
 
 export const Login = () => {
   const [email, setemail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [password, setPassword] = useState("");
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -87,7 +89,9 @@ export const Login = () => {
   };
 
   const handleResetPassword = async () => {
+    
     try {
+      setIsLoading(true);
       const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
         redirectTo: "https://insieme.vercel.app/reset",
       });
@@ -95,13 +99,14 @@ export const Login = () => {
       if (error) {
         throw error;
       }
-
+      setIsLoading(false);
       setIsModalOpen(true);
       setError({
         name: "Password Reset Email Sent",
         message: `An email has been sent to ${email} with a link to reset your password.`,
       });
     } catch (error) {
+      setIsLoading(false);
       setIsModalOpen(true);
       setError(error);
     }
@@ -198,6 +203,20 @@ export const Login = () => {
             </Tooltip>
           </div>
           <WindowContent>
+          {isLoading ? (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                Loading...
+                <Hourglass size={32} style={{ margin: 20 }} />
+              </div>
+          )
+            : (
             <form onSubmit={handleSubmit}>
               <div>
                 <div style={{ display: "flex" }}>
@@ -234,6 +253,7 @@ export const Login = () => {
                 </div>
               </div>
             </form>
+            )}
           </WindowContent>
         </Window>
       </motion.div>

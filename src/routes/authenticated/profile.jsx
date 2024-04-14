@@ -109,6 +109,8 @@ export const Profile = () => {
                   flexDirection: "column",
                   gap: "10px",
                   marginBottom: "10px",
+                  alignItems: "center",
+                  justifyItems: "center",
                 }}
               >
                 <div
