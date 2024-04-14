@@ -202,7 +202,7 @@ export const Login = () => {
               <div>
                 <div style={{ display: "flex" }}>
                   <TextInput
-                  style={{ flex: 1}}
+                    style={{ flex: 1 }}
                     placeholder="Email Address"
                     value={email}
                     onChange={(e) => {
@@ -213,7 +213,7 @@ export const Login = () => {
                 <br />
                 <TextInput
                   placeholder="Password"
-                  style={{ flex: 1}}
+                  style={{ flex: 1 }}
                   type="password"
                   value={password}
                   onChange={(e) => {
@@ -227,9 +227,7 @@ export const Login = () => {
                   <Button onClick={() => handleResetPassword()}>
                     Forgot your password?
                   </Button>
-                  <Button onClick={() => navigate("/signup")}>
-                    Sign up
-                  </Button>
+                  <Button onClick={() => navigate("/signup")}>Sign up</Button>
                   <Button type="submit" value="login">
                     Sign in
                   </Button>

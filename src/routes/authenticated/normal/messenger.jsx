@@ -184,10 +184,12 @@ const Messenger = () => {
   return (
     <StyledWindow style={{ flex: 1, width: 320 }}>
       <StyledWindowHeader
-      onClick={() => {
-        navigate("/match", { replace: true })
-      }}
-      >Insieme Live Messenger</StyledWindowHeader>
+        onClick={() => {
+          navigate("/match", { replace: true });
+        }}
+      >
+        Insieme Live Messenger
+      </StyledWindowHeader>
       <WindowContent
         style={{
           overflow: "auto",
@@ -318,8 +320,8 @@ const Messenger = () => {
                   e.preventDefault();
                 }
               }}
-              style={{ flex: 1}}
-              />
+              style={{ flex: 1 }}
+            />
             <Button onClick={handleSend} style={{ marginLeft: 4 }}>
               Send
             </Button>

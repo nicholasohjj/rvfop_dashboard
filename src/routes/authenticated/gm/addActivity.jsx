@@ -105,11 +105,14 @@ const AddActivity = () => {
   const groups = useMemo(() => {
     const initialOption = [{ group_name: "Select Group", group_id: null }];
     const updatedGroups = [...initialOption, ...storeGroups];
-    
+
     return updatedGroups;
   }, [storeGroups]);
 
-  const activities = useMemo(() => [{ activity_name: "Select Activity" }, ...activityData], [activityData]);
+  const activities = useMemo(
+    () => [{ activity_name: "Select Activity" }, ...activityData],
+    [activityData]
+  );
   const userData = useStore((state) => state.userData);
 
   useEffect(() => {
@@ -154,7 +157,6 @@ const AddActivity = () => {
     } else {
       setLoading(false);
     }
-    
   }, [storeGroups.length]);
 
   const modalVariants = {

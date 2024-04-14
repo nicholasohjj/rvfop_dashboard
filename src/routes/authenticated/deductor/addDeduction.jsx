@@ -77,7 +77,9 @@ const PointsSection = styled.div`
 // Main component
 const AddDeduction = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const [houses, setHouses] = useState([{ house_id: "", house_name: "Select a house", total_points: 0}]);
+  const [houses, setHouses] = useState([
+    { house_id: "", house_name: "Select a house", total_points: 0 },
+  ]);
   const [loading, setLoading] = useState(true);
   const [group, setGroup] = useState(null);
   const [selectedHouse, setSelectedHouse] = useState(null);
@@ -97,23 +99,26 @@ const AddDeduction = () => {
       try {
         if (!userData) {
           await initializeUserData();
-          if (!['deductor', 'admin'].includes(userData.role)) {
-            navigate('/', { replace: true });
+          if (!["deductor", "admin"].includes(userData.role)) {
+            navigate("/", { replace: true });
           }
         }
 
-      if (!group) {
-        const groupData = await fetchGroup();
-        setGroup(groupData);
-      }
+        if (!group) {
+          const groupData = await fetchGroup();
+          setGroup(groupData);
+        }
 
-      if (houses.length == 1) {
-        console.log(houses)
-        const housesData = await fetchHouses();
+        if (houses.length == 1) {
+          console.log(houses);
+          const housesData = await fetchHouses();
 
-        console.log(housesData)
-        setHouses([{ house_id: "", house_name: "Select a house", total_points: 0}, ...housesData.sort((a, b) => b.total_points - a.total_points)]);
-      }
+          console.log(housesData);
+          setHouses([
+            { house_id: "", house_name: "Select a house", total_points: 0 },
+            ...housesData.sort((a, b) => b.total_points - a.total_points),
+          ]);
+        }
       } catch (error) {
         setError(error.message);
         console.error("Initialization error:", error);
@@ -131,7 +136,7 @@ const AddDeduction = () => {
 
   const handleAddDeduction = async () => {
     if (!selectedHouse || deductionPoints <= 0) {
-      setError('Please select a house and specify the points to deduct.');
+      setError("Please select a house and specify the points to deduct.");
       setIsModalOpen(true);
       return;
     }
@@ -150,7 +155,6 @@ const AddDeduction = () => {
       setError(error.message); // Set an error message to display in your modal
       setIsModalOpen(true); // Open the modal to display the error
     }
-
   };
 
   if (loading) return <Loading />;
@@ -183,18 +187,21 @@ const AddDeduction = () => {
         <span>Add Deduction</span>
       </WindowHeader>
       <WindowContent style={{ overflowX: "visible" }}>
-      {group?.total_points && (
+        {group?.total_points && (
           <GroupBox marginBottom="10px">
-            You have {group.total_points} points in total. You can deduct a maximum of {group.total_points} points.
+            You have {group.total_points} points in total. You can deduct a
+            maximum of {group.total_points} points.
           </GroupBox>
         )}
 
         <GroupBox label="Select House to Deduct">
-        <Select
+          <Select
             value={selectedHouse}
             onChange={handleSelectChange}
-            options={houses.map(house => ({
-              label: house.house_id ? `${house.house_name} (${house.total_points} points)` : house.house_name,
+            options={houses.map((house) => ({
+              label: house.house_id
+                ? `${house.house_name} (${house.total_points} points)`
+                : house.house_name,
               value: house,
             }))}
             width="100%"
@@ -206,7 +213,7 @@ const AddDeduction = () => {
             <p>Points to deduct: </p>
             <NumberInput
               value={deductionPoints}
-              onChange={value => setDeductionPoints(Number(value))}
+              onChange={(value) => setDeductionPoints(Number(value))}
               step={20}
               min={0}
               max={Math.min(group.total_points, selectedHouse.total_points)}

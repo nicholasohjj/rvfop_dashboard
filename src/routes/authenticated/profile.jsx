@@ -1,5 +1,12 @@
 import { useState, useRef, useEffect } from "react";
-import { Window, Hourglass, WindowHeader, WindowContent, Avatar, Button } from "react95";
+import {
+  Window,
+  Hourglass,
+  WindowHeader,
+  WindowContent,
+  Avatar,
+  Button,
+} from "react95";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -74,7 +81,7 @@ export const Profile = () => {
       <motion.div
         drag
         dragConstraints={constraintsRef}
-        style={{ rotate: rotateValue, x: dragX }} 
+        style={{ rotate: rotateValue, x: dragX }}
       >
         <Window style={windowStyle}>
           <StyledWindowHeader>
@@ -82,17 +89,17 @@ export const Profile = () => {
           </StyledWindowHeader>
           <WindowContent>
             {!user && (
-                      <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      Loading...
-                      <Hourglass size={32} style={{ margin: 20 }} />
-                    </div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                Loading...
+                <Hourglass size={32} style={{ margin: 20 }} />
+              </div>
             )}
             {user && (
               <div
@@ -132,12 +139,11 @@ export const Profile = () => {
                 <div>Role: {user.role_name}</div>
               </div>
             )}
-                            <div
-                  style={{ display: "flex", justifyContent: "space-around" }}
-                >
-            <Button onClick={() => navigate("/update")}>Update Password</Button>
-            <Button onClick={() => handleReturnHome()}>Return home</Button>
- 
+            <div style={{ display: "flex", justifyContent: "space-around" }}>
+              <Button onClick={() => navigate("/update")}>
+                Update Password
+              </Button>
+              <Button onClick={() => handleReturnHome()}>Return home</Button>
             </div>
           </WindowContent>
         </Window>

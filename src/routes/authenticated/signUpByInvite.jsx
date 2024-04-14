@@ -54,7 +54,7 @@ const StyledWindowHeader = styled(WindowHeader)`
 `;
 
 export const SignupByInvite = () => {
-  const [name, setName] = useState(""); 
+  const [name, setName] = useState("");
   const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
   const [selectedGroup, setSelectedGroup] = useState(null); // Add selectedGroup state
@@ -74,14 +74,13 @@ export const SignupByInvite = () => {
   const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
 
   useEffect(() => {
-
     const fetch = async () => {
       Promise.all([fetchUser(), fetchGroups()]).then((values) => {
         setUser(values[0]);
         console.log("User", values[0]);
         setGroups(values[1]);
-    });
-  }
+      });
+    };
 
     fetch();
   }, []);
@@ -111,24 +110,14 @@ export const SignupByInvite = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("Email", email);
     console.log("Password", password);
 
-    if (!email || !password || !name) {
+    if (!password || !name) {
       setError({
         name: "Error",
-        message: "Please enter your name, email and password.",
+        message: "Please enter your name and password.",
       });
       setIsModalOpen(true);
-      return;
-    }
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setIsModalOpen(true);
-      setError({
-        name: "Error",
-        message: "Please enter a valid email address.",
-      });
       return;
     }
 
@@ -163,21 +152,15 @@ export const SignupByInvite = () => {
     }
 
     try {
+      console.log(user.id);
 
-      const { data, error } = await supabaseClient.auth.update({
-        password,
-        options: {
-          data: {
-            group_id: selectedGroup,
-            role: selectedRole,
-            profile_name: name,
-          },
-        },
-      });
+      const { data, error } = await supabaseClient.auth.admin.updateUserById(
+        user.id,
+        {}
+      );
 
       console.log("Data", data, error);
 
-      
       if (data.user && "email_verified" in data.user.user_metadata) {
         setIsModalOpen(true);
         setError({
@@ -257,8 +240,7 @@ export const SignupByInvite = () => {
       >
         <Window style={windowStyle}>
           <WindowHeader>
-            <span>Sign up (By Invite Only)
-            </span>
+            <span>Sign up (By Invite Only)</span>
           </WindowHeader>
           <div style={{ marginTop: 8 }}>
             <Tooltip text="Purr! 🐱‍" enterDelay={100} leaveDelay={100}>
@@ -272,10 +254,10 @@ export const SignupByInvite = () => {
           <WindowContent>
             <form onSubmit={handleSubmit}>
               <div>
-              <div style={{ display: "flex" }}>
+                <div style={{ display: "flex" }}>
                   <TextInput
                     placeholder="Profile Name (E.g John Doe)"
-                    style={{ flex: 1}}
+                    style={{ flex: 1 }}
                     value={name}
                     onChange={(e) => {
                       setName(e.target.value);
@@ -285,10 +267,10 @@ export const SignupByInvite = () => {
                 <br />
                 <div style={{ display: "flex" }}>
                   <TextInput
-                  value={user?.email}
+                    value={user?.email}
                     placeholder="Email Address"
                     disabled
-                    style={{ flex: 1}}
+                    style={{ flex: 1 }}
                     onChange={(e) => {
                       setemail(e.target.value);
                     }}
@@ -297,15 +279,15 @@ export const SignupByInvite = () => {
                 <br />
                 <TextInput
                   placeholder="Password"
-                  style={{ flex: 1}}
-                    type="password"
+                  style={{ flex: 1 }}
+                  type="password"
                   value={password}
                   onChange={(e) => {
                     setPassword(e.target.value);
                   }}
                 />
                 <br />
-                
+
                 <GroupBox label="Select your Role">
                   <Select
                     defaultValue={2}

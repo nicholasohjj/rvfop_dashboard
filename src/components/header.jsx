@@ -9,7 +9,6 @@ export const Header = () => {
   const userData = useStore((state) => state.userData);
 
   useEffect(() => {
-
     const checkSession = async () => {
       const {
         data: { session },

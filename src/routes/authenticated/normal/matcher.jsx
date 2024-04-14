@@ -11,6 +11,7 @@ import {
   Select,
   GroupBox,
   Hourglass,
+  Tooltip,
 } from "react95";
 import Loading from "../../loading";
 import { useStore, initializeUserData } from "../../../context/userContext";
@@ -137,7 +138,7 @@ const Matcher = () => {
           window.location.href =
             "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/Rick%20Astley%20-%20Never%20Gonna%20Give%20You%20Up%20(Official%20Music%20Video).mp4?t=2024-04-08T06%3A12%3A18.440Z";
         }, 1000);
-        
+
         const { data: matches, error: selectError } = await supabaseClient
           .from("matches")
           .select("*")
@@ -166,7 +167,6 @@ const Matcher = () => {
           console.log("No matches found");
         } else {
           setMatched(true);
-
         }
       } else {
         setMatching(false);
@@ -213,21 +213,6 @@ const Matcher = () => {
     }
   };
 
-  const generateColorFromName = (name) => {
-    let hash = 0;
-    for (let i = 0; i < name.length; i++) {
-      hash = name.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    const color = `hsl(${hash % 360}, 75%, 60%)`;
-    return color;
-  };
-
-  const isNewDay = (currentMessageDate, previousMessageDate) => {
-    const currentDate = new Date(currentMessageDate).setHours(0, 0, 0, 0);
-    const previousDate = new Date(previousMessageDate).setHours(0, 0, 0, 0);
-    return currentDate > previousDate;
-  };
-
   if (loading) return <Loading />;
 
   return (
@@ -263,6 +248,15 @@ const Matcher = () => {
         >
           {!matching ? "Match me!" : "Stop matching"}
         </Button>
+        <div style={{ alignSelf: "center", margin: "10px" }}>
+          <Tooltip text="Woof! 🐶" enterDelay={100} leaveDelay={100}>
+            <img
+              src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/matcher.png"
+              alt="rvrc-logo"
+              width={100}
+            />
+          </Tooltip>
+        </div>
         {!matched && matching && (
           <div
             style={{

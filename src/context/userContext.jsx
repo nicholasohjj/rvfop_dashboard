@@ -1,12 +1,12 @@
-import { create } from 'zustand'
+import { create } from "zustand";
 
 // Assuming fetchUser is an async function from your services
-import { fetchUser, fetchGroups } from '../supabase/services'
+import { fetchUser, fetchGroups } from "../supabase/services";
 
 export const useStore = create((set) => ({
   userData: null, // Initial state can be null or some default value
   setUserData: (userData) => set({ userData }), // Action to update userData
-  
+
   groups: [], // Initial state can be an empty array or some default value
   setGroups: (groups) => set({ groups }), // Action to update groups
 }));

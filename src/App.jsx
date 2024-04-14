@@ -138,7 +138,14 @@ const App = () => {
     },
     {
       path: "/home",
-      element: <Home />,
+      element: loading ? (
+        <Loading />
+      ) : !session ? (
+        <Home />
+      ) : (
+        <Navigate to="/" replace />
+      ),
+      errorElement: <ErrorPage />,
     },
     {
       path: "/error",

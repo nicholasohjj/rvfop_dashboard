@@ -12,8 +12,7 @@ const fetchUser = async () => {
   const { data: user } = await supabaseClient.auth.getUser();
   const userId = user.user.id;
 
-  
-  const {data, error} = await supabaseClient.rpc("get_profile")
+  const { data, error } = await supabaseClient.rpc("get_profile");
 
   console.log("User", data, error);
   return data;
@@ -78,7 +77,9 @@ const fetchActivities = async () => {
 };
 
 const fetchAwardedGames = async (gm_id) => {
-  const { data, error } = await supabaseClient.rpc("get_awarded_games", {gm_id});
+  const { data, error } = await supabaseClient.rpc("get_awarded_games", {
+    gm_id,
+  });
   if (error) throw error;
 
   console.log("Awarded Games", data);
@@ -92,7 +93,7 @@ const fetchAwardedGames = async (gm_id) => {
     return 0;
   });
   return data;
-}
+};
 
 const addActivity = async (activity) => {
   console.log("Activity", activity);
@@ -133,5 +134,5 @@ export {
   addDeduction,
   addGroupActivity,
   fetchDeductions,
-  fetchAwardedGames
+  fetchAwardedGames,
 };

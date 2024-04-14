@@ -32,7 +32,7 @@ const Loading = () => {
 
   useEffect(() => {
     if (percent === 100) {
-      navigate("/", {replace:true}); // Replace '/next-route' with your actual route
+      navigate("/", { replace: true }); // Replace '/next-route' with your actual route
     }
   }, [percent, navigate]);
 
@@ -47,7 +47,7 @@ const Loading = () => {
         height: "100vh", // Ensure it covers full height
         padding: 0, // Remove any default padding
         boxSizing: "border-box", // Ensure padding and border are included in total width and height
-        minHeight: "90vh",  
+        minHeight: "90vh",
         maxHeight: "90vh",
         paddingTop: "48px",
       }}

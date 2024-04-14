@@ -54,7 +54,7 @@ const StyledWindowHeader = styled(WindowHeader)`
 `;
 
 export const Signup = () => {
-  const [name, setName] = useState(""); 
+  const [name, setName] = useState("");
   const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
   const [selectedGroup, setSelectedGroup] = useState(null); // Add selectedGroup state
@@ -156,7 +156,6 @@ export const Signup = () => {
     }
 
     try {
-
       const { data, error } = await supabaseClient.auth.signUp({
         email,
         password,
@@ -166,12 +165,11 @@ export const Signup = () => {
             role: selectedRole,
             profile_name: name,
           },
-        }
+        },
       });
 
       console.log("Data", data, error);
 
-      
       if (data.user && "email_verified" in data.user.user_metadata) {
         setIsModalOpen(true);
         setError({
@@ -251,8 +249,7 @@ export const Signup = () => {
       >
         <Window style={windowStyle}>
           <WindowHeader>
-            <span>Sign up
-            </span>
+            <span>Sign up</span>
           </WindowHeader>
           <div style={{ marginTop: 8 }}>
             <Tooltip text="Purr! 🐱‍" enterDelay={100} leaveDelay={100}>
@@ -266,10 +263,10 @@ export const Signup = () => {
           <WindowContent>
             <form onSubmit={handleSubmit}>
               <div>
-              <div style={{ display: "flex" }}>
+                <div style={{ display: "flex" }}>
                   <TextInput
                     placeholder="Profile Name (E.g John Doe)"
-                    style={{ flex: 1}}
+                    style={{ flex: 1 }}
                     value={name}
                     onChange={(e) => {
                       setName(e.target.value);
@@ -280,7 +277,7 @@ export const Signup = () => {
                 <div style={{ display: "flex" }}>
                   <TextInput
                     placeholder="Email Address"
-                    style={{ flex: 1}}
+                    style={{ flex: 1 }}
                     value={email}
                     onChange={(e) => {
                       setemail(e.target.value);
@@ -290,15 +287,15 @@ export const Signup = () => {
                 <br />
                 <TextInput
                   placeholder="Password"
-                  style={{ flex: 1}}
-                    type="password"
+                  style={{ flex: 1 }}
+                  type="password"
                   value={password}
                   onChange={(e) => {
                     setPassword(e.target.value);
                   }}
                 />
                 <br />
-                
+
                 <GroupBox label="Select your Role">
                   <Select
                     defaultValue={2}

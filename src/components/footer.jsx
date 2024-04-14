@@ -91,27 +91,29 @@ export const Footer = () => {
                   </MenuListItem>
                 )}
 
-              {session && (userData?.role === "admin" ||
-                userData?.role === "deductor") && (
-                <MenuListItem onClick={() => handleNavigate("/deductions")}>
-                  <img
-                    src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/deduction.png"
-                    alt="deduction_logo"
-                    style={{ height: "20px", marginRight: 4 }}
-                  />
-                  Deductions
-                </MenuListItem>
-              )}
-              {session && (userData?.role == "admin" || userData?.role == "gm") && (
-                <MenuListItem onClick={() => handleNavigate("/games")}>
-                  <img
-                    src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/games.png"
-                    alt="game_logo"
-                    style={{ height: "20px", marginRight: 4 }}
-                  />
-                  Awarded Games
-                </MenuListItem>
-              )}
+              {session &&
+                (userData?.role === "admin" ||
+                  userData?.role === "deductor") && (
+                  <MenuListItem onClick={() => handleNavigate("/deductions")}>
+                    <img
+                      src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/deduction.png"
+                      alt="deduction_logo"
+                      style={{ height: "20px", marginRight: 4 }}
+                    />
+                    Deductions
+                  </MenuListItem>
+                )}
+              {session &&
+                (userData?.role == "admin" || userData?.role == "gm") && (
+                  <MenuListItem onClick={() => handleNavigate("/games")}>
+                    <img
+                      src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/games.png"
+                      alt="game_logo"
+                      style={{ height: "20px", marginRight: 4 }}
+                    />
+                    Awarded Games
+                  </MenuListItem>
+                )}
               <MenuListItem
                 onClick={
                   userData

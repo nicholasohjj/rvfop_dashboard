@@ -1,12 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 
-import {
-  Window,
-  WindowHeader,
-  WindowContent,
-  Button,
-  Tooltip,
-} from "react95";
+import { Window, WindowHeader, WindowContent, Button, Tooltip } from "react95";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import styled from "styled-components";
@@ -89,7 +83,11 @@ const ErrorPage = () => {
           </StyledWindowHeader>
           <div style={{ marginTop: 8 }}>
             <Tooltip text="Woof! 🐶" enterDelay={100} leaveDelay={100}>
-              <img src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/error.png" alt="rvrc-logo" width={100} />
+              <img
+                src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/error.png"
+                alt="rvrc-logo"
+                width={100}
+              />
             </Tooltip>
           </div>
           <WindowContent>

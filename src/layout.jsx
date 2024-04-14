@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { useStore, initializeUserData } from "./context/userContext";
 import { useEffect, useCallback, useState } from "react";
 import styled, { keyframes } from "styled-components";
-import './style.css'; // Make sure this points to your CSS file
+import "./style.css"; // Make sure this points to your CSS file
 import { supabaseClient } from "./supabase/supabaseClient";
 const modalVariants = {
   hidden: {
@@ -47,7 +47,18 @@ const ContentArea = styled.div`
 `;
 
 export const Layout = () => {
-  const konamiCode = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a"];
+  const konamiCode = [
+    "ArrowUp",
+    "ArrowUp",
+    "ArrowDown",
+    "ArrowDown",
+    "ArrowLeft",
+    "ArrowRight",
+    "ArrowLeft",
+    "ArrowRight",
+    "b",
+    "a",
+  ];
   const [inputSequence, setInputSequence] = useState([]);
   const [showCat, setShowCat] = useState(false);
   const [session, setSession] = useState(null);
@@ -81,7 +92,7 @@ export const Layout = () => {
       const {
         data: { session },
       } = await supabaseClient.auth.getSession();
-      console.log("Session: ", session)
+      console.log("Session: ", session);
       setSession(session);
       // Set loading to false after the session check
       setLoading(false);
@@ -97,11 +108,20 @@ export const Layout = () => {
   return (
     <Container>
       <Header />
-      <motion.div initial="hidden" animate="visible" exit="hidden" variants={modalVariants}>
-      <ContentArea>
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        exit="hidden"
+        variants={modalVariants}
+      >
+        <ContentArea>
           {showCat && (
             <CatAnimation>
-              <img src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/error.png" alt="Dashing Cat" style={{ width: "100px" }} />
+              <img
+                src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/error.png"
+                alt="Dashing Cat"
+                style={{ width: "100px" }}
+              />
             </CatAnimation>
           )}
           <Outlet />

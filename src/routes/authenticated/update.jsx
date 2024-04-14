@@ -146,7 +146,7 @@ export const Update = () => {
                 <div style={{ display: "flex" }}>
                   <TextInput
                     placeholder="Email Address"
-                    style={{ flex: 1}}
+                    style={{ flex: 1 }}
                     value={email}
                     disabled
                     onChange={(e) => {
@@ -157,7 +157,7 @@ export const Update = () => {
                 <br />
                 <TextInput
                   placeholder="Password"
-                  style={{ flex: 1}}
+                  style={{ flex: 1 }}
                   type="password"
                   value={password}
                   onChange={(e) => {

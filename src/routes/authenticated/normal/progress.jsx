@@ -170,15 +170,16 @@ const Progress = () => {
           display: "flex", // Enable flex layout
           flexDirection: "column", // Stack children vertically
         }}
-      >        {groupData && (
+      >
+        {" "}
+        {groupData && (
           <GroupBox label={`Group: ${groupData.group_name}`}>
             Total Points Earned: {groupData.total_points}
           </GroupBox>
         )}
-        <div style={{ marginTop: 10, }}>
+        <div style={{ marginTop: 10 }}>
           {ActivityData.length > 0 ? (
-            <Table
-            >
+            <Table>
               <TableHead>
                 <TableRow>
                   <TableHeadCell>Day</TableHeadCell>
