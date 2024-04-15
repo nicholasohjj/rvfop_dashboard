@@ -17,6 +17,7 @@ import { supabaseClient } from "../../../supabase/supabaseClient";
 import Filter from "bad-words";
 import styled from "styled-components"; // Import styled-components
 import { useNavigate } from "react-router-dom";
+import { fetchChannels } from "../../../supabase/services";
 
 const StyledWindowHeader = styled(WindowHeader)`
   color: white; // Adjust the text color as needed for contrast
@@ -48,7 +49,7 @@ const MessageBubble = styled.div`
 const Messenger = () => {
   const [loading, setLoading] = useState(true);
   const [channel, setChannel] = useState(null);
-  const [channels, setChannels] = useState(["General", "Random", "Help"]); // Example channel names
+  const [channels, setChannels] = useState(); // Example channel names
   const [selectedChannel, setSelectedChannel] = useState("General"); // Default channel
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
@@ -58,7 +59,16 @@ const Messenger = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!userData) initializeUserData();
+
+    const init = async () => {
+      if (!userData) await initializeUserData();
+      const channels = await fetchChannels();
+      console.log("Channels", channels)
+      setChannels(channels);
+      setSelectedChannel(channels[0]);
+    };
+    init();
+
   }, [userData]);
 
   useEffect(() => {
@@ -210,7 +220,8 @@ const Messenger = () => {
             value={selectedChannel}
             onChange={handleChannelChange}
             options={channels.map((channel) => ({
-              label: channel,
+              //capitalise the first letter of the channel name
+              label: channel.charAt(0).toUpperCase() + channel.slice(1),
               value: channel,
             }))}
             width="100%"

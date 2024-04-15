@@ -8,6 +8,16 @@ const fetchHouses = async () => {
   return data;
 };
 
+const fetchChannels = async () => {
+  const { data, error } = await supabaseClient.from("channels").select("channel").eq("is_active", true);
+  if (error) {
+    throw new Error(error.message);
+  }
+  //sort by channel name
+  data.sort((a, b) => a.channel.localeCompare(b.channel));
+  return data.map(channel => channel.channel);
+}
+
 const fetchUser = async () => {
   const { data: user } = await supabaseClient.auth.getUser();
   const userId = user.user.id;
@@ -135,4 +145,5 @@ export {
   addGroupActivity,
   fetchDeductions,
   fetchAwardedGames,
+  fetchChannels
 };
