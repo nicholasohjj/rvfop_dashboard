@@ -67,14 +67,12 @@ const Messenger = () => {
     const fetchMessages = async () => {
       if (!selectedChannel) return;
 
-      console.log("Fetching messages for channel:", selectedChannel);
       const { data, error } = await supabaseClient
         .from("messages")
         .select("*")
         .eq("channel", selectedChannel.toLowerCase())
         .order("tm_created", { ascending: true });
 
-      console.log("Fetched messages", data);
 
       if (error) {
         console.error("Fetching messages error:", error);

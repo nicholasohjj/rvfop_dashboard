@@ -2,10 +2,13 @@ import { useState, useEffect } from "react";
 import { AppBar, Toolbar, Button, MenuList, MenuListItem } from "react95";
 import { useNavigate } from "react-router-dom";
 import { useStore, initializeUserData } from "../context/userContext";
+import { supabaseClient } from "../supabase/supabaseClient";
 
 export const Header = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [session, setSession] = useState(null);
+  const [loading, setLoading] = useState(true);
   const userData = useStore((state) => state.userData);
 
   useEffect(() => {
