@@ -92,7 +92,6 @@ export const Layout = () => {
       const {
         data: { session },
       } = await supabaseClient.auth.getSession();
-      console.log("Session: ", session);
       setSession(session);
       // Set loading to false after the session check
       setLoading(false);

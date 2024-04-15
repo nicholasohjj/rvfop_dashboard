@@ -17,7 +17,7 @@ import { supabaseClient } from "../../../supabase/supabaseClient";
 import Filter from "bad-words";
 import styled from "styled-components"; // Import styled-components
 import { useNavigate } from "react-router-dom";
-import { fetchChannels } from "../../../supabase/services";
+import { fetchChannels, fetchMessages } from "../../../supabase/services";
 
 const StyledWindowHeader = styled(WindowHeader)`
   color: white; // Adjust the text color as needed for contrast
@@ -59,32 +59,30 @@ const Messenger = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-
     const init = async () => {
       if (!userData) await initializeUserData();
       const channels = await fetchChannels();
-      console.log("Channels", channels)
       setChannels(channels);
       setSelectedChannel(channels[0]);
     };
     init();
-
   }, [userData]);
 
   useEffect(() => {
     let isSubscribed = true;
 
-    const fetchMessages = async () => {
+    const fetchMessages2 = async () => {
       if (!selectedChannel) return;
-
       console.log("Fetching messages for channel:", selectedChannel);
-      const { data, error } = await supabaseClient
-        .from("messages")
-        .select("*")
-        .eq("channel", selectedChannel.toLowerCase())
-        .order("tm_created", { ascending: true });
 
-      console.log("Fetched messages", data);
+
+      
+
+      const { data, error } = await supabaseClient.rpc("fetch_messages", {
+        input_channel: selectedChannel
+      });
+
+      console.log("Fetched messages", data, error);
 
       if (error) {
         console.error("Fetching messages error:", error);
@@ -99,7 +97,7 @@ const Messenger = () => {
       // Initialize and subscribe to the new channel
       const newChannel = supabaseClient.channel(channelName);
 
-      await fetchMessages(); // Fetch messages for the selected channel
+      await fetchMessages2(); // Fetch messages for the selected channel
       newChannel
         .on("broadcast", { event: "chat" }, (payload) => {
           // Filter or directly set messages for the selected channel
@@ -137,10 +135,6 @@ const Messenger = () => {
     if (!message.trim()) return;
 
     const sanitizedMessage = filter.clean(message);
-
-    console.log("Sending message:", sanitizedMessage);
-    console.log("User data:", userData);
-    console.log("Selected channel:", selectedChannel);
 
     const payload = {
       user_id: userData.id,
@@ -291,11 +285,11 @@ const Messenger = () => {
                       }}
                       size={40}
                     >
-                      {message.name[0]}
+                      {message.profile_name[0]}
                     </Avatar>
                     <MessageBubble isUser={message.user_id === userData.id}>
                       <div>
-                        <strong>{message.name}</strong>
+                        <strong>{message.profile_name}</strong>
                       </div>
                       <div>{message.message}</div>
                       <div

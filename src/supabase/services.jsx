@@ -18,6 +18,14 @@ const fetchChannels = async () => {
   return data.map(channel => channel.channel);
 }
 
+const fetchMessages = async (input_channel) => {
+  const { data, error } = await supabaseClient.from("messages").select("*");
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data;
+}
+
 const fetchUser = async () => {
   const { data: user } = await supabaseClient.auth.getUser();
   const userId = user.user.id;
@@ -145,5 +153,6 @@ export {
   addGroupActivity,
   fetchDeductions,
   fetchAwardedGames,
-  fetchChannels
+  fetchChannels,
+  fetchMessages
 };
