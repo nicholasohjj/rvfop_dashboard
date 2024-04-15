@@ -274,6 +274,11 @@ const Scoreboard = () => {
                 src={selectedHouse.house_logo}
                 alt={selectedHouse.house_name + "-logo"}
                 width={100}
+                onClick={
+                  () => {
+                    window.open(selectedHouse.house_ig, "_blank");
+                  }
+                } 
               />
               </div>
 

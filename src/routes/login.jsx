@@ -207,6 +207,11 @@ export const Login = () => {
                 src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/logo.png"
                 alt="rvrc-logo"
                 width={100}
+                onClick={
+                  () => {
+                    window.open("https://www.instagram.com/rvrcfop","_blank");
+                  }
+                } 
               />
             </Tooltip>
           </div>
