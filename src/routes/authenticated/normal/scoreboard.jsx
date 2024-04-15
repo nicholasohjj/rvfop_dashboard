@@ -15,6 +15,8 @@ import Loading from "../../loading";
 import { fetchHouses } from "../../../supabase/services";
 import styled from "styled-components";
 import { supabaseClient } from "../../../supabase/supabaseClient";
+import { motion } from "framer-motion";
+
 const Scoreboard = () => {
   const [houses, setHouses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,6 +24,7 @@ const Scoreboard = () => {
   const [sortDirection, setSortDirection] = useState("desc"); // Start with points descending
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedHouse, setSelectedHouse] = useState(null);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   useEffect(() => {
     const sortHousesInitially = (housesData) => {
@@ -114,6 +117,17 @@ const Scoreboard = () => {
     background-color: rgba(0, 0, 0, 0.6); // Semi-transparent background
   `;
 
+  const modalVariants = {
+    hidden: {
+      opacity: 0,
+      scale: 0,
+    },
+    visible: {
+      opacity: 1,
+      scale: 1,
+    },
+  };
+
   // Mimics the Window component without size constraints
   const StyledModalContent = styled.div`
     background: white;
@@ -124,6 +138,11 @@ const Scoreboard = () => {
     max-height: 90%;
     overflow: auto;
   `;
+
+  const windowStyle = {
+    width: windowWidth > 500 ? 500 : "90%", // Adjust width here
+    margin: "0%",
+  };
 
   const sortHouses = (key) => {
     const direction =
@@ -155,53 +174,114 @@ const Scoreboard = () => {
 
   if (loading) return <Loading />;
   return (
-    <div style={{ flex: 1 ,display:"flex", minHeight: "100vh"  }}>
-    <Window style={{ flex: 1 }}>
-      <WindowHeader>Scoreboard</WindowHeader>
-      <WindowContent>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableHeadCell onClick={() => sortHouses("name")}>
-                House
-              </TableHeadCell>
-              <TableHeadCell
-                onClick={() => sortHouses("total_points")}
-                sort={sortKey === "total_points" ? sortDirection : undefined}
-              >
-                Points
-              </TableHeadCell>
-              <TableHeadCell
-                onClick={() => sortHouses("total_deductions")}
-                sort={
-                  sortKey === "total_deductions" ? sortDirection : undefined
-                }
-              >
-                Deductions
-              </TableHeadCell>
-              <TableHeadCell
-                onClick={() => sortHouses("overall_points")}
-                sort={sortKey === "overall_points" ? sortDirection : undefined}
-              >
-                Overall Points
-              </TableHeadCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {houses.map((house) => (
-              <TableRow key={house.house_id} onClick={() => toggleModal(house)}>
-                <TableDataCell>{house.house_name}</TableDataCell>
-                <TableDataCell>{house.total_points}</TableDataCell>
-                <TableDataCell>{house.total_penalties}</TableDataCell>
-                <TableDataCell>
-                  {house.total_points - house.total_penalties}
-                </TableDataCell>
+    <div
+      style={{
+        flex: 1,
+        display: "flex",
+        minHeight: "100vh",
+        position: "relative",
+      }}
+    >
+      <Window style={{ flex: 1 }}>
+        <WindowHeader>Scoreboard</WindowHeader>
+        <WindowContent>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableHeadCell onClick={() => sortHouses("name")}>
+                  House
+                </TableHeadCell>
+                <TableHeadCell
+                  onClick={() => sortHouses("total_points")}
+                  sort={sortKey === "total_points" ? sortDirection : undefined}
+                >
+                  Points
+                </TableHeadCell>
+                <TableHeadCell
+                  onClick={() => sortHouses("total_deductions")}
+                  sort={
+                    sortKey === "total_deductions" ? sortDirection : undefined
+                  }
+                >
+                  Deductions
+                </TableHeadCell>
+                <TableHeadCell
+                  onClick={() => sortHouses("overall_points")}
+                  sort={
+                    sortKey === "overall_points" ? sortDirection : undefined
+                  }
+                >
+                  Overall Points
+                </TableHeadCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </WindowContent>
-    </Window>
+            </TableHead>
+            <TableBody>
+              {houses.map((house) => (
+                <TableRow
+                  key={house.house_id}
+                  onClick={() => toggleModal(house)}
+                >
+                  <TableDataCell>{house.house_name}</TableDataCell>
+                  <TableDataCell>{house.total_points}</TableDataCell>
+                  <TableDataCell>{house.total_penalties}</TableDataCell>
+                  <TableDataCell>
+                    {house.total_points - house.total_penalties}
+                  </TableDataCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </WindowContent>
+      </Window>
+      {isModalOpen && (
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          exit="hidden"
+          variants={modalVariants}
+          style={{
+            position: "absolute", // This makes the div position relative to the nearest positioned ancestor
+            top: 0,
+            left: 0,
+            minWidth: "100vw",
+            minHeight: "100vh",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 10,
+          }}
+        >
+          <Window style={windowStyle}>
+            <StyledWindowHeader>
+              <span>About {selectedHouse.house_name}</span>
+              <Button onClick={() => setIsModalOpen(false)}>
+                <CloseIcon />
+              </Button>
+            </StyledWindowHeader>
+            <WindowContent>
+              <p
+                style={{
+                  textAlign: "left",
+                  fontSize: "1.5rem",
+                  fontWeight: "bold",
+                  color: "black",
+                }}
+              >
+                {selectedHouse.house_name}
+              </p>
+              <div>
+              <img
+                src={selectedHouse.house_logo}
+                alt={selectedHouse.house_name + "-logo"}
+                width={100}
+              />
+              </div>
+
+              <p>{selectedHouse.house_description}</p>
+            </WindowContent>
+          </Window>
+        </motion.div>
+      )}
     </div>
   );
 };
