@@ -71,10 +71,13 @@ const ErrorPage = () => {
           x: dragxError,
           position: "absolute",
           top: "50%",
-          left: "0%",
+          bottom: "50%",
           width: "80%", // Responsive width
           maxWidth: "90%", // Ensures it doesn't get too large on big screens
           zIndex: 10,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
         }}
       >
         <Window style={windowStyle}>
