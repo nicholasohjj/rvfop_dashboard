@@ -7,7 +7,7 @@ import {
   TextInput,
   Button,
 } from "react95";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate, useSearchParams } from "react-router-dom"; // Import useNavigate
 import { supabaseClient } from "../../supabase/supabaseClient";
 import styled from "styled-components";
 import { motion, useMotionValue, useTransform } from "framer-motion";
@@ -56,6 +56,7 @@ export const Reset = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState(null);
+  const [searchParams] = useSearchParams();
   const dragX = useMotionValue(0);
   const dragxError = useMotionValue(0);
 
@@ -66,6 +67,8 @@ export const Reset = () => {
   const navigate = useNavigate(); // Hook for navigation
 
   useEffect(() => {
+
+    console.log(searchParams)
     const getEmail = async () => {
       const { data } = await supabaseClient.auth.getUser();
       setemail(data.user.email);
@@ -79,7 +82,7 @@ export const Reset = () => {
     getEmail();
     // Cleanup the event listener on component unmount
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  }, [searchParams]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
