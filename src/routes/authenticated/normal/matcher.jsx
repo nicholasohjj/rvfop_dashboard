@@ -52,6 +52,8 @@ const Matcher = () => {
   const [channel, setChannel] = useState(null);
   const [matching, setMatching] = useState(false);
   const [matched, setMatched] = useState(false);
+  const [partner, setPartner] = useState();
+  const [partnerStatus, setPartnerStatus] = useState(false);
   const [selectedChannel, setSelectedChannel] = useState(); // Default channel
   const [message, setMessage] = useState("");
   const [privateMessages, setPrivateMessages] = useState([]);
@@ -60,37 +62,77 @@ const Matcher = () => {
   const filter = new Filter();
   const navigate = useNavigate();
 
-  const initChannel = async (channelName) => {
-    if (channel) channel.unsubscribe(); // Unsubscribe from the previous channel
-    setPrivateMessages([]); // Clear messages from the previous channel
-    // Initialize and subscribe to the new channel
-    const newChannel = supabaseClient.channel(channelName);
-    console.log("Channel created", newChannel);
-
-    console.log("Selected channel here:", selectedChannel);
-
-    if (channelName != "matcher") {
-      const data = await fetchPrivateMessages(); // Fetch messages for the selected channel
-      
-    }
-    newChannel
-      .on("broadcast", { event: "chat" }, (payload) => {
-        // Filter or directly set messages for the selected channel
-        console.log("New message received", payload.payload);
-        setPrivateMessages((prevMessages) => [...prevMessages, payload.payload]);
-      })
-      .subscribe();
-
-    setChannel(newChannel);
-  };
-
   useEffect(() => {
-    if (!userData) initializeUserData();
+    const init = async () => {
+      setLoading(true);
+      if (!userData) await initializeUserData();
+      setLoading(false);
+    };
+    init();
   }, [userData]);
 
   useEffect(() => {
+    if (partner) {
+      console.log("Partner", partner)
+    }
+  }
+  , [partner])
 
-  }, [selectedChannel]); // Dependency array includes selectedChannel
+  useEffect(() => {
+    let isSubscribed = true;
+
+    const initChannel = async (channelName) => {
+      if (!channelName) return;
+      
+      if (channel) channel.unsubscribe(); // Unsubscribe from the previous channel
+
+      // Initialize and subscribe to the new channel
+      const newChannel = supabaseClient.channel(channelName);
+
+      console.log("Selected channel:", newChannel)
+
+      const data = await fetchPrivateMessages(selectedChannel); // Fetch messages for the selected channel
+      console.log("Data", data)
+      setPrivateMessages(data);
+
+      const userStatus = {
+        ...userData
+      }
+
+      newChannel
+      .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+        console.log('join', key, newPresences)
+
+        if (newPresences[0].id && newPresences[0].id != userData.id) {
+          setPartnerStatus(true)
+          setPartner(newPresences[0])
+        }
+      })
+      .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+        console.log('leave', key, leftPresences)
+        if (partner && leftPresences[0].id == partner.id) {
+          setPartnerStatus(false)
+          setPartner(null)
+        }
+      })
+      .subscribe(async (status) => {
+        if (status !== 'SUBSCRIBED') { return }
+      
+        const presenceTrackStatus = await newChannel.track(userStatus)
+        console.log(presenceTrackStatus)
+      })
+
+      setChannel(newChannel);
+      setLoading(false);
+    };
+
+    setPrivateMessages([]); // Clear messages from the previous channel
+    initChannel(selectedChannel); // Re-initialize channel subscription
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, [selectedChannel, userData]); // Dependency array includes selectedChannel
 
   useLayoutEffect(() => {
     const scroll = () => {
@@ -107,18 +149,8 @@ const Matcher = () => {
   const handleMatch = async () => {
 
     if (!matching) {
-    await initChannel("matcher");
-    setMatching(true);
-    
-
-    const { error } = await channel.send({
-      type: "broadcast",
-      event: "chat",
-      user_id: userData.id,
-    })
-
-    console.log("Matching started", error);
-
+      setSelectedChannel("chat");
+      setMatching(true);
     } else {
 
       if (channel) channel.unsubscribe();
@@ -126,6 +158,7 @@ const Matcher = () => {
       setMatching(false);
       setMatched(false);
       setChannel(null);
+      setPartner(null);
     }
     
       // if (!matching) {
@@ -169,7 +202,7 @@ const Matcher = () => {
     if (error || postError) {
       console.error("Sending message error:", error, postError);
     } else {
-      setMessages((prevMessages) => [...prevMessages, payload]);
+      setPrivateMessages((prevMessages) => [...prevMessages, payload]);
       setMessage("");
     }
   };
@@ -218,7 +251,11 @@ const Matcher = () => {
               height: "50vh",
             }}
           >
-            Finding a match for you...
+            {partner ? (
+              `Found a match! Say hi to ${partner.profile_name}`
+            ): (
+            `Finding a match for you...`
+            )}
             <Hourglass size={32} style={{ margin: 20 }} />
           </div>
           
