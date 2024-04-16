@@ -58,6 +58,14 @@ const Messenger = () => {
   const filter = new Filter();
   const navigate = useNavigate();
 
+  const scrollToBottom = () => {
+      const elem = scrollViewRef.current;
+      if (elem) {
+        elem.scrollTop = elem.scrollHeight;
+      }
+    };
+
+
   useEffect(() => {
     const init = async () => {
       setLoading(true);
@@ -79,6 +87,11 @@ const Messenger = () => {
     };
     init();
   }, [userData]);
+
+  useLayoutEffect(() => {
+    scrollToBottom();
+  }, [messages]); // Dependency on messages to ensure scroll after update
+
 
   useEffect(() => {
     let isSubscribed = true;
@@ -116,18 +129,6 @@ const Messenger = () => {
     };
   }, [selectedChannel]); // Dependency array includes selectedChannel
 
-  useLayoutEffect(() => {
-    const scroll = () => {
-      if (scrollViewRef.current) {
-        const scrollElement = scrollViewRef.current;
-        scrollElement.scrollTop = scrollElement.scrollHeight;
-      }
-    };
-
-    // Execute scroll to bottom on component mount and messages update
-    scroll();
-  }, [messages.length]); // Dependency on messages.length ensures scroll updates with new messages
-
   const handleChange = (e) => setMessage(e.target.value);
 
   const handleSend = async () => {
@@ -158,6 +159,7 @@ const Messenger = () => {
     } else {
       setMessages((prevMessages) => [...prevMessages, {...payload, profile_name: userData.profile_name}]);
       setMessage("");
+      scrollToBottom();
     }
   };
 
