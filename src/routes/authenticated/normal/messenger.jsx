@@ -122,7 +122,6 @@ const Messenger = () => {
 
     const payload = {
       user_id: userData.id,
-      name: userData.profile_name,
       message: sanitizedMessage,
       tm_created: new Date().toISOString(),
     };
@@ -142,7 +141,7 @@ const Messenger = () => {
     if (error || postError) {
       console.error("Sending message error:", error, postError);
     } else {
-      setMessages((prevMessages) => [...prevMessages, payload]);
+      setMessages((prevMessages) => [...prevMessages, {...payload, profile_name: userData.profile_name}]);
       setMessage("");
     }
   };
