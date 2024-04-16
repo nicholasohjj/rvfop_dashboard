@@ -19,10 +19,30 @@ const fetchChannels = async () => {
 }
 
 const fetchMessages = async (input_channel) => {
-  const { data, error } = await supabaseClient.rpc("fetch_messages", { input_channel });
+  const { data, error } = await supabaseClient
+  .from('messages')
+  .select(`
+  message_id,
+  tm_created,
+  channel,
+    message,
+    user_id,
+    profiles:user_id (
+      profile_name
+    )
+  `)
+  .eq('channel', input_channel)
   if (error) {
     throw new Error(error.message);
   }
+
+  //flatten the data
+  data.forEach(message => {
+    message.profile_name = message.profiles.profile_name;
+    delete message.profiles;
+  });
+
+  console.log("Messages", data);
   return data;
 }
 

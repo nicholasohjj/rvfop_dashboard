@@ -66,6 +66,9 @@ const Messenger = () => {
       setChannels(channels);
       setSelectedChannel(channels[0]);
 
+      console.log("Channels", channels)
+      console.log("Selected Channel", channels[0])
+
       const data = await fetchMessages(channels[0]); // Fetch messages for the selected channel
 
       console.log("Messages", data)
