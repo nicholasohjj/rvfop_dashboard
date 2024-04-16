@@ -19,7 +19,15 @@ const fetchChannels = async () => {
 }
 
 const fetchMessages = async (input_channel) => {
-  const { data, error } = await supabaseClient.from("messages").select("*");
+  const { data, error } = await supabaseClient.rpc("fetch_messages", { input_channel });
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data;
+}
+
+const fetchPrivateMessages = async (input_channel) => {
+  const { data, error } = await supabaseClient.rpc("fetch_private_messages", { input_channel });
   if (error) {
     throw new Error(error.message);
   }
@@ -154,5 +162,6 @@ export {
   fetchDeductions,
   fetchAwardedGames,
   fetchChannels,
-  fetchMessages
+  fetchMessages,
+  fetchPrivateMessages
 };

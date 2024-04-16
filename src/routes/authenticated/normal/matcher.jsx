@@ -19,7 +19,7 @@ import { supabaseClient } from "../../../supabase/supabaseClient";
 import Filter from "bad-words";
 import styled from "styled-components"; // Import styled-components
 import { useNavigate } from "react-router-dom";
-
+import { fetchPrivateMessages } from "../../../supabase/services";
 const StyledWindowHeader = styled(WindowHeader)`
   color: white; // Adjust the text color as needed for contrast
   display: flex;
@@ -52,67 +52,44 @@ const Matcher = () => {
   const [channel, setChannel] = useState(null);
   const [matching, setMatching] = useState(false);
   const [matched, setMatched] = useState(false);
-  const [selectedChannel, setSelectedChannel] = useState("General"); // Default channel
+  const [selectedChannel, setSelectedChannel] = useState(); // Default channel
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([]);
+  const [privateMessages, setPrivateMessages] = useState([]);
   const userData = useStore((state) => state.userData);
   const scrollViewRef = useRef();
   const filter = new Filter();
   const navigate = useNavigate();
+
+  const initChannel = async (channelName) => {
+    if (channel) channel.unsubscribe(); // Unsubscribe from the previous channel
+    setPrivateMessages([]); // Clear messages from the previous channel
+    // Initialize and subscribe to the new channel
+    const newChannel = supabaseClient.channel(channelName);
+    console.log("Channel created", newChannel);
+
+    console.log("Selected channel here:", selectedChannel);
+
+    if (channelName != "matcher") {
+      const data = await fetchPrivateMessages(); // Fetch messages for the selected channel
+      
+    }
+    newChannel
+      .on("broadcast", { event: "chat" }, (payload) => {
+        // Filter or directly set messages for the selected channel
+        console.log("New message received", payload.payload);
+        setPrivateMessages((prevMessages) => [...prevMessages, payload.payload]);
+      })
+      .subscribe();
+
+    setChannel(newChannel);
+  };
 
   useEffect(() => {
     if (!userData) initializeUserData();
   }, [userData]);
 
   useEffect(() => {
-    let isSubscribed = true;
 
-    const fetchMessages = async () => {
-      if (!selectedChannel) return;
-
-      console.log("Fetching messages for channel:", selectedChannel);
-      const { data, error } = await supabaseClient
-        .from("messages")
-        .select("*")
-        .eq("channel", selectedChannel.toLowerCase())
-        .order("tm_created", { ascending: true });
-
-      console.log("Fetched messages", data);
-
-      if (error) {
-        console.error("Fetching messages error:", error);
-      } else if (isSubscribed) {
-        setMessages(data);
-      }
-    };
-
-    const initChannel = async (channelName) => {
-      if (channel) channel.unsubscribe(); // Unsubscribe from the previous channel
-
-      // Initialize and subscribe to the new channel
-      const newChannel = supabaseClient.channel(channelName);
-      console.log("Channel created", newChannel);
-
-      console.log("Selected channel here:", selectedChannel);
-      await fetchMessages(); // Fetch messages for the selected channel
-      newChannel
-        .on("broadcast", { event: "chat" }, (payload) => {
-          // Filter or directly set messages for the selected channel
-          console.log("New message received", payload.payload);
-          setMessages((prevMessages) => [...prevMessages, payload.payload]);
-        })
-        .subscribe();
-
-      setChannel(newChannel);
-      setLoading(false);
-    };
-
-    setMessages([]); // Clear messages from the previous channel
-    initChannel(selectedChannel.toLowerCase()); // Re-initialize channel subscription
-
-    return () => {
-      isSubscribed = false;
-    };
   }, [selectedChannel]); // Dependency array includes selectedChannel
 
   useLayoutEffect(() => {
@@ -125,56 +102,40 @@ const Matcher = () => {
 
     // Execute scroll to bottom on component mount and messages update
     scroll();
-  }, [messages.length]); // Dependency on messages.length ensures scroll updates with new messages
-
-  const handleChange = (e) => setMessage(e.target.value);
+  }, [privateMessages.length]); // Dependency on messages.length ensures scroll updates with new messages
 
   const handleMatch = async () => {
-    try {
-      if (!matching) {
-        setMatching(true);
-        setTimeout(() => {
-          console.log("Navigating to the video");
-          window.location.href =
-            "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/Rick%20Astley%20-%20Never%20Gonna%20Give%20You%20Up%20(Official%20Music%20Video).mp4?t=2024-04-08T06%3A12%3A18.440Z";
-        }, 1000);
 
-        const { data: matches, error: selectError } = await supabaseClient
-          .from("matches")
-          .select("*")
-          .or("user1_id.is.null,user2_id.is.null")
-          .neq("user1_id", userData.id)
-          .neq("user2_id", userData.id)
-          .limit(1);
+    if (!matching) {
+    await initChannel("matcher");
+    setMatching(true);
+    
 
-        if (selectError) {
-          throw new Error(
-            "Error while fetching matches: " + selectError.message
-          );
-        }
+    const { error } = await channel.send({
+      type: "broadcast",
+      event: "chat",
+      user_id: userData.id,
+    })
 
-        if (matches.length === 0) {
-          const { data: insertedData, error: insertError } =
-            await supabaseClient
-              .from("matches")
-              .insert([{ user1_id: userData.id }])
-              .single();
-          if (insertError) {
-            throw new Error(
-              "Error while inserting match: " + insertError.message
-            );
-          }
-          console.log("No matches found");
-        } else {
-          setMatched(true);
-        }
-      } else {
-        setMatching(false);
-        console.log("Stopping matching user:", userData);
-      }
-    } catch (error) {
-      console.error("Error:", error);
+    console.log("Matching started", error);
+
+    } else {
+
+      if (channel) channel.unsubscribe();
+      
+      setMatching(false);
+      setMatched(false);
+      setChannel(null);
     }
+    
+      // if (!matching) {
+      //   setMatching(true);
+      //   setTimeout(() => {
+      //     console.log("Navigating to the video");
+      //     window.location.href =
+      //       "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/Rick%20Astley%20-%20Never%20Gonna%20Give%20You%20Up%20(Official%20Music%20Video).mp4?t=2024-04-08T06%3A12%3A18.440Z";
+      //   }, 1000);
+      // }
   };
 
   const handleSend = async () => {
@@ -213,7 +174,6 @@ const Matcher = () => {
     }
   };
 
-  if (loading) return <Loading />;
 
   return (
     <StyledWindow style={{ flex: 1, width: 320 }}>
@@ -248,15 +208,6 @@ const Matcher = () => {
         >
           {!matching ? "Match me!" : "Stop matching"}
         </Button>
-        <div style={{ alignSelf: "center", margin: "10px" }}>
-          <Tooltip text="Woof! 🐶" enterDelay={100} leaveDelay={100}>
-            <img
-              src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/matcher.png"
-              alt="rvrc-logo"
-              width={100}
-            />
-          </Tooltip>
-        </div>
         {!matched && matching && (
           <div
             style={{
@@ -270,6 +221,7 @@ const Matcher = () => {
             Finding a match for you...
             <Hourglass size={32} style={{ margin: 20 }} />
           </div>
+          
         )}
       </WindowContent>
     </StyledWindow>

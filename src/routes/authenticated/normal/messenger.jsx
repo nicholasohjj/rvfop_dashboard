@@ -49,7 +49,7 @@ const MessageBubble = styled.div`
 const Messenger = () => {
   const [loading, setLoading] = useState(true);
   const [channel, setChannel] = useState(null);
-  const [channels, setChannels] = useState(); // Example channel names
+  const [channels, setChannels] = useState([]); // Example channel names
   const [selectedChannel, setSelectedChannel] = useState("General"); // Default channel
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
@@ -60,10 +60,12 @@ const Messenger = () => {
 
   useEffect(() => {
     const init = async () => {
+      setLoading(true);
       if (!userData) await initializeUserData();
       const channels = await fetchChannels();
       setChannels(channels);
       setSelectedChannel(channels[0]);
+      setLoading(false);
     };
     init();
   }, [userData]);
@@ -71,33 +73,15 @@ const Messenger = () => {
   useEffect(() => {
     let isSubscribed = true;
 
-    const fetchMessages2 = async () => {
-      if (!selectedChannel) return;
-      console.log("Fetching messages for channel:", selectedChannel);
-
-
-      
-
-      const { data, error } = await supabaseClient.rpc("fetch_messages", {
-        input_channel: selectedChannel
-      });
-
-      console.log("Fetched messages", data, error);
-
-      if (error) {
-        console.error("Fetching messages error:", error);
-      } else if (isSubscribed) {
-        setMessages(data);
-      }
-    };
-
     const initChannel = async (channelName) => {
       if (channel) channel.unsubscribe(); // Unsubscribe from the previous channel
 
       // Initialize and subscribe to the new channel
       const newChannel = supabaseClient.channel(channelName);
 
-      await fetchMessages2(); // Fetch messages for the selected channel
+      const data = await fetchMessages(selectedChannel); // Fetch messages for the selected channel
+      console.log("Data", data)
+      setMessages(data);
       newChannel
         .on("broadcast", { event: "chat" }, (payload) => {
           // Filter or directly set messages for the selected channel
@@ -110,7 +94,7 @@ const Messenger = () => {
     };
 
     setMessages([]); // Clear messages from the previous channel
-    initChannel(selectedChannel.toLowerCase()); // Re-initialize channel subscription
+    initChannel(selectedChannel); // Re-initialize channel subscription
 
     return () => {
       isSubscribed = false;
@@ -237,7 +221,7 @@ const Messenger = () => {
               overflow: "auto",
             }}
           >
-            {messages.map((message, index) => {
+            {messages && messages.map((message, index) => {
               const previousMessage = messages[index - 1];
               const isStartOfNewDay =
                 index === 0 ||
