@@ -65,7 +65,12 @@ const Messenger = () => {
       const channels = await fetchChannels();
       setChannels(channels);
       setSelectedChannel(channels[0]);
+
+      const data = await fetchMessages(selectedChannel); // Fetch messages for the selected channel
+      setMessages(data);
       setLoading(false);
+
+      
     };
     init();
   }, [userData]);
@@ -74,10 +79,16 @@ const Messenger = () => {
     let isSubscribed = true;
 
     const initChannel = async (channelName) => {
+      if (channelName === "" || !isSubscribed) return; // Avoid initializing with an empty channel name (e.g., on component mount
+      
+      // check if new channel is same as the current channel
+      if (channel && channelName === channel.channelName) return;
       if (channel) channel.unsubscribe(); // Unsubscribe from the previous channel
 
-      // Initialize and subscribe to the new channel
       const newChannel = supabaseClient.channel(channelName);
+
+
+      // Initialize and subscribe to the new channel
 
       const data = await fetchMessages(selectedChannel); // Fetch messages for the selected channel
       console.log("Data", data)
@@ -90,7 +101,6 @@ const Messenger = () => {
         .subscribe();
 
       setChannel(newChannel);
-      setLoading(false);
     };
 
     setMessages([]); // Clear messages from the previous channel
