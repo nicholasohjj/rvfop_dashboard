@@ -7,7 +7,7 @@ import {
 import ErrorPage from "./routes/errorpage";
 import { Login } from "./routes/login";
 import { Layout } from "./layout";
-import Scoreboard from "./routes/authenticated/normal/scoreboard";
+import Scoreboard from "./routes/scoreboard";
 import Loading from "./routes/loading";
 import Progress from "./routes/authenticated/normal/progress";
 import { supabaseClient } from "./supabase/supabaseClient";

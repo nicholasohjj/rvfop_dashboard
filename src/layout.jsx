@@ -18,20 +18,6 @@ const modalVariants = {
   },
 };
 
-const bounce = keyframes`
-  0% { transform: translateX(-100%) scale(0.5); opacity: 0; }
-  30% { transform: translateX(0%) scale(1.2); opacity: 1; }
-  70% { transform: translateX(50vw) scale(1.2); opacity: 1; }
-  100% { transform: translateX(100vw) scale(0.5); opacity: 0; }
-`;
-
-const CatAnimation = styled.div`
-  position: fixed;
-  left: -100%;
-  top: 50%;
-  animation: ${bounce} 5s linear forwards;
-`;
-
 const Container = styled.div`
   flex: 1;
   max-width: 100vw;
@@ -60,7 +46,6 @@ export const Layout = () => {
     "a",
   ];
   const [inputSequence, setInputSequence] = useState([]);
-  const [showCat, setShowCat] = useState(false);
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -71,9 +56,8 @@ export const Layout = () => {
         sequence.shift(); // Keep the array no longer than the Konami Code
       }
       if (JSON.stringify(sequence) === JSON.stringify(konamiCode)) {
-        console.log("Konami Code activated!");
-        setShowCat(true);
-        setTimeout(() => setShowCat(false), 5000); // Adjust time based on animation duration
+
+        window.open("https://t.me/+tPTYz0NmYDBkYjY1", "_blank");
         sequence = []; // Reset sequence
       }
       return sequence;
@@ -114,15 +98,6 @@ export const Layout = () => {
         variants={modalVariants}
       >
         <ContentArea>
-          {showCat && (
-            <CatAnimation>
-              <img
-                src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/error.png"
-                alt="Dashing Cat"
-                style={{ width: "100px" }}
-              />
-            </CatAnimation>
-          )}
           <Outlet />
         </ContentArea>
       </motion.div>

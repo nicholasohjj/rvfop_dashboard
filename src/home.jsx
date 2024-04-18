@@ -6,7 +6,7 @@ import { useStore, initializeUserData } from "./context/userContext";
 import { useEffect, useCallback, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import "./style.css"; // Make sure this points to your CSS file
-import Scoreboard from "./routes/authenticated/normal/scoreboard";
+import Scoreboard from "./routes/scoreboard";
 
 const modalVariants = {
   hidden: {
