@@ -187,7 +187,7 @@ const AddDeduction = () => {
           <GroupBox
           style={{ marginBottom: "20px" }}
           >
-            You have {group.total_points} points in total. You can deduct a maximum of {group.total_points} points.
+            You have {group.total_points} points in total. You can deduct a maximum of {group.total_points} points. Note: You can only deduct points from other houses with points.
           </GroupBox>
         )}
 
