@@ -110,10 +110,8 @@ const AddDeduction = () => {
         }
 
         if (houses.length == 1) {
-          console.log(houses);
           const housesData = await fetchHouses();
 
-          console.log(housesData);
           setHouses([
             { house_id: "", house_name: "Select a house", total_points: 0 },
             ...housesData.sort((a, b) => b.total_points - a.total_points),
@@ -187,6 +185,8 @@ const AddDeduction = () => {
         <span>Add Deduction</span>
       </WindowHeader>
       <WindowContent style={{ overflowX: "visible" }}>
+      <GroupBox marginBottom="10px">
+            You have {group.total_points} points in total. You can deduct a maximum of {group.total_points} points.
         {group?.total_points && (
           <GroupBox marginBottom="10px">
             You have {group.total_points} points in total. You can deduct a maximum of {group.total_points} points.
