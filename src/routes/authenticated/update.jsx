@@ -6,6 +6,7 @@ import {
   WindowContent,
   TextInput,
   Button,
+  Anchor
 } from "react95";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
@@ -159,6 +160,10 @@ export const Update = () => {
             <span>Update your password</span>
           </WindowHeader>
           <WindowContent>
+          <p style={{ display: "flex" }}>
+              Enter your new password below. Make sure it is at least 6
+              characters.
+            </p>
             <form onSubmit={handleSubmit}>
               <div>
                 <p style={{ display: "flex" }}>Email address</p>
@@ -200,12 +205,13 @@ export const Update = () => {
                 }}
               />
               <br />
-              <div style={{ display: "flex", justifyContent: "space-around" }}>
-                <Button onClick={() => handleReturnHome()}>Return home</Button>
+              <div style={{ display: "flex", flexDirection: "column"}}>
                 <Button type="submit" value="login">
                   Update
                 </Button>
+                <Anchor href="/">Return home</Anchor>
               </div>
+
             </form>
           </WindowContent>
         </Window>
