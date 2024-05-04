@@ -53,6 +53,9 @@ const StyledWindowHeader = styled(WindowHeader)`
 export const Update = () => {
   const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
+  const [isloading, setIsloading] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordsMatch, setPasswordsMatch] = useState(true);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState(null);
@@ -77,6 +80,10 @@ export const Update = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  useEffect(() => {
+    setPasswordsMatch(password === confirmPassword);
+  }, [password, confirmPassword]);
+
   const handleReturnHome = () => {
     setPassword("");
     navigate("/", { replace: true });
@@ -84,6 +91,16 @@ export const Update = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!passwordsMatch) {
+      setError({
+        name: "Password Mismatch",
+        message: "Passwords do not match.",
+      });
+      setIsModalOpen(true);
+      return;
+    }
+
+    setIsloading(true);
 
     try {
       const { data, error } = await supabaseClient.auth.updateUser({
@@ -95,9 +112,10 @@ export const Update = () => {
       }
 
       supabaseClient.auth.getSession().then(({ data: { session } }) => {});
-
+      setIsloading(false);
       navigate("/", { replace: true });
     } catch (error) {
+      setIsloading(false);
       setIsModalOpen(true);
       setError(error);
     }
@@ -143,38 +161,50 @@ export const Update = () => {
           <WindowContent>
             <form onSubmit={handleSubmit}>
               <div>
-                <div style={{ display: "flex" }}>
-                  <TextInput
-                    placeholder="Email Address"
-                    style={{ flex: 1 }}
-                    value={email}
-                    disabled
-                    onChange={(e) => {
-                      setemail(e.target.value);
-                    }}
-                  />
-                </div>
-                <br />
+                <p style={{ display: "flex" }}>Email address</p>
                 <TextInput
-                  placeholder="Password"
+                  placeholder=""
                   style={{ flex: 1 }}
-                  type="password"
-                  value={password}
+                  value={email}
+                  disabled
                   onChange={(e) => {
-                    setPassword(e.target.value);
+                    setemail(e.target.value);
                   }}
                 />
-                <br />
-                <div
-                  style={{ display: "flex", justifyContent: "space-around" }}
-                >
-                  <Button onClick={() => handleReturnHome()}>
-                    Return home
-                  </Button>
-                  <Button type="submit" value="login">
-                    Update
-                  </Button>
-                </div>
+              </div>
+              <br />
+              <p style={{ display: "flex" }}>New Password</p>
+              <TextInput
+                placeholder=""
+                style={{ flex: 1 }}
+                type="password"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                }}
+              />
+              <br />
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <p style={{ display: "flex" }}>Confirm your new password</p>
+                {!passwordsMatch && (
+                  <p style={{ color: "red" }}>Passwords do not match.</p>
+                )}
+              </div>
+              <TextInput
+                placeholder=""
+                style={{ flex: 1 }}
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                }}
+              />
+              <br />
+              <div style={{ display: "flex", justifyContent: "space-around" }}>
+                <Button onClick={() => handleReturnHome()}>Return home</Button>
+                <Button type="submit" value="login">
+                  Update
+                </Button>
               </div>
             </form>
           </WindowContent>

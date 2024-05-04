@@ -55,7 +55,7 @@ export const Reset = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordsMatch, setPasswordsMatch] = useState(true);
-  const [isloading, setIsloading] = useState(false)
+  const [isloading, setIsloading] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState(null);
@@ -70,8 +70,7 @@ export const Reset = () => {
   const navigate = useNavigate(); // Hook for navigation
 
   useEffect(() => {
-
-    console.log(searchParams)
+    console.log(searchParams);
     const getEmail = async () => {
       const { data } = await supabaseClient.auth.getUser();
       setemail(data.user.email);
@@ -91,16 +90,18 @@ export const Reset = () => {
     setPasswordsMatch(password === confirmPassword);
   }, [password, confirmPassword]);
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!passwordsMatch) {
-      setError({ name: "Password Mismatch", message: "Passwords do not match." });
+      setError({
+        name: "Password Mismatch",
+        message: "Passwords do not match.",
+      });
       setIsModalOpen(true);
       return;
     }
 
-    setIsloading(true)
+    setIsloading(true);
 
     try {
       const { data, error } = await supabaseClient.auth.updateUser({
@@ -112,10 +113,10 @@ export const Reset = () => {
       }
 
       supabaseClient.auth.getSession().then(({ data: { session } }) => {});
-      setIsloading(false)
+      setIsloading(false);
       navigate("/", { replace: true });
     } catch (error) {
-      setIsloading(false)
+      setIsloading(false);
       setIsModalOpen(true);
       setError(error);
     }
@@ -159,13 +160,14 @@ export const Reset = () => {
             <span>Reset your password</span>
           </WindowHeader>
           <WindowContent>
-          <p style={{display:"flex"}}>
-                  Enter your new password below. Make sure it is at least 6 characters.
-                </p>
-                <br/>
+            <p style={{ display: "flex" }}>
+              Enter your new password below. Make sure it is at least 6
+              characters.
+            </p>
+            <br />
             <form onSubmit={handleSubmit}>
               <div>
-                <p style={{display:"flex"}}>Email address</p>
+                <p style={{ display: "flex" }}>Email address</p>
                 <div style={{ display: "flex" }}>
                   <TextInput
                     placeholder=""
@@ -178,9 +180,7 @@ export const Reset = () => {
                   />
                 </div>
                 <br />
-                <p style={{display:"flex"}}>
-                  New password
-                </p>
+                <p style={{ display: "flex" }}>New password</p>
                 <TextInput
                   placeholder=""
                   style={{ flex: 1 }}
@@ -190,14 +190,14 @@ export const Reset = () => {
                     setPassword(e.target.value);
                   }}
                 />
-                <br/>
-                <div style={{display:"flex",  justifyContent:"space-between"}}>
-                <p style={{display:"flex"}}>
-                  Confirm your new password
-                </p>
-                {!passwordsMatch && (
-                  <p style={{ color: "red" }}>Passwords do not match.</p>
-                )}
+                <br />
+                <div
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                >
+                  <p style={{ display: "flex" }}>Confirm your new password</p>
+                  {!passwordsMatch && (
+                    <p style={{ color: "red" }}>Passwords do not match.</p>
+                  )}
                 </div>
                 <TextInput
                   placeholder=""
@@ -208,7 +208,7 @@ export const Reset = () => {
                     setConfirmPassword(e.target.value);
                   }}
                 />
-                <br/>
+                <br />
                 <Button type="submit" value="login">
                   Update
                 </Button>
