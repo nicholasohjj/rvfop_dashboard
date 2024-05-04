@@ -238,8 +238,7 @@ export const Login = () => {
                       Sign in
                     </Button>
                     <div style={{marginTop:"5px"}}>
-                      New to Insieme?
-                      <Anchor href="/signup">Create an account </Anchor>
+                      New to Insieme?<Anchor href="/signup"> Create an account</Anchor>
                     </div>
                   </div>
                 </div>
