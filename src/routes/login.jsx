@@ -89,38 +89,6 @@ export const Login = () => {
     },
   };
 
-  const handleResetPassword = async () => {
-    if (!email) {
-      setIsModalOpen(true);
-      setError({
-        name: "Error",
-        message: "Please enter your email address.",
-      });
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-        redirectTo: "https://insieme.vercel.app/reset",
-      });
-
-      if (error) {
-        throw error;
-      }
-      setIsLoading(false);
-      setIsModalOpen(true);
-      setError({
-        name: "Password Reset Email Sent",
-        message: `An email has been sent to ${email} with a link to reset your password.`,
-      });
-    } catch (error) {
-      setIsLoading(false);
-      setIsModalOpen(true);
-      setError(error);
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -153,6 +121,7 @@ export const Login = () => {
     }
 
     try {
+      setIsLoading(true);
       const { data, error } = await supabaseClient.auth.signInWithPassword({
         email,
         password,
@@ -164,9 +133,11 @@ export const Login = () => {
         console.log("Error");
         throw error;
       }
+      setIsLoading(false);
 
       navigate("/", { replace: true });
     } catch (error) {
+      setIsLoading(false);
       setIsModalOpen(true);
       setError(error);
     }
