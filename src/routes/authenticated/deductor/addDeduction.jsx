@@ -189,8 +189,7 @@ const AddDeduction = () => {
       <WindowContent style={{ overflowX: "visible" }}>
         {group?.total_points && (
           <GroupBox marginBottom="10px">
-            You have {group.total_points} points in total. You can deduct a
-            maximum of {group.total_points} points.
+            You have {group.total_points} points in total. You can deduct a maximum of {group.total_points} points.
           </GroupBox>
         )}
 
