@@ -25,6 +25,7 @@ import { Profile } from "./routes/authenticated/profile";
 import { Signup } from "./routes/signup";
 import { Home } from "./home";
 import { SignupByInvite } from "./routes/authenticated/signUpByInvite";
+import { ResetForm } from "./routes/resetForm";
 const App = () => {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -120,6 +121,17 @@ const App = () => {
         <Loading />
       ) : !session ? (
         <Signup />
+      ) : (
+        <Navigate to="/home" replace />
+      ),
+      errorElement: <ErrorPage />,
+    },
+    {
+      path: "/resetform",
+      element: loading ? (
+        <Loading />
+      ) : !session ? (
+        <ResetForm />
       ) : (
         <Navigate to="/home" replace />
       ),

@@ -5,8 +5,6 @@ import {
   WindowContent,
   TextInput,
   Button,
-  Anchor,
-  Tooltip,
   Hourglass,
 } from "react95";
 import { motion, useMotionValue, useTransform } from "framer-motion";
@@ -52,12 +50,12 @@ const StyledWindowHeader = styled(WindowHeader)`
   align-items: center;
 `;
 
-export const Login = () => {
+export const ResetForm = () => {
   const [email, setemail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [password, setPassword] = useState("");
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [sent, setSent] = useState(false);
   const [error, setError] = useState(null);
   const constraintsRef = useRef(null);
   const navigate = useNavigate(); // Hook for navigation
@@ -89,7 +87,8 @@ export const Login = () => {
     },
   };
 
-  const handleResetPassword = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     if (!email) {
       setIsModalOpen(true);
       setError({
@@ -110,63 +109,13 @@ export const Login = () => {
       }
       setIsLoading(false);
       setIsModalOpen(true);
+      setSent(true);
       setError({
         name: "Password Reset Email Sent",
         message: `An email has been sent to ${email} with a link to reset your password.`,
       });
     } catch (error) {
       setIsLoading(false);
-      setIsModalOpen(true);
-      setError(error);
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!email || !password) {
-      setIsModalOpen(true);
-      setError({
-        name: "Error",
-        message: "Email and password are required.",
-      });
-      return;
-    }
-
-    // check if email is valid and password is at least 6 chars
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setIsModalOpen(true);
-      setError({
-        name: "Error",
-        message: "Please enter a valid email address.",
-      });
-      return;
-    }
-
-    if (password.length < 6) {
-      setIsModalOpen(true);
-      setError({
-        name: "Error",
-        message: "Password must be at least 6 characters.",
-      });
-      return;
-    }
-
-    try {
-      const { data, error } = await supabaseClient.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      console.log(data, error);
-
-      if (error) {
-        console.log("Error");
-        throw error;
-      }
-
-      navigate("/", { replace: true });
-    } catch (error) {
       setIsModalOpen(true);
       setError(error);
     }
@@ -200,21 +149,14 @@ export const Login = () => {
       >
         <Window style={windowStyle}>
           <WindowHeader>
-            <span>Insieme 2024</span>
+            <span>Reset your password</span>
           </WindowHeader>
-          <div style={{ marginTop: 8 }}>
-            <Tooltip text="Meow! 🐱‍" enterDelay={100} leaveDelay={100}>
-              <img
-                src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/logo.png"
-                alt="rvrc-logo"
-                width={100}
-                onClick={() => {
-                  window.open("https://www.instagram.com/rvrcfop", "_blank");
-                }}
-              />
-            </Tooltip>
-          </div>
+
+
           <WindowContent>
+          <p style={{display:"flex"}}>
+          Enter your user account&apos;s verified email address and we will send you a password reset link.
+          </p>
             {isLoading ? (
               <div
                 style={{
@@ -240,22 +182,6 @@ export const Login = () => {
                       }}
                     />
                   <br />
-                    <div style={{display:"flex", justifyContent:"space-between", flexDirection:"row"}}>
-                    <p style={{ justifySelf: "left" }}>Password</p>
-                      <Anchor href="/resetform">
-                        Forgot your password?
-                      </Anchor>
-                    </div>
-                    <TextInput
-                      placeholder=""
-                      style={{ flex: 1 }}
-                      type="password"
-                      value={password}
-                      onChange={(e) => {
-                        setPassword(e.target.value);
-                      }}
-                    />
-                  <br />
                   <div
                     style={{
                       display: "flex",
@@ -263,13 +189,9 @@ export const Login = () => {
                       justifyContent: "space-around",
                     }}
                   >
-                    <Button type="submit" value="login">
-                      Sign in
+                    <Button type="submit" value="reset">
+                      Send password reset email
                     </Button>
-                    <div style={{marginTop:"5px"}}>
-                      New to Insieme?
-                      <Anchor href="/signup">Create an account </Anchor>
-                    </div>
                   </div>
                 </div>
               </form>
@@ -313,7 +235,12 @@ export const Login = () => {
             <Window style={windowStyle}>
               <StyledWindowHeader>
                 <span>{error.name} ⚠️</span>
-                <Button onClick={() => setIsModalOpen(false)}>
+                <Button onClick={() => {
+                  if (setSent) {
+                    navigate("/");
+                  setSent(false);
+                  }
+                  setIsModalOpen(false)}}>
                   <CloseIcon />
                 </Button>
               </StyledWindowHeader>
