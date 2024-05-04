@@ -53,6 +53,9 @@ const StyledWindowHeader = styled(WindowHeader)`
 export const Reset = () => {
   const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordsMatch, setPasswordsMatch] = useState(true);
+  const [isloading, setIsloading] = useState(false)
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState(null);
@@ -84,8 +87,20 @@ export const Reset = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, [searchParams]);
 
+  useEffect(() => {
+    setPasswordsMatch(password === confirmPassword);
+  }, [password, confirmPassword]);
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!passwordsMatch) {
+      setError({ name: "Password Mismatch", message: "Passwords do not match." });
+      setIsModalOpen(true);
+      return;
+    }
+
+    setIsloading(true)
 
     try {
       const { data, error } = await supabaseClient.auth.updateUser({
@@ -97,9 +112,10 @@ export const Reset = () => {
       }
 
       supabaseClient.auth.getSession().then(({ data: { session } }) => {});
-
+      setIsloading(false)
       navigate("/", { replace: true });
     } catch (error) {
+      setIsloading(false)
       setIsModalOpen(true);
       setError(error);
     }
@@ -143,11 +159,16 @@ export const Reset = () => {
             <span>Reset your password</span>
           </WindowHeader>
           <WindowContent>
+          <p style={{display:"flex"}}>
+                  Enter your new password below. Make sure it is at least 6 characters.
+                </p>
+                <br/>
             <form onSubmit={handleSubmit}>
               <div>
+                <p style={{display:"flex"}}>Email address</p>
                 <div style={{ display: "flex" }}>
                   <TextInput
-                    placeholder="Email Address"
+                    placeholder=""
                     style={{ flex: 1 }}
                     value={email}
                     disabled
@@ -157,8 +178,11 @@ export const Reset = () => {
                   />
                 </div>
                 <br />
+                <p style={{display:"flex"}}>
+                  New password
+                </p>
                 <TextInput
-                  placeholder="Password"
+                  placeholder=""
                   style={{ flex: 1 }}
                   type="password"
                   value={password}
@@ -166,8 +190,25 @@ export const Reset = () => {
                     setPassword(e.target.value);
                   }}
                 />
-                <br />
-
+                <br/>
+                <div style={{display:"flex",  justifyContent:"space-between"}}>
+                <p style={{display:"flex"}}>
+                  Confirm your new password
+                </p>
+                {!passwordsMatch && (
+                  <p style={{ color: "red" }}>Passwords do not match.</p>
+                )}
+                </div>
+                <TextInput
+                  placeholder=""
+                  style={{ flex: 1 }}
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => {
+                    setConfirmPassword(e.target.value);
+                  }}
+                />
+                <br/>
                 <Button type="submit" value="login">
                   Update
                 </Button>
