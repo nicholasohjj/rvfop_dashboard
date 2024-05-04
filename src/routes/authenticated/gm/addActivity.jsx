@@ -214,7 +214,7 @@ const AddActivity = () => {
     try {
       await addGroupActivity(newGroupActivity);
       setNewActivity({ activity_name: "", description: "" });
-      navigate("/progress");
+      navigate("/games");
     } catch (error) {
       console.error("Error adding group activity: ", error);
       setError("Failed to add group activity"); // Set an error message to display in your modal

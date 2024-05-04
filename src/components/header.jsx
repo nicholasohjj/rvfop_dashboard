@@ -65,11 +65,11 @@ export const Header = () => {
                 Add Activity
               </MenuListItem>
             )}
-            {userData?.role == "admin" && (
+            {(userData?.role == "admin" || userData?.role == "deductor") && (
               <MenuListItem onClick={() => navigate("/adddeduction")}>
                 <img
                   src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/adddeduction.png"
-                  alt="add_activity"
+                  alt="add_deduction"
                   style={{ height: "20px", marginRight: 4 }}
                 />
                 Add Deduction
