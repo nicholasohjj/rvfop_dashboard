@@ -195,7 +195,13 @@ const Scoreboard = () => {
                   onClick={() => sortHouses("total_points")}
                   sort={sortKey === "total_points" ? sortDirection : undefined}
                 >
-                  Points
+                  Points (Tribal)
+                </TableHeadCell>
+                <TableHeadCell
+                  onClick={() => sortHouses("total_points")}
+                  sort={sortKey === "total_points" ? sortDirection : undefined}
+                >
+                  Points (Pro-humans)
                 </TableHeadCell>
                 <TableHeadCell
                   onClick={() => sortHouses("total_deductions")}
@@ -223,6 +229,7 @@ const Scoreboard = () => {
                 >
                   <TableDataCell>{house.house_name}</TableDataCell>
                   <TableDataCell>{house.total_points}</TableDataCell>
+                  <TableDataCell>{house.pro_human_points}</TableDataCell>
                   <TableDataCell>{house.total_penalties}</TableDataCell>
                   <TableDataCell>
                     {house.total_points - house.total_penalties}
