@@ -198,12 +198,6 @@ const Scoreboard = () => {
                   Points (Tribal)
                 </TableHeadCell>
                 <TableHeadCell
-                  onClick={() => sortHouses("total_points")}
-                  sort={sortKey === "total_points" ? sortDirection : undefined}
-                >
-                  Points (Pro-humans)
-                </TableHeadCell>
-                <TableHeadCell
                   onClick={() => sortHouses("total_deductions")}
                   sort={
                     sortKey === "total_deductions" ? sortDirection : undefined
@@ -219,6 +213,12 @@ const Scoreboard = () => {
                 >
                   Overall Points
                 </TableHeadCell>
+                <TableHeadCell
+                  onClick={() => sortHouses("total_points")}
+                  sort={sortKey === "total_points" ? sortDirection : undefined}
+                >
+                  Points (Pro-humans)
+                </TableHeadCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -229,11 +229,12 @@ const Scoreboard = () => {
                 >
                   <TableDataCell>{house.house_name}</TableDataCell>
                   <TableDataCell>{house.total_points}</TableDataCell>
-                  <TableDataCell>{house.pro_human_points}</TableDataCell>
                   <TableDataCell>{house.total_penalties}</TableDataCell>
                   <TableDataCell>
                     {house.total_points - house.total_penalties}
                   </TableDataCell>
+                  <TableDataCell>{house.pro_human_points}</TableDataCell>
+
                 </TableRow>
               ))}
             </TableBody>
