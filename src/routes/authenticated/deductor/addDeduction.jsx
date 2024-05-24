@@ -10,10 +10,10 @@ import {
 } from "react95";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import Loading from "../loading";
+import Loading from "../../loading";
 import { motion, useMotionValue, useTransform } from "framer-motion";
-import { fetchHouses, fetchGroup, addDeduction } from "../../supabase/services";
-import { useStore, initializeUserData } from "../../context/userContext";
+import { fetchGroups, fetchGroup, addDeduction } from "../../../supabase/services";
+import { useStore, initializeUserData } from "../../../context/userContext";
 // Styled components
 const StyledWindow = styled(Window)`
   flex: 1;
@@ -77,12 +77,10 @@ const PointsSection = styled.div`
 // Main component
 const AddDeduction = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const [houses, setHouses] = useState([
-    { house_id: "", house_name: "Select a house", total_points: 0 },
-  ]);
+  const [groups, setGroups] = useState([]); // Add groups state
   const [loading, setLoading] = useState(true);
   const [group, setGroup] = useState(null);
-  const [selectedHouse, setSelectedHouse] = useState(null);
+  const [selectedGroup, setSelectedGroup] = useState(null);
   const [deductionPoints, setDeductionPoints] = useState(0);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -99,24 +97,24 @@ const AddDeduction = () => {
       try {
         if (!userData) {
           await initializeUserData();
-          if (!["deductor", "admin"].includes(userData.role)) {
-            navigate("/", { replace: true });
+          if (!['deductor', 'admin'].includes(userData?.role)) {
+            navigate('/', { replace: true });
           }
         }
+        if (groups.length < 1) {
+          fetchGroups().then((data) => {
+          setGroups(data);
+          console.log("Groups", data);
+        });
+      }
 
-        if (!group) {
-          const groupData = await fetchGroup();
-          setGroup(groupData);
-        }
+      if (!group) {
+        const groupData = await fetchGroup();
+        setGroup(groupData);  
+      }
 
-        if (houses.length == 1) {
-          const housesData = await fetchHouses();
 
-          setHouses([
-            { house_id: "", house_name: "Select a house", total_points: 0 },
-            ...housesData.sort((a, b) => b.total_points - a.total_points),
-          ]);
-        }
+
       } catch (error) {
         setError(error.message);
         console.error("Initialization error:", error);
@@ -125,22 +123,18 @@ const AddDeduction = () => {
       }
     };
 
-    if (!group || !houses.length > 1) {
       init();
-    } else {
-      setLoading(false);
-    }
-  }, [group, houses, userData]); // Update dependencies
+  }, [group, groups, navigate, userData]); // Update dependencies
 
   const handleAddDeduction = async () => {
-    if (!selectedHouse || deductionPoints <= 0) {
-      setError("Please select a house and specify the points to deduct.");
+    if (!selectedGroup || deductionPoints <= 0) {
+      setError('Please select a group and specify the points to deduct.');
       setIsModalOpen(true);
       return;
     }
 
     const deduction = {
-      house_id: selectedHouse.house_id,
+      deducted_group_id: selectedGroup.group_id,
       group_id: group.group_id,
       points_deducted: deductionPoints,
     };
@@ -153,6 +147,7 @@ const AddDeduction = () => {
       setError(error.message); // Set an error message to display in your modal
       setIsModalOpen(true); // Open the modal to display the error
     }
+
   };
 
   if (loading) return <Loading />;
@@ -175,7 +170,7 @@ const AddDeduction = () => {
 
   const handleSelectChange = (selectedOption) => {
     console.log(selectedOption);
-    setSelectedHouse(selectedOption.value); // Assuming `value` here is `house_id`
+    setSelectedGroup(selectedOption.value);
     setDeductionPoints(0);
   };
 
@@ -185,43 +180,41 @@ const AddDeduction = () => {
         <span>Add Deduction</span>
       </WindowHeader>
       <WindowContent style={{ overflowX: "visible" }}>
-      <GroupBox marginBottom="10px">
-            You have {group.total_points} points in total. You can deduct a maximum of {group.total_points} points.
-        {group?.total_points && (
-          <GroupBox marginBottom="10px">
-            You have {group.total_points} points in total. You can deduct a maximum of {group.total_points} points.
+      {group?.total_points>=0 && (
+          <GroupBox
+          style={{ marginBottom: "20px" }}
+          >
+            You have {group.total_points} points in total. You can deduct a maximum of {group.total_points} points. Note: You can only deduct points from other groups with points.
           </GroupBox>
         )}
 
-        <GroupBox label="Select House to Deduct">
-          <Select
-            value={selectedHouse}
+        <GroupBox label="Select Group to Deduct">
+        <Select
+            value={selectedGroup}
             onChange={handleSelectChange}
-            options={houses.map((house) => ({
-              label: house.house_id
-                ? `${house.house_name} (${house.total_points} points)`
-                : house.house_name,
-              value: house,
+            options={groups.map(group => ({
+              label: `${group.group_name} (${group.total_points} points)`,
+              value: group,
             }))}
             width="100%"
           />
         </GroupBox>
 
-        {group?.total_points && selectedHouse && selectedHouse.house_id && (
+        {group?.total_points >= 0 && selectedGroup && selectedGroup.group_id && (
           <PointsSection>
             <p>Points to deduct: </p>
             <NumberInput
               value={deductionPoints}
-              onChange={(value) => setDeductionPoints(Number(value))}
+              onChange={value => setDeductionPoints(Number(value))}
               step={20}
               min={0}
-              max={Math.min(group.total_points, selectedHouse.total_points)}
+              max={Math.min(group.total_points, selectedGroup.total_points)}
             />
           </PointsSection>
         )}
         <ActionButtonsContainer>
           <Button onClick={() => navigate("/")}>Go back</Button>
-          {selectedHouse && deductionPoints > 0 && (
+          {selectedGroup && deductionPoints > 0 && (
             <Button onClick={handleAddDeduction}>Deduct</Button>
           )}
         </ActionButtonsContainer>

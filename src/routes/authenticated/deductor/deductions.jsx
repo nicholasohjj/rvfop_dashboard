@@ -14,9 +14,9 @@ import {
 } from "react95";
 import styled from "styled-components";
 import { motion, useMotionValue, useTransform } from "framer-motion";
-import Loading from "../loading";
-import { fetchGroup, fetchDeductions } from "../../supabase/services";
-import { useStore, initializeUserData } from "../../context/userContext";
+import Loading from "../../loading";
+import { fetchGroup, fetchDeductions } from "../../../supabase/services";
+import { useStore, initializeUserData } from "../../../context/userContext";
 import { useNavigate } from "react-router-dom";
 
 const CloseIcon = styled.div`
