@@ -180,13 +180,14 @@ const AddDeduction = () => {
         <span>Add Deduction</span>
       </WindowHeader>
       <WindowContent style={{ overflowX: "visible" }}>
-      {group?.total_points>=0 && (
+      {group?.total_points>=0 ? (
+        <div>
           <GroupBox
           style={{ marginBottom: "20px" }}
           >
             You have {group.total_points} points in total. You can deduct a maximum of {group.total_points} points. Note: You can only deduct points from other groups with points.
           </GroupBox>
-        )}
+        
 
         <GroupBox label="Select Group to Deduct">
         <Select
@@ -261,6 +262,13 @@ const AddDeduction = () => {
                 <WindowContent>{error}</WindowContent>
               </Window>
             </motion.div>
+          </div>
+        )}
+                </div>
+
+        ) : (
+          <div style={{ textAlign: "center", margin: "20px 0" }}>
+          You are not associated with any Pro-human group.
           </div>
         )}
       </WindowContent>

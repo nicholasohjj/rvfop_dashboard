@@ -171,7 +171,6 @@ const Progress = () => {
           flexDirection: "column", // Stack children vertically
         }}
       >
-        {" "}
         {groupData && (
           <GroupBox label={`Group: ${groupData.group_name}`}>
             Total Points Earned: {groupData.total_points}
