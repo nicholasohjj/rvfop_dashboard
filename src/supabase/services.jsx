@@ -42,7 +42,6 @@ const fetchMessages = async (input_channel) => {
     delete message.profiles;
   });
 
-  console.log("Messages", data);
   return data;
 }
 
@@ -60,7 +59,6 @@ const fetchUser = async () => {
 
   const { data, error } = await supabaseClient.rpc("get_profile");
 
-  console.log("User", data, error);
   return data;
 };
 
@@ -85,7 +83,6 @@ const fetchGroup = async () => {
 
   if (fetchedGroupData && fetchedGroupData.length > 0) {
     const group = fetchedGroupData[0]; // Assuming the first group is what you're interested in
-    console.log("Group", group);
     return group;
   }
 };
@@ -98,7 +95,6 @@ const fetchGroupActivities = async (group_id) => {
     }
   );
 
-  console.log("Activities", activityData, activityError);
 
   if (activityError) throw activityError;
   activityData.sort((a, b) => new Date(b.tm_created) - new Date(a.tm_created));
@@ -128,7 +124,6 @@ const fetchAwardedGames = async (gm_id) => {
   });
   if (error) throw error;
 
-  console.log("Awarded Games", data);
 
   // sort by date then group_name alphabetically
   data.sort((a, b) => {
@@ -142,7 +137,6 @@ const fetchAwardedGames = async (gm_id) => {
 };
 
 const addActivity = async (activity) => {
-  console.log("Activity", activity);
   const { data, error } = await supabaseClient
     .from("activities")
     .insert([activity])
