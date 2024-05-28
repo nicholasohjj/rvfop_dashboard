@@ -6,6 +6,7 @@ import {
   WindowContent,
   WindowHeader,
   GroupBox,
+  TextInput,
   NumberInput,
 } from "react95";
 import styled from "styled-components";
@@ -79,6 +80,7 @@ const AddDeduction = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [groups, setGroups] = useState([]); // Add groups state
   const [loading, setLoading] = useState(true);
+  const [comments, setComments] = useState("")
   const [group, setGroup] = useState(null);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [deductionPoints, setDeductionPoints] = useState(0);
@@ -137,6 +139,7 @@ const AddDeduction = () => {
       deducted_group_id: selectedGroup.group_id,
       group_id: group.group_id,
       points_deducted: deductionPoints,
+      comments: comments
     };
 
     try {
@@ -202,6 +205,17 @@ const AddDeduction = () => {
         </GroupBox>
 
         {group?.total_points >= 0 && selectedGroup && selectedGroup.group_id && (
+          <div style={{ marginTop: "10px" }}>
+
+          <TextInput
+    value={comments}
+    multiline
+    onChange={(e) =>
+      setComments(e.target.value)
+    }
+    placeholder="Comments"
+    style={{ marginBottom: "10px" }}
+  />
           <PointsSection>
             <p>Points to deduct: </p>
             <NumberInput
@@ -212,7 +226,10 @@ const AddDeduction = () => {
               max={Math.min(group.total_points, selectedGroup.total_points)}
             />
           </PointsSection>
+          </div>
+
         )}
+                        
         <ActionButtonsContainer>
           <Button onClick={() => navigate("/")}>Go back</Button>
           {selectedGroup && deductionPoints > 0 && (

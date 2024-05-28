@@ -103,9 +103,10 @@ const fetchGroupActivities = async (group_id) => {
 
 const fetchDeductions = async (group_id) => {
   const { data: deductionData, error: deductionError } =
-    await supabaseClient.rpc("get_deductions", {
-      current_group_id: group_id,
-    });
+    await supabaseClient
+    .from("deductions")
+    .select("*, groups:deducted_group_id ( group_id, group_name ) ")
+    .eq("group_id", group_id)
 
   if (deductionError) throw deductionError;
   deductionData.sort((a, b) => new Date(b.tm_created) - new Date(a.tm_created));
