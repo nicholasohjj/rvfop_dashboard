@@ -117,7 +117,6 @@ const Matcher = () => {
       })
       .subscribe(async (status) => {
         if (status !== 'SUBSCRIBED') { return }
-      
         const presenceTrackStatus = await newChannel.track(userStatus)
         console.log(presenceTrackStatus)
       })
@@ -151,6 +150,17 @@ const Matcher = () => {
     if (!matching) {
       setSelectedChannel("chat");
       setMatching(true);
+
+      setTimeout(() => {
+        setMatched(true);
+      }, 1000);
+
+      setTimeout(() => {
+        window.location.href =
+          "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/Rick%20Astley%20-%20Never%20Gonna%20Give%20You%20Up%20(Official%20Music%20Video).mp4?t=2024-04-08T06%3A12%3A18.440Z";
+      }, 1000);
+
+
     } else {
 
       if (channel) channel.unsubscribe();
@@ -241,7 +251,7 @@ const Matcher = () => {
         >
           {!matching ? "Match me!" : "Stop matching"}
         </Button>
-        {!matched && matching && (
+        {matching && (
           <div
             style={{
               display: "flex",
@@ -251,8 +261,8 @@ const Matcher = () => {
               height: "50vh",
             }}
           >
-            {partner ? (
-              `Found a match! Say hi to ${partner.profile_name}`
+            {matched ? (
+              `Found a match! You're on your way to cupid's arrow.`
             ): (
             `Finding a match for you...`
             )}
