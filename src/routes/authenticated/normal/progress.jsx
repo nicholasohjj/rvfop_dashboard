@@ -11,11 +11,16 @@ import {
   WindowContent,
   WindowHeader,
   GroupBox,
+  Separator 
 } from "react95";
 import styled from "styled-components";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import Loading from "../../loading";
-import { fetchGroupActivities, fetchGroup } from "../../../supabase/services";
+import {
+  fetchGroupActivities,
+  fetchGroup,
+  fetchDeductedDeductions,
+} from "../../../supabase/services";
 import { useStore, initializeUserData } from "../../../context/userContext";
 import { useNavigate } from "react-router-dom";
 
@@ -60,6 +65,7 @@ const Progress = () => {
   const [groupData, setGroupData] = useState(null); // Initialize to null for better checks
   const [ActivityData, setActivityData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deductions, setDeductions] = useState([]); // Initialize to an empty array
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState(null);
   const constraintsRef = useRef(null);
@@ -104,6 +110,11 @@ const Progress = () => {
 
         const activityData = await fetchGroupActivities(group.group_id);
         setActivityData(activityData);
+
+        const deductedDeductions = await fetchDeductedDeductions(
+          group.group_id
+        );
+        setDeductions(deductedDeductions);
       } catch (error) {
         console.error("Failed to fetch data:", error);
       } finally {
@@ -171,103 +182,156 @@ const Progress = () => {
           flexDirection: "column", // Stack children vertically
         }}
       >
-        {groupData && (
-          <GroupBox label={`Group: ${groupData.group_name}`}>
-            Total Points Earned: {groupData.total_points}
-          </GroupBox>
-        )}
-        <div style={{ marginTop: 10 }}>
-          {ActivityData.length > 0 ? (
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableHeadCell>Day</TableHeadCell>
-                  <TableHeadCell>Activity</TableHeadCell>
-                  <TableHeadCell>Points</TableHeadCell>
-                  <TableHeadCell>Details</TableHeadCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {ActivityData.map((activity, index) => (
-                  <TableRow key={index}>
-                    <TableDataCell>
-                      {formatSGT(activity.tm_created)}
-                    </TableDataCell>
-                    <TableDataCell>{activity.activity_name}</TableDataCell>
-                    <TableDataCell>{activity.points_earned}</TableDataCell>
-                    <TableDataCell
-                      style={{
-                        gap: 16,
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Button onClick={() => handleViewButtonClick(activity)}>
-                        View
-                      </Button>
-                    </TableDataCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          ) : (
-            <div style={{ textAlign: "center", margin: "20px 0" }}>
-              No activities found.
+        {groupData ? (
+          <div>
+            <GroupBox label={`Group: ${groupData.group_name}`}>
+              Total Points Earned: {groupData.total_points}
+            </GroupBox>
+
+            <div style={{ marginTop: 10 }}>
+              {ActivityData.length > 0 ? (
+                <>
+                  <h2 style={{ marginBottom: 20, fontWeight:"bold" }}>Activities</h2>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableHeadCell>Day</TableHeadCell>
+                        <TableHeadCell>Activity</TableHeadCell>
+                        <TableHeadCell>Points</TableHeadCell>
+                        <TableHeadCell>Details</TableHeadCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {ActivityData.map((activity, index) => (
+                        <TableRow key={index}>
+                          <TableDataCell>
+                            {formatSGT(activity.tm_created)}
+                          </TableDataCell>
+                          <TableDataCell>
+                            {activity.activity_name}
+                          </TableDataCell>
+                          <TableDataCell>
+                            {activity.points_earned}
+                          </TableDataCell>
+                          <TableDataCell
+                            style={{
+                              gap: 16,
+                              display: "flex",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <Button
+                              onClick={() => handleViewButtonClick(activity)}
+                            >
+                              View
+                            </Button>
+                          </TableDataCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </>
+              ) : (
+                <div style={{ textAlign: "center", margin: "20px 0" }}>
+                  No activities found.
+                </div>
+              )}
             </div>
-          )}
-        </div>
-        {isModalOpen && (
-          <div
-            ref={constraintsRef}
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              display: "flex", // Use flexbox for centering
-              alignItems: "center", // Vertical center
-              justifyContent: "center", // Horizontal center
-              zIndex: 10, // Ensure it's above other content
-            }}
-          >
-            <motion.div
-              drag
-              dragConstraints={constraintsRef}
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              variants={modalVariants}
-              style={{
-                rotate: rotateValueError,
-                x: dragxError,
-                position: "absolute",
-                top: "50%",
-                left: "0%",
-                width: "80%", // Responsive width
-                maxWidth: "90%", // Ensures it doesn't get too large on big screens
-                zIndex: 10,
-              }}
-            >
-              <Window style={windowStyle}>
-                <StyledWindowHeader>
-                  <span>{selectedActivity.activity_name}</span>
-                  <Button onClick={() => setIsModalOpen(false)}>
-                    <CloseIcon />
-                  </Button>
-                </StyledWindowHeader>
-                <WindowContent>
-                  <div style={{ marginBottom: 10 }}>
-                    <GroupBox label="Description">
-                      {selectedActivity?.description}
-                    </GroupBox>
-                    <GroupBox label="Points Earned">
-                      {selectedActivity?.points_earned}
-                    </GroupBox>
-                  </div>
-                </WindowContent>
-              </Window>
-            </motion.div>
+            {isModalOpen && (
+              <div
+                ref={constraintsRef}
+                style={{
+                  position: "fixed",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  display: "flex", // Use flexbox for centering
+                  alignItems: "center", // Vertical center
+                  justifyContent: "center", // Horizontal center
+                  zIndex: 10, // Ensure it's above other content
+                }}
+              >
+                <motion.div
+                  drag
+                  dragConstraints={constraintsRef}
+                  initial="hidden"
+                  animate="visible"
+                  exit="hidden"
+                  variants={modalVariants}
+                  style={{
+                    rotate: rotateValueError,
+                    x: dragxError,
+                    position: "absolute",
+                    top: "50%",
+                    left: "0%",
+                    width: "80%", // Responsive width
+                    maxWidth: "90%", // Ensures it doesn't get too large on big screens
+                    zIndex: 10,
+                  }}
+                >
+                  <Window style={windowStyle}>
+                    <StyledWindowHeader>
+                      <span>{selectedActivity.activity_name}</span>
+                      <Button onClick={() => setIsModalOpen(false)}>
+                        <CloseIcon />
+                      </Button>
+                    </StyledWindowHeader>
+                    <WindowContent>
+                      <div style={{ marginBottom: 10 }}>
+                        <GroupBox label="Description">
+                          {selectedActivity?.description}
+                        </GroupBox>
+                        <GroupBox label="Points Earned">
+                          {selectedActivity?.points_earned}
+                        </GroupBox>
+                      </div>
+                    </WindowContent>
+                  </Window>
+                </motion.div>
+              </div>
+            )}
+                    <Separator style={{marginBottom:20, marginTop:20}}/>
+            <div style={{ marginTop: 10 }}>
+              {ActivityData.length > 0 ? (
+                <>
+                  <h2 style={{ marginBottom: 20, fontWeight:"bold" }}>Deductions</h2>
+
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableHeadCell>Day</TableHeadCell>
+                        <TableHeadCell>Points deducted</TableHeadCell>
+                        <TableHeadCell>Comments</TableHeadCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {deductions.map((deduction, index) => (
+                        <TableRow key={index}>
+                          <TableDataCell>
+                            {formatSGT(deduction.tm_created)}
+                          </TableDataCell>
+                          <TableDataCell>
+                            {deduction.points_deducted}
+                          </TableDataCell>
+                          <TableDataCell>
+                            {deduction.comments ? deduction.comments : "-"}
+                          </TableDataCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </>
+              ) : (
+                <div style={{ textAlign: "center", margin: "20px 0" }}>
+                  Hooray! You have no deductions.
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div style={{ textAlign: "center", margin: "20px 0" }}>
+            You are not associated with any group.
           </div>
         )}
       </WindowContent>

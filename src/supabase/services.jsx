@@ -113,6 +113,34 @@ const fetchDeductions = async (group_id) => {
   return deductionData;
 };
 
+const fetchDeductedDeductions = async (group_id) => {
+  try {
+    console.log("Fetching deductions for group:", group_id);
+    
+    const { data: deductionData, error: deductionError } = await supabaseClient
+      .from("deductions")
+      .select("*");
+
+    if (deductionError) {
+      throw new Error(`Error fetching deductions: ${deductionError.message}`);
+    }
+    
+    // Filter out deductions that are not for the current group
+    const filteredDeductions = deductionData.filter(deduction => deduction.deducted_group_id === group_id);
+    
+    console.log("Filtered deductions:", filteredDeductions);
+    
+    // Sort filtered deductions by creation time
+    filteredDeductions.sort((a, b) => new Date(b.tm_created) - new Date(a.tm_created));
+    
+    return filteredDeductions;
+  } catch (error) {
+    console.error("Error in fetchDeductedDeductions:", error);
+    throw error;
+  }
+};
+
+
 const fetchActivities = async () => {
   const { data, error } = await supabaseClient.from("activities").select("*");
   if (error) throw error;
@@ -178,5 +206,6 @@ export {
   fetchAwardedGames,
   fetchChannels,
   fetchMessages,
-  fetchPrivateMessages
+  fetchPrivateMessages,
+  fetchDeductedDeductions
 };
