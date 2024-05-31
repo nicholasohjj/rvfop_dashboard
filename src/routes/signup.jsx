@@ -174,7 +174,7 @@ export const Signup = () => {
         options: {
           data: {
             group_id: selectedGroup,
-            role: selectedRole,
+            role: selectedRole.role,
             profile_name: name,
           },
         },
@@ -229,7 +229,7 @@ export const Signup = () => {
 
   const roleOptions = roles.map((role) => ({
     label: role.role_name,
-    value: role.role,
+    value: role,
   }));
 
   roleOptions.sort((a, b) => a.label.localeCompare(b.label));
@@ -335,7 +335,7 @@ export const Signup = () => {
                     onChange={onRoleChange}
                   />
                 </GroupBox>
-                {(selectedRole === "deductor" || selectedRole === "normal") && (
+                {selectedRole.needs_group && (
                   <GroupBox label="Select your Orientation Group">
                     <Select
                       defaultValue={2}
