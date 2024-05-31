@@ -10,6 +10,7 @@ import {
   Avatar,
   Select,
   GroupBox,
+  Anchor
 } from "react95";
 import Loading from "../../loading";
 import { useStore, initializeUserData } from "../../../context/userContext";
@@ -59,12 +60,11 @@ const Messenger = () => {
   const navigate = useNavigate();
 
   const scrollToBottom = () => {
-      const elem = scrollViewRef.current;
-      if (elem) {
-        elem.scrollTop = elem.scrollHeight;
-      }
-    };
-
+    const elem = scrollViewRef.current;
+    if (elem) {
+      elem.scrollTop = elem.scrollHeight;
+    }
+  };
 
   useEffect(() => {
     const init = async () => {
@@ -74,16 +74,14 @@ const Messenger = () => {
       setChannels(channels);
       setSelectedChannel(channels[0]);
 
-      console.log("Channels", channels)
-      console.log("Selected Channel", channels[0])
+      console.log("Channels", channels);
+      console.log("Selected Channel", channels[0]);
 
       const data = await fetchMessages(channels[0]); // Fetch messages for the selected channel
 
-      console.log("Messages", data)
+      console.log("Messages", data);
       setMessages(data);
       setLoading(false);
-
-      
     };
     init();
   }, [userData]);
@@ -92,24 +90,22 @@ const Messenger = () => {
     scrollToBottom();
   }, [messages]); // Dependency on messages to ensure scroll after update
 
-
   useEffect(() => {
     let isSubscribed = true;
 
     const initChannel = async (channelName) => {
       if (channelName === "" || !isSubscribed) return; // Avoid initializing with an empty channel name (e.g., on component mount
-      
+
       // check if new channel is same as the current channel
       if (channel && channelName === channel.channelName) return;
       if (channel) channel.unsubscribe(); // Unsubscribe from the previous channel
 
       const newChannel = supabaseClient.channel(channelName);
 
-
       // Initialize and subscribe to the new channel
 
       const data = await fetchMessages(selectedChannel); // Fetch messages for the selected channel
-      console.log("Data", data)
+      console.log("Data", data);
       setMessages(data);
       newChannel
         .on("broadcast", { event: "chat" }, (payload) => {
@@ -157,7 +153,10 @@ const Messenger = () => {
     if (error || postError) {
       console.error("Sending message error:", error, postError);
     } else {
-      setMessages((prevMessages) => [...prevMessages, {...payload, profile_name: userData.profile_name}]);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { ...payload, profile_name: userData.profile_name },
+      ]);
       setMessage("");
       scrollToBottom();
     }
@@ -182,6 +181,24 @@ const Messenger = () => {
     const previousDate = new Date(previousMessageDate).setHours(0, 0, 0, 0);
     return currentDate > previousDate;
   };
+
+  const createLinkMarkup = (text) => {
+    const urlPattern = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])|(\bwww\.[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi;
+    const parts = text.split(urlPattern);
+    return parts.map((part, index) => {
+      if (/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])|(\bwww\.[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi.test(part)) {
+        const url = part.startsWith('www.') ? `http://${part}` : part;
+        return (
+          <Anchor key={index} href={url} target="_blank">
+            {part}
+          </Anchor>
+        );
+      } else {
+        return part;
+      }
+    });
+  };
+
 
   if (loading) return <Loading />;
 
@@ -237,82 +254,85 @@ const Messenger = () => {
               overflow: "auto",
             }}
           >
-            {messages && messages.map((message, index) => {
-              const previousMessage = messages[index - 1];
-              const isStartOfNewDay =
-                index === 0 ||
-                (previousMessage &&
-                  isNewDay(message.tm_created, previousMessage.tm_created));
+            {messages &&
+              messages.map((message, index) => {
+                const previousMessage = messages[index - 1];
+                const isStartOfNewDay =
+                  index === 0 ||
+                  (previousMessage &&
+                    isNewDay(message.tm_created, previousMessage.tm_created));
 
-              // Format the date as "30 March"
-              const formatDate = (dateString) => {
-                const date = new Date(dateString);
-                return `${date.getDate()} ${date.toLocaleString("default", {
-                  month: "long",
-                })}`;
-              };
+                // Format the date as "30 March"
+                const formatDate = (dateString) => {
+                  const date = new Date(dateString);
+                  return `${date.getDate()} ${date.toLocaleString("default", {
+                    month: "long",
+                  })}`;
+                };
 
-              return (
-                <React.Fragment key={index}>
-                  {isStartOfNewDay && (
-                    <div
-                      style={{
-                        width: "100%",
-                        textAlign: "center",
-                        margin: "10px 0",
-                      }}
-                    >
-                      <strong>{formatDate(message.tm_created)}</strong>
-                    </div>
-                  )}
-                  <div
-                    style={{
-                      padding: "10px",
-                      display: "flex",
-                      flexDirection:
-                        message.user_id === userData.id ? "row-reverse" : "row",
-                      alignItems: "flex-start",
-                      gap: "10px",
-                      marginBottom: "10px",
-                      textAlign:
-                        message.user_id === userData.id ? "right" : "left",
-                    }}
-                  >
-                    <Avatar
-                      style={{
-                        background: generateColorFromName(message.user_id),
-                        flexShrink: 0,
-                      }}
-                      size={40}
-                    >
-                      {message.profile_name[0]}
-                    </Avatar>
-                    <MessageBubble isUser={message.user_id === userData.id}>
-                      <div>
-                        <strong>{message.profile_name}</strong>
-                      </div>
-                      <div>{message.message}</div>
+                return (
+                  <React.Fragment key={index}>
+                    {isStartOfNewDay && (
                       <div
                         style={{
-                          fontSize: "0.75rem",
-                          marginTop: "5px",
-                          opacity: 0.6,
+                          width: "100%",
+                          textAlign: "center",
+                          margin: "10px 0",
                         }}
                       >
-                        {new Date(message.tm_created).toLocaleTimeString(
-                          "en-US",
-                          {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            hour12: false,
-                          }
-                        )}
+                        <strong>{formatDate(message.tm_created)}</strong>
                       </div>
-                    </MessageBubble>
-                  </div>
-                </React.Fragment>
-              );
-            })}
+                    )}
+                    <div
+                      style={{
+                        padding: "10px",
+                        display: "flex",
+                        flexDirection:
+                          message.user_id === userData.id
+                            ? "row-reverse"
+                            : "row",
+                        alignItems: "flex-start",
+                        gap: "10px",
+                        marginBottom: "10px",
+                        textAlign:
+                          message.user_id === userData.id ? "right" : "left",
+                      }}
+                    >
+                      <Avatar
+                        style={{
+                          background: generateColorFromName(message.user_id),
+                          flexShrink: 0,
+                        }}
+                        size={40}
+                      >
+                        {message.profile_name[0]}
+                      </Avatar>
+                      <MessageBubble isUser={message.user_id === userData.id}>
+                        <div>
+                          <strong>{message.profile_name}</strong>
+                        </div>
+                        <div>{createLinkMarkup(message.message)}</div>
+                        <div
+                          style={{
+                            fontSize: "0.75rem",
+                            marginTop: "5px",
+                            opacity: 0.6,
+                          }}
+                        >
+                          {new Date(message.tm_created).toLocaleTimeString(
+                            "en-US",
+                            {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: false,
+                            }
+                          )}
+                        </div>
+                      </MessageBubble>
+                    </div>
+                  </React.Fragment>
+                );
+              })}
           </ScrollView>
           <div style={{ display: "flex" }}>
             <TextInput
