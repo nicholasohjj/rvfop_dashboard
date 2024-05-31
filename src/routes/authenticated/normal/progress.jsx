@@ -291,10 +291,10 @@ const Progress = () => {
                 </motion.div>
               </div>
             )}
-                    <Separator style={{marginBottom:20, marginTop:20}}/>
             <div style={{ marginTop: 10 }}>
-              {ActivityData.length > 0 ? (
+              {deductions.length > 0 && (
                 <>
+                  <Separator style={{marginBottom:20, marginTop:20}}/>
                   <h2 style={{ marginBottom: 20, fontWeight:"bold" }}>Deductions</h2>
 
                   <Table>
@@ -322,10 +322,6 @@ const Progress = () => {
                     </TableBody>
                   </Table>
                 </>
-              ) : (
-                <div style={{ textAlign: "center", margin: "20px 0" }}>
-                  Hooray! You have no deductions.
-                </div>
               )}
             </div>
           </div>
