@@ -213,7 +213,7 @@ const AddDeduction = () => {
     onChange={(e) =>
       setComments(e.target.value)
     }
-    placeholder="Comments"
+    placeholder="Comments. Note: Deducted group will see this."
     style={{ marginBottom: "10px" }}
   />
           <PointsSection>
