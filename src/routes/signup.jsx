@@ -14,7 +14,7 @@ import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { supabaseClient } from "../supabase/supabaseClient";
 import styled from "styled-components";
-import { fetchGroups } from "../supabase/services";
+import { fetchGroups, fetchRoles } from "../supabase/services";
 // Styled Close Icon Component
 const CloseIcon = styled.div`
   display: inline-block;
@@ -63,6 +63,7 @@ export const Signup = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState("");
+  const [roles, setRoles] = useState([]); // Add roles state
   const [groups, setGroups] = useState([]); // Add groups state
   const [isLoading, setIsLoading] = useState(false); // Add isLoading state
   const constraintsRef = useRef(null);
@@ -74,10 +75,17 @@ export const Signup = () => {
   const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
 
   useEffect(() => {
+    const init = async () => {
     fetchGroups().then((data) => {
       setGroups(data);
       console.log("Groups", data);
     });
+    fetchRoles().then((data) => {
+      console.log("Roles", data);
+      setRoles(data);
+    });
+  }
+    init();
   }, []);
 
   useEffect(() => {
@@ -216,12 +224,15 @@ export const Signup = () => {
     value: group.group_id,
   }));
 
-  const roleOptions = [
-    { label: "Normal OG", value: "normal" },
-    { label: "Pro-human OG", value: "deductor" },
-    { label: "Gamemaster", value: "gm" },
-    { label: "Admin", value: "admin" },
-  ];
+  groupOptions.sort((a, b) => a.label.localeCompare(b.label));
+  
+
+  const roleOptions = roles.map((role) => ({
+    label: role.role_name,
+    value: role.role,
+  }));
+
+  roleOptions.sort((a, b) => a.label.localeCompare(b.label));
 
   const onGroupChange = (selectedOption) => {
     setSelectedGroup(selectedOption.value);

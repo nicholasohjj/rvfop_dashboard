@@ -113,6 +113,14 @@ const fetchDeductions = async (group_id) => {
   return deductionData;
 };
 
+const fetchRoles = async () => {
+  const { data, error } = await supabaseClient.from("roles").select("*").eq("is_active", true);
+
+  if (error) throw error;
+  console.log("Roles:", data);
+  return data;
+};
+
 const fetchDeductedDeductions = async (group_id) => {
   try {
     console.log("Fetching deductions for group:", group_id);
@@ -205,6 +213,7 @@ export {
   fetchDeductions,
   fetchAwardedGames,
   fetchChannels,
+  fetchRoles,
   fetchMessages,
   fetchPrivateMessages,
   fetchDeductedDeductions
