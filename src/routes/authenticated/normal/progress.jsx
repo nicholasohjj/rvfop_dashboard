@@ -12,6 +12,7 @@ import {
   WindowHeader,
   GroupBox,
   Separator,
+  Tooltip
 } from "react95";
 import styled from "styled-components";
 import { motion, useMotionValue, useTransform } from "framer-motion";
@@ -28,6 +29,7 @@ import {
 } from "../../../context/userContext";
 import { useNavigate } from "react-router-dom";
 import { formatSGT } from "../../../utils/formatsgt";
+import { ProfileAvatar } from "../../../components/profileavatar";
 
 const CloseIcon = styled.div`
   display: inline-block;
@@ -175,9 +177,24 @@ const Progress = () => {
       >
         {groupData ? (
           <div>
-            <GroupBox label={`Group: ${groupData.group_name}`}>
+            <GroupBox label={`Group: ${groupData.group_name}`} style={{marginBottom:20}}>
               Total Points Earned: {groupData.total_points}
             </GroupBox>
+            <div style={{ flex: 1, flexDirection: "row", display: "flex", alignItems: "center" }}>
+            {members.length > 0 && (
+              members.map((member, index) => (
+                <div key={index} style={{ margin: "0 5px" }}>
+    <Tooltip text={member.profile_name} enterDelay={100} leaveDelay={100}>
+                  <ProfileAvatar
+                  name={member.profile_name}
+                  nameColor={member.id}
+                  />
+                  </Tooltip>
+                </div>
+              ))
+            )}    
+            </div>
+
 
             <div style={{ marginTop: 10 }}>
               {ActivityData.length > 0 ? (
