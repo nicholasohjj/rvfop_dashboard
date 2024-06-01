@@ -335,7 +335,7 @@ export const Signup = () => {
                     onChange={onRoleChange}
                   />
                 </GroupBox>
-                {selectedRole.needs_group && (
+                {selectedRole?.needs_group && (
                   <GroupBox label="Select your Orientation Group">
                     <Select
                       defaultValue={2}
