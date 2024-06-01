@@ -29,8 +29,8 @@ const Scoreboard = () => {
   useEffect(() => {
     const sortHousesInitially = (housesData) => {
       return [...housesData].sort((a, b) => {
-        const aVal = a.total_points - a.total_penalties;
-        const bVal = b.total_points - b.total_penalties;
+        const aVal = a.total_points;
+        const bVal = b.total_points;
 
         return sortDirection === "asc" ? aVal - bVal : bVal - aVal;
       });
@@ -154,11 +154,6 @@ const Scoreboard = () => {
       let aVal = a[key];
       let bVal = b[key];
 
-      if (key === "overall_points") {
-        aVal = a.total_points - a.total_penalties;
-        bVal = b.total_points - b.total_penalties;
-      }
-
       if (aVal < bVal) return direction === "asc" ? -1 : 1;
       if (aVal > bVal) return direction === "asc" ? 1 : -1;
       return 0;
@@ -198,16 +193,8 @@ const Scoreboard = () => {
                   Points (Tribal)
                 </TableHeadCell>
                 <TableHeadCell
-                  onClick={() => sortHouses("overall_points")}
-                  sort={
-                    sortKey === "overall_points" ? sortDirection : undefined
-                  }
-                >
-                  Overall Points
-                </TableHeadCell>
-                <TableHeadCell
-                  onClick={() => sortHouses("total_points")}
-                  sort={sortKey === "total_points" ? sortDirection : undefined}
+                  onClick={() => sortHouses("pro_human_points")}
+                  sort={sortKey === "pro_human_points" ? sortDirection : undefined}
                 >
                   Points (Pro-humans)
                 </TableHeadCell>
@@ -221,9 +208,6 @@ const Scoreboard = () => {
                 >
                   <TableDataCell>{house.house_name}</TableDataCell>
                   <TableDataCell>{house.total_points}</TableDataCell>
-                  <TableDataCell>
-                    {house.total_points}
-                  </TableDataCell>
                   <TableDataCell>{house.pro_human_points}</TableDataCell>
 
                 </TableRow>

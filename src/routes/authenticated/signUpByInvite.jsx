@@ -13,7 +13,7 @@ import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { supabaseClient } from "../../supabase/supabaseClient";
 import styled from "styled-components";
-import { fetchGroups, fetchUser } from "../../supabase/services";
+import { fetchGroups, fetchUser, fetchRoles } from "../../supabase/services";
 // Styled Close Icon Component
 const CloseIcon = styled.div`
   display: inline-block;
@@ -56,6 +56,7 @@ const StyledWindowHeader = styled(WindowHeader)`
 export const SignupByInvite = () => {
   const [name, setName] = useState("");
   const [email, setemail] = useState("");
+  const [roles, setRoles] = useState([]); // Add roles state
   const [password, setPassword] = useState("");
   const [selectedGroup, setSelectedGroup] = useState(null); // Add selectedGroup state
   const [selectedRole, setSelectedRole] = useState(null); // Add selectedRole state
@@ -75,10 +76,10 @@ export const SignupByInvite = () => {
 
   useEffect(() => {
     const fetch = async () => {
-      Promise.all([fetchUser(), fetchGroups()]).then((values) => {
+      Promise.all([fetchUser(), fetchGroups(), fetchRoles()]).then((values) => {
         setUser(values[0]);
-        console.log("User", values[0]);
         setGroups(values[1]);
+        setRoles(values[2]);
       });
     };
 
@@ -140,7 +141,7 @@ export const SignupByInvite = () => {
     }
 
     if (
-      (selectedRole === "deductor" || selectedRole === "normal") &&
+      selectedRole?.needs_group &&
       !selectedGroup
     ) {
       setIsModalOpen(true);
@@ -156,7 +157,13 @@ export const SignupByInvite = () => {
 
       const { data, error } = await supabaseClient.auth.admin.updateUserById(
         user.id,
-        {}
+        {
+          user_metadata: {
+            name: name,
+            role: selectedRole.role,
+            group_id: selectedGroup,
+        }
+      }
       );
 
       console.log("Data", data, error);
@@ -201,12 +208,10 @@ export const SignupByInvite = () => {
     value: group.group_id,
   }));
 
-  const roleOptions = [
-    { label: "Normal OG", value: "normal" },
-    { label: "Pro-human OG", value: "deductor" },
-    { label: "Gamemaster", value: "gm" },
-    { label: "Admin", value: "admin" },
-  ];
+  const roleOptions = roles.map((role) => ({
+    label: role.role_name,
+    value: role,
+  }));
 
   const onGroupChange = (selectedOption) => {
     setSelectedGroup(selectedOption.value);
@@ -297,7 +302,7 @@ export const SignupByInvite = () => {
                     onChange={onRoleChange}
                   />
                 </GroupBox>
-                {(selectedRole === "deductor" || selectedRole === "normal") && (
+                {selectedRole?.needs_group && (
                   <GroupBox label="Select your Orientation Group">
                     <Select
                       defaultValue={2}
