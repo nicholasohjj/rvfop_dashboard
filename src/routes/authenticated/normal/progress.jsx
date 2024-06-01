@@ -73,6 +73,7 @@ const Progress = () => {
   const [deductions, setDeductions] = useState([]); // Initialize to an empty array
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState(null);
+  const [members, setMembers] = useState([]); // Initialize to an empty array
   const constraintsRef = useRef(null);
   const dragxError = useMotionValue(0);
   const navigate = useNavigate();
@@ -108,6 +109,10 @@ const Progress = () => {
         const group = await fetchGroup(userData.group_id);
         console.log("group", group);
         setGroupData(group);
+
+        const membersData = await fetchMembers(userData.group_id);
+        console.log("membersData", membersData);
+        setMembers(membersData);
 
         if (group) {
           const activityData = await fetchGroupActivities(group.group_id);

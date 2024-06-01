@@ -19,7 +19,7 @@ import Filter from "bad-words";
 import styled from "styled-components"; // Import styled-components
 import { useNavigate } from "react-router-dom";
 import { fetchChannels, fetchMessages } from "../../../supabase/services";
-
+import { ProfileAvatar } from "../../../components/profileavatar";
 const StyledWindowHeader = styled(WindowHeader)`
   color: white; // Adjust the text color as needed for contrast
   display: flex;
@@ -167,15 +167,6 @@ const Messenger = () => {
     setMessages([]); // Clear messages when changing channels
   };
 
-  const generateColorFromName = (name) => {
-    let hash = 0;
-    for (let i = 0; i < name.length; i++) {
-      hash = name.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    const color = `hsl(${hash % 360}, 75%, 60%)`;
-    return color;
-  };
-
   const isNewDay = (currentMessageDate, previousMessageDate) => {
     const currentDate = new Date(currentMessageDate).setHours(0, 0, 0, 0);
     const previousDate = new Date(previousMessageDate).setHours(0, 0, 0, 0);
@@ -298,15 +289,7 @@ const Messenger = () => {
                           message.user_id === userData.id ? "right" : "left",
                       }}
                     >
-                      <Avatar
-                        style={{
-                          background: generateColorFromName(message.user_id),
-                          flexShrink: 0,
-                        }}
-                        size={40}
-                      >
-                        {message.profile_name[0]}
-                      </Avatar>
+                      <ProfileAvatar name={message.profile_name} nameColor={message.user_id} />
                       <MessageBubble isUser={message.user_id === userData.id}>
                         <div>
                           <strong>{message.profile_name}</strong>

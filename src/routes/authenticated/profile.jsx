@@ -11,7 +11,7 @@ import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { fetchUser } from "../../supabase/services";
-
+import { ProfileAvatar } from "../../components/profileavatar";
 const StyledWindowHeader = styled(WindowHeader)`
   background-color: #ff0000;
   color: white;
@@ -54,15 +54,6 @@ export const Profile = () => {
   const windowStyle = {
     width: windowWidth > 500 ? 500 : "90%",
     margin: "0%",
-  };
-
-  const generateColorFromName = (name) => {
-    let hash = 0;
-    for (let i = 0; i < name.length; i++) {
-      hash = name.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    const color = `hsl(${hash % 360}, 75%, 60%)`;
-    return color;
   };
 
   return (
@@ -121,17 +112,7 @@ export const Profile = () => {
                     marginBottom: "10px",
                   }}
                 >
-                  <Avatar
-                    style={{
-                      background: generateColorFromName(
-                        JSON.stringify(user.id)
-                      ),
-                      flexShrink: 0,
-                    }}
-                    size={40}
-                  >
-                    {user.profile_name[0]}
-                  </Avatar>
+                  <ProfileAvatar name={user.profile_name} nameColor={user.id} />
                   <div>
                     <strong>{user.profile_name}</strong>
                   </div>
