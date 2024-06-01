@@ -171,6 +171,7 @@ const AddActivity = () => {
   const windowStyle = {
     width: windowWidth > 500 ? 500 : "90%", // Adjust width here
     margin: "0%",
+    overflow: "auto",
   };
 
   const handleAddActivity = async () => {
@@ -311,9 +312,7 @@ const AddActivity = () => {
                 label="Description"
                 style={{ padding: "10px", margin: "0 auto", maxWidth: "90%" }}
               >
-                <ScrollView style={{ maxHeight: "100px", padding: "5px" }}>
                   {selectedActivity.description || "No description available."}
-                </ScrollView>
               </GroupBox>
             </div>
           )}
