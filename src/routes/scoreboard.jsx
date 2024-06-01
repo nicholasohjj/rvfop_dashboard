@@ -172,11 +172,11 @@ const Scoreboard = () => {
       style={{
         flex: 1,
         display: "flex",
-        minHeight: "100vh",
+        maxHeight: "100vh",
         position: "relative",
       }}
     >
-      <Window style={{ flex: 1 }}>
+      <Window style={{ flex: 1, overflow: "auto", maxHeight: "100vh" }}>
         <WindowHeader>Scoreboard</WindowHeader>
         <WindowContent>
           <Table>
@@ -193,7 +193,9 @@ const Scoreboard = () => {
                 </TableHeadCell>
                 <TableHeadCell
                   onClick={() => sortHouses("pro_human_points")}
-                  sort={sortKey === "pro_human_points" ? sortDirection : undefined}
+                  sort={
+                    sortKey === "pro_human_points" ? sortDirection : undefined
+                  }
                 >
                   Points (Pro-humans)
                 </TableHeadCell>
@@ -208,7 +210,6 @@ const Scoreboard = () => {
                   <TableDataCell>{house.house_name}</TableDataCell>
                   <TableDataCell>{house.total_points}</TableDataCell>
                   <TableDataCell>{house.pro_human_points}</TableDataCell>
-
                 </TableRow>
               ))}
             </TableBody>
@@ -252,16 +253,14 @@ const Scoreboard = () => {
                 {selectedHouse.house_name}
               </p>
               <div>
-              <img
-                src={selectedHouse.house_logo}
-                alt={selectedHouse.house_name + "-logo"}
-                width={100}
-                onClick={
-                  () => {
+                <img
+                  src={selectedHouse.house_logo}
+                  alt={selectedHouse.house_name + "-logo"}
+                  width={100}
+                  onClick={() => {
                     window.open(selectedHouse.house_ig, "_blank");
-                  }
-                } 
-              />
+                  }}
+                />
               </div>
 
               <p>{selectedHouse.house_description}</p>
