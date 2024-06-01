@@ -111,7 +111,6 @@ export const SignupByInvite = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("Password", password);
 
     if (!password || !name) {
       setError({
@@ -153,7 +152,6 @@ export const SignupByInvite = () => {
     }
 
     try {
-      console.log(user.id);
 
       const { data, error } = await supabaseClient.auth.admin.updateUserById(
         user.id,
@@ -166,7 +164,6 @@ export const SignupByInvite = () => {
       }
       );
 
-      console.log("Data", data, error);
 
       if (data.user && "email_verified" in data.user.user_metadata) {
         setIsModalOpen(true);

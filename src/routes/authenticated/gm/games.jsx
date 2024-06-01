@@ -11,7 +11,6 @@ import {
   WindowContent,
   WindowHeader,
   GroupBox,
-  ScrollView,
 } from "react95";
 import styled from "styled-components";
 import { motion, useMotionValue, useTransform } from "framer-motion";
@@ -19,6 +18,7 @@ import Loading from "../../loading";
 import { fetchAwardedGames } from "../../../supabase/services";
 import { useStore, initializeUserData } from "../../../context/userContext";
 import { useNavigate } from "react-router-dom";
+import { formatSGT } from "../../../utils/formatsgt";
 
 const CloseIcon = styled.div`
   display: inline-block;
@@ -87,11 +87,15 @@ const Games = () => {
         }
       }
 
+      if (userData && !userData.id) {
+        setLoading(false);
+        return;
+      }
+
       // Assuming `fetchAwardedGames` is an async function that needs a user ID
       try {
         const awardedGames = await fetchAwardedGames(userData.id);
         setAwardedGames(awardedGames); // Assuming this is what you intend to do with the fetched data
-        console.log("fetchAwardedGames:", awardedGames);
       } catch (error) {
         console.error("Failed to fetch awarded games:", error);
       }
@@ -114,21 +118,6 @@ const Games = () => {
   };
 
   if (loading) return <Loading />;
-
-  // Helper function to convert UTC to SGT and format to "day-month"
-  const formatSGT = (utcString) => {
-    const utcDate = new Date(utcString);
-    // Convert UTC date to SGT (UTC+8)
-    const sgtDate = new Date(utcDate.getTime() + 8 * 60 * 60 * 1000);
-    // Format date to "day-month" using Intl.DateTimeFormat
-    return new Intl.DateTimeFormat("en-SG", {
-      day: "2-digit",
-      month: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    }).format(sgtDate);
-  };
 
   const handleViewButtonClick = (game) => {
     setIsModalOpen(!isModalOpen);

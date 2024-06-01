@@ -45,7 +45,6 @@ const Scoreboard = () => {
 
     const handleUpdate = (payload) => {
       const updatedHouse = payload.new;
-      console.log("Updated house", updatedHouse);
       // Update the state to reflect the changes
       setHouses((currentHouses) => {
         return currentHouses.map((house) =>

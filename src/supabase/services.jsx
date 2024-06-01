@@ -21,6 +21,20 @@ const fetchChannels = async () => {
   return data.map((channel) => channel.channel);
 };
 
+const fetchMembers = async (group_id) => {
+  const { data, error } = await supabaseClient
+    .from("profiles")
+    .select("*")
+    .eq("group_id", group_id);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data;
+}
+
+
 const fetchMessages = async (input_channel) => {
   const { data, error } = await supabaseClient
     .from("messages")
@@ -62,7 +76,6 @@ const fetchPrivateMessages = async (input_channel) => {
 
 const fetchUser = async () => {
   const { data, error } = await supabaseClient.rpc("get_profile");
-  console.log("Profile data:", data);
   return data;
 };
 
@@ -73,22 +86,13 @@ const fetchGroups = async () => {
   return data;
 };
 
-const fetchGroup = async () => {
-  const {
-    data: { user },
-    error: userError,
-  } = await supabaseClient.auth.getUser();
-  if (userError) throw userError;
-
-  const { data: fetchedGroupData, error: fetchDataError } =
-    await supabaseClient.rpc("get_group_data", { user_id: user.id });
-
-  if (fetchDataError) throw fetchDataError;
-
-  if (fetchedGroupData && fetchedGroupData.length > 0) {
-    const group = fetchedGroupData[0]; // Assuming the first group is what you're interested in
-    return group;
-  }
+const fetchGroup = async (group_id) => {
+  const { data, error } = await supabaseClient
+    .from("groups")
+    .select("*")
+    .eq("group_id", group_id);
+  if (error) throw error;
+  return data[0];
 };
 
 const fetchGroupActivities = async (group_id) => {
@@ -122,13 +126,11 @@ const fetchRoles = async () => {
     .eq("is_active", true);
 
   if (error) throw error;
-  console.log("Roles:", data);
   return data;
 };
 
 const fetchDeductedDeductions = async (group_id) => {
   try {
-    console.log("Fetching deductions for group:", group_id);
 
     const { data: deductionData, error: deductionError } = await supabaseClient
       .from("deductions")
@@ -143,7 +145,6 @@ const fetchDeductedDeductions = async (group_id) => {
       (deduction) => deduction.deducted_group_id === group_id
     );
 
-    console.log("Filtered deductions:", filteredDeductions);
 
     // Sort filtered deductions by creation time
     filteredDeductions.sort(
@@ -213,6 +214,7 @@ export {
   fetchUser,
   fetchGroup,
   fetchGroups,
+  fetchMembers,
   fetchActivities,
   addActivity,
   addDeduction,

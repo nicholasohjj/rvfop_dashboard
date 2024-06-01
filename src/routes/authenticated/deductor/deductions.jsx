@@ -18,7 +18,7 @@ import Loading from "../../loading";
 import { fetchGroup, fetchDeductions } from "../../../supabase/services";
 import { useStore, initializeUserData } from "../../../context/userContext";
 import { useNavigate } from "react-router-dom";
-
+import { formatSGT } from "../../../utils/formatsgt";
 const CloseIcon = styled.div`
   display: inline-block;
   width: 16px;
@@ -70,10 +70,11 @@ const Deductions = () => {
 
   useEffect(() => {
     const init = async () => {
+      setLoading(true);
     if (!userData) {
       try {
         const data = await initializeUserData()
-        if (!data.can_deduct) {
+        if (data && !data.can_deduct) {
           navigate("/", { replace: true });
         }
       } catch (error) {
@@ -84,38 +85,28 @@ const Deductions = () => {
         navigate("/", { replace: true });
       }
     }
+
+    if (userData && !userData.group_id) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+
+      const group = await fetchGroup(userData.group_id);
+      setGroupData(group);
+
+      const deductionData = await fetchDeductions(userData.group_id);
+      setDeductionData(deductionData);
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+    } finally {
+      setLoading(false);
+    }
+
     }
     init();
   }, [userData, navigate]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    setLoading(true);
-
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const group = await fetchGroup();
-        setGroupData(group);
-
-        const deductionData = await fetchDeductions(group.group_id);
-        setDeductionData(deductionData);
-      } catch (error) {
-        console.error("Failed to fetch data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   const modalVariants = {
     hidden: {
@@ -129,21 +120,6 @@ const Deductions = () => {
   };
 
   if (loading) return <Loading />;
-
-  // Helper function to convert UTC to SGT and format to "day-month"
-  const formatSGT = (utcString) => {
-    const utcDate = new Date(utcString);
-    // Convert UTC date to SGT (UTC+8)
-    const sgtDate = new Date(utcDate.getTime() + 8 * 60 * 60 * 1000);
-    // Format date to "day-month" using Intl.DateTimeFormat
-    return new Intl.DateTimeFormat("en-SG", {
-      day: "2-digit",
-      month: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    }).format(sgtDate);
-  };
 
   const handleViewButtonClick = (deduction) => {
     setIsModalOpen(!isModalOpen);

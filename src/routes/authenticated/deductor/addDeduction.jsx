@@ -23,6 +23,7 @@ import { useStore, initializeUserData } from "../../../context/userContext";
 const StyledWindow = styled(Window)`
   flex: 1;
   max-width: 100vw;
+  overflow: auto;
   margin: 0 auto;
   position: relative;
   width: ${({ windowWidth }) => (windowWidth > 500 ? "500px" : "90%")};
@@ -103,24 +104,26 @@ const AddDeduction = () => {
       try {
         if (!userData) {
           const user = await initializeUserData();
-          if (!user.can_deduct) {
+          if (user && !user.can_deduct) {
             navigate("/", { replace: true });
           }
         } else {
           if (!userData.can_deduct) {
-            console.log("User cannot deduct points.");
             navigate("/", { replace: true });
           }
         }
         if (groups.length < 1) {
           fetchGroups().then((data) => {
             setGroups(data);
-            console.log("Groups", data);
           });
         }
 
+        if (userData && !userData.group_id) {
+          return
+        }
+
         if (!group) {
-          const groupData = await fetchGroup();
+          const groupData = await fetchGroup(userData.group_id);
           setGroup(groupData);
         }
       } catch (error) {
@@ -177,7 +180,6 @@ const AddDeduction = () => {
   };
 
   const handleSelectChange = (selectedOption) => {
-    console.log(selectedOption);
     setSelectedGroup(selectedOption.value);
     setDeductionPoints(0);
   };
@@ -205,6 +207,7 @@ const AddDeduction = () => {
                   value: group,
                 }))}
                 width="100%"
+                menuMaxHeight={window.innerHeight * 0.4}
               />
             </GroupBox>
 

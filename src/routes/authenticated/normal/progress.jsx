@@ -19,14 +19,15 @@ import Loading from "../../loading";
 import {
   fetchGroupActivities,
   fetchGroup,
+  fetchMembers,
   fetchDeductedDeductions,
 } from "../../../supabase/services";
 import {
   useStore,
-  initialiseGroups,
   initializeUserData,
 } from "../../../context/userContext";
 import { useNavigate } from "react-router-dom";
+import { formatSGT } from "../../../utils/formatsgt";
 
 const CloseIcon = styled.div`
   display: inline-block;
@@ -83,10 +84,9 @@ const Progress = () => {
       console.log("userData", userData);
       if (!userData) {
         try {
-          await initializeUserData();
-
-
-          if (!userData.has_progress) {
+          const data = await initializeUserData();
+          
+          if (data && !data.has_progress) {
             navigate("/", { replace: true });
           }
         } catch (error) {
@@ -98,27 +98,18 @@ const Progress = () => {
           navigate("/", { replace: true });
         }
       }
-    };
-    init();
-  }, [userData, navigate]);
 
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
+      if (userData && !userData.group_id) {
+        setLoading(false);
+        return;
+      }
 
-    window.addEventListener("resize", handleResize);
-
-    setLoading(true);
-
-    const fetchData = async () => {
-      setLoading(true);
       try {
-        const group = await fetchGroup();
+        const group = await fetchGroup(userData.group_id);
         console.log("group", group);
         setGroupData(group);
 
-        if (group && group.group_id != null) {
+        if (group) {
           const activityData = await fetchGroupActivities(group.group_id);
           setActivityData(activityData);
 
@@ -132,12 +123,10 @@ const Progress = () => {
       } finally {
         setLoading(false);
       }
+
     };
-
-    fetchData();
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+    init();
+  }, [userData, navigate]);
 
   const modalVariants = {
     hidden: {
@@ -151,21 +140,6 @@ const Progress = () => {
   };
 
   if (loading) return <Loading />;
-
-  // Helper function to convert UTC to SGT and format to "day-month"
-  const formatSGT = (utcString) => {
-    const utcDate = new Date(utcString);
-    // Convert UTC date to SGT (UTC+8)
-    const sgtDate = new Date(utcDate.getTime() + 8 * 60 * 60 * 1000);
-    // Format date to "day-month" using Intl.DateTimeFormat
-    return new Intl.DateTimeFormat("en-SG", {
-      day: "2-digit",
-      month: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    }).format(sgtDate);
-  };
 
   const handleViewButtonClick = (activity) => {
     setIsModalOpen(!isModalOpen);

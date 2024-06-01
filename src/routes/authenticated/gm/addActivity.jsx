@@ -116,8 +116,8 @@ const AddActivity = () => {
     const initializeData = async () => {
       try {
         if (!userData) {
-          await initializeUserData();
-          if (!userData.can_add_activity) {
+          const data = await initializeUserData();
+          if (data && !data.can_add_activity) {
             navigate("/", { replace: true });
             return;
           }
@@ -194,7 +194,6 @@ const AddActivity = () => {
         const [addedActivity] = await addActivity(newActivity);
         console.log("Custom activity received: ", addedActivity);
         activityToAdd = addedActivity;
-        console.log("Custom: ", activityToAdd);
       } catch (error) {
         console.error("Error adding activity: ", error);
         setError("Failed to add activity"); // Set an error message to display in your modal
@@ -260,7 +259,7 @@ const AddActivity = () => {
               setSelectedGroup(e.value);
             }}
             //max height should be 20% of screen
-            menuMaxHeight={window.innerHeight * 0.2}
+            menuMaxHeight={window.innerHeight * 0.4}
           />
         </GroupBox>
 

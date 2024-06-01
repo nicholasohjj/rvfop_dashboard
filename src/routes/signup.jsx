@@ -78,10 +78,8 @@ export const Signup = () => {
     const init = async () => {
     fetchGroups().then((data) => {
       setGroups(data);
-      console.log("Groups", data);
     });
     fetchRoles().then((data) => {
-      console.log("Roles", data);
       setRoles(data);
     });
   }
@@ -112,9 +110,6 @@ export const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    console.log("Email", email);
-    console.log("Password", password);
 
     if (!email || !password || !name) {
       setError({
@@ -242,7 +237,6 @@ export const Signup = () => {
 
   const onRoleChange = (selectedOption) => {
     setSelectedRole(selectedOption.value);
-    console.log("Selected Role", selectedOption);
   };
 
   return (

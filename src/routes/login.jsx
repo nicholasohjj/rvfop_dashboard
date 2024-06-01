@@ -130,7 +130,6 @@ export const Login = () => {
       console.log(data, error);
 
       if (error) {
-        console.log("Error");
         throw error;
       }
       setIsLoading(false);
@@ -201,31 +200,37 @@ export const Login = () => {
             ) : (
               <form onSubmit={handleSubmit}>
                 <div>
-                  <p style={{ display:"flex", justifySelf: "left" }}>Email address</p>
-                    <TextInput
-                      style={{ flex: 1 }}
-                      placeholder=""
-                      value={email}
-                      onChange={(e) => {
-                        setemail(e.target.value);
-                      }}
-                    />
+                  <p style={{ display: "flex", justifySelf: "left" }}>
+                    Email address
+                  </p>
+                  <TextInput
+                    style={{ flex: 1 }}
+                    placeholder=""
+                    value={email}
+                    onChange={(e) => {
+                      setemail(e.target.value);
+                    }}
+                  />
                   <br />
-                    <div style={{display:"flex", justifyContent:"space-between", flexDirection:"row"}}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      flexDirection: "row",
+                    }}
+                  >
                     <p style={{ justifySelf: "left" }}>Password</p>
-                      <Anchor href="/resetform">
-                        Forgot your password?
-                      </Anchor>
-                    </div>
-                    <TextInput
-                      placeholder=""
-                      style={{ flex: 1 }}
-                      type="password"
-                      value={password}
-                      onChange={(e) => {
-                        setPassword(e.target.value);
-                      }}
-                    />
+                    <Anchor href="/resetform">Forgot your password?</Anchor>
+                  </div>
+                  <TextInput
+                    placeholder=""
+                    style={{ flex: 1 }}
+                    type="password"
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                    }}
+                  />
                   <br />
                   <div
                     style={{
@@ -237,8 +242,9 @@ export const Login = () => {
                     <Button type="submit" value="login">
                       Sign in
                     </Button>
-                    <div style={{marginTop:"5px"}}>
-                      New to Insieme?<Anchor href="/signup"> Create an account</Anchor>
+                    <div style={{ marginTop: "5px" }}>
+                      New to Insieme?
+                      <Anchor href="/signup"> Create an account</Anchor>
                     </div>
                   </div>
                 </div>
