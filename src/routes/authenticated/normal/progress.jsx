@@ -11,7 +11,7 @@ import {
   WindowContent,
   WindowHeader,
   GroupBox,
-  Separator 
+  Separator,
 } from "react95";
 import styled from "styled-components";
 import { motion, useMotionValue, useTransform } from "framer-motion";
@@ -21,7 +21,11 @@ import {
   fetchGroup,
   fetchDeductedDeductions,
 } from "../../../supabase/services";
-import { useStore, initializeUserData } from "../../../context/userContext";
+import {
+  useStore,
+  initialiseGroups,
+  initializeUserData,
+} from "../../../context/userContext";
 import { useNavigate } from "react-router-dom";
 
 const CloseIcon = styled.div`
@@ -70,26 +74,32 @@ const Progress = () => {
   const [selectedActivity, setSelectedActivity] = useState(null);
   const constraintsRef = useRef(null);
   const dragxError = useMotionValue(0);
-  const userData = useStore((state) => state.userData);
   const navigate = useNavigate();
   const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
+  const userData = useStore((state) => state.userData);
 
   useEffect(() => {
-    if (!userData) {
-      initializeUserData()
-        .then(() => {
-          if (!(userData.role === "normal" || userData.role === "admin")) {
+    const init = async () => {
+      console.log("userData", userData);
+      if (!userData) {
+        try {
+          await initializeUserData();
+
+
+          if (!userData.has_progress) {
             navigate("/", { replace: true });
           }
-        })
-        .catch((error) => {
-          console.error("Failed to initialize user data:", error);
-        });
-    } else {
-      if (!(userData.role === "normal" || userData.role === "admin")) {
-        navigate("/", { replace: true });
+        } catch (error) {
+          console.error("Failed to fetch data:", error);
+        }
+      } else {
+
+        if (!userData.has_progress) {
+          navigate("/", { replace: true });
+        }
       }
-    }
+    };
+    init();
   }, [userData, navigate]);
 
   useEffect(() => {
@@ -108,13 +118,15 @@ const Progress = () => {
         console.log("group", group);
         setGroupData(group);
 
-        const activityData = await fetchGroupActivities(group.group_id);
-        setActivityData(activityData);
+        if (group && group.group_id != null) {
+          const activityData = await fetchGroupActivities(group.group_id);
+          setActivityData(activityData);
 
-        const deductedDeductions = await fetchDeductedDeductions(
-          group.group_id
-        );
-        setDeductions(deductedDeductions);
+          const deductedDeductions = await fetchDeductedDeductions(
+            group.group_id
+          );
+          setDeductions(deductedDeductions);
+        }
       } catch (error) {
         console.error("Failed to fetch data:", error);
       } finally {
@@ -191,7 +203,9 @@ const Progress = () => {
             <div style={{ marginTop: 10 }}>
               {ActivityData.length > 0 ? (
                 <>
-                  <h2 style={{ marginBottom: 20, fontWeight:"bold" }}>Activities</h2>
+                  <h2 style={{ marginBottom: 20, fontWeight: "bold" }}>
+                    Activities
+                  </h2>
                   <Table>
                     <TableHead>
                       <TableRow>
@@ -294,8 +308,10 @@ const Progress = () => {
             <div style={{ marginTop: 10 }}>
               {deductions.length > 0 && (
                 <>
-                  <Separator style={{marginBottom:20, marginTop:20}}/>
-                  <h2 style={{ marginBottom: 20, fontWeight:"bold" }}>Deductions</h2>
+                  <Separator style={{ marginBottom: 20, marginTop: 20 }} />
+                  <h2 style={{ marginBottom: 20, fontWeight: "bold" }}>
+                    Deductions
+                  </h2>
 
                   <Table>
                     <TableHead>

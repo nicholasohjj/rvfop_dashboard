@@ -72,7 +72,7 @@ const Progress = () => {
     if (!userData) {
       initializeUserData()
         .then(() => {
-          if (!(userData.role === "normal" || userData.role === "admin")) {
+          if (!userData.has_progress) {
             navigate("/", { replace: true });
           }
         })
@@ -80,7 +80,7 @@ const Progress = () => {
           console.error("Failed to initialize user data:", error);
         });
     } else {
-      if (!(userData.role === "normal" || userData.role === "admin")) {
+      if (!userData.has_progress) {
         navigate("/", { replace: true });
       }
     }

@@ -9,19 +9,23 @@ const fetchHouses = async () => {
 };
 
 const fetchChannels = async () => {
-  const { data, error } = await supabaseClient.from("channels").select("channel").eq("is_active", true);
+  const { data, error } = await supabaseClient
+    .from("channels")
+    .select("channel")
+    .eq("is_active", true);
   if (error) {
     throw new Error(error.message);
   }
   //sort by channel name
   data.sort((a, b) => a.channel.localeCompare(b.channel));
-  return data.map(channel => channel.channel);
-}
+  return data.map((channel) => channel.channel);
+};
 
 const fetchMessages = async (input_channel) => {
   const { data, error } = await supabaseClient
-  .from('messages')
-  .select(`
+    .from("messages")
+    .select(
+      `
   message_id,
   tm_created,
   channel,
@@ -30,35 +34,35 @@ const fetchMessages = async (input_channel) => {
     profiles:user_id (
       profile_name
     )
-  `)
-  .eq('channel', input_channel)
+  `
+    )
+    .eq("channel", input_channel);
   if (error) {
     throw new Error(error.message);
   }
 
   //flatten the data
-  data.forEach(message => {
+  data.forEach((message) => {
     message.profile_name = message.profiles.profile_name;
     delete message.profiles;
   });
 
   return data;
-}
+};
 
 const fetchPrivateMessages = async (input_channel) => {
-  const { data, error } = await supabaseClient.rpc("fetch_private_messages", { input_channel });
+  const { data, error } = await supabaseClient.rpc("fetch_private_messages", {
+    input_channel,
+  });
   if (error) {
     throw new Error(error.message);
   }
   return data;
-}
+};
 
 const fetchUser = async () => {
-  const { data: user } = await supabaseClient.auth.getUser();
-  const userId = user.user.id;
-
   const { data, error } = await supabaseClient.rpc("get_profile");
-
+  console.log("Profile data:", data);
   return data;
 };
 
@@ -95,18 +99,16 @@ const fetchGroupActivities = async (group_id) => {
     }
   );
 
-
   if (activityError) throw activityError;
   activityData.sort((a, b) => new Date(b.tm_created) - new Date(a.tm_created));
   return activityData;
 };
 
 const fetchDeductions = async (group_id) => {
-  const { data: deductionData, error: deductionError } =
-    await supabaseClient
+  const { data: deductionData, error: deductionError } = await supabaseClient
     .from("deductions")
     .select("*, groups:deducted_group_id ( group_id, group_name ) ")
-    .eq("group_id", group_id)
+    .eq("group_id", group_id);
 
   if (deductionError) throw deductionError;
   deductionData.sort((a, b) => new Date(b.tm_created) - new Date(a.tm_created));
@@ -114,7 +116,10 @@ const fetchDeductions = async (group_id) => {
 };
 
 const fetchRoles = async () => {
-  const { data, error } = await supabaseClient.from("roles").select("*").eq("is_active", true);
+  const { data, error } = await supabaseClient
+    .from("roles")
+    .select("*")
+    .eq("is_active", true);
 
   if (error) throw error;
   console.log("Roles:", data);
@@ -124,7 +129,7 @@ const fetchRoles = async () => {
 const fetchDeductedDeductions = async (group_id) => {
   try {
     console.log("Fetching deductions for group:", group_id);
-    
+
     const { data: deductionData, error: deductionError } = await supabaseClient
       .from("deductions")
       .select("*");
@@ -132,22 +137,25 @@ const fetchDeductedDeductions = async (group_id) => {
     if (deductionError) {
       throw new Error(`Error fetching deductions: ${deductionError.message}`);
     }
-    
+
     // Filter out deductions that are not for the current group
-    const filteredDeductions = deductionData.filter(deduction => deduction.deducted_group_id === group_id);
-    
+    const filteredDeductions = deductionData.filter(
+      (deduction) => deduction.deducted_group_id === group_id
+    );
+
     console.log("Filtered deductions:", filteredDeductions);
-    
+
     // Sort filtered deductions by creation time
-    filteredDeductions.sort((a, b) => new Date(b.tm_created) - new Date(a.tm_created));
-    
+    filteredDeductions.sort(
+      (a, b) => new Date(b.tm_created) - new Date(a.tm_created)
+    );
+
     return filteredDeductions;
   } catch (error) {
     console.error("Error in fetchDeductedDeductions:", error);
     throw error;
   }
 };
-
 
 const fetchActivities = async () => {
   const { data, error } = await supabaseClient.from("activities").select("*");
@@ -160,7 +168,6 @@ const fetchAwardedGames = async (gm_id) => {
     gm_id,
   });
   if (error) throw error;
-
 
   // sort by date then group_name alphabetically
   data.sort((a, b) => {
@@ -216,5 +223,5 @@ export {
   fetchRoles,
   fetchMessages,
   fetchPrivateMessages,
-  fetchDeductedDeductions
+  fetchDeductedDeductions,
 };

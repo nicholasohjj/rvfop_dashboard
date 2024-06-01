@@ -78,9 +78,7 @@ export const Footer = () => {
                 </MenuListItem>
               )}
               {session &&
-                (userData?.role == "admin" ||
-                  userData?.role == "normal" ||
-                  userData?.role == "deductor") && (
+                (userData.has_progress) && (
                   <MenuListItem onClick={() => handleNavigate("/progress")}>
                     <img
                       src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/progress.png"
@@ -92,8 +90,7 @@ export const Footer = () => {
                 )}
 
               {session &&
-                (userData?.role === "admin" ||
-                  userData?.role === "deductor") && (
+                (userData.can_deduct) && (
                   <MenuListItem onClick={() => handleNavigate("/deductions")}>
                     <img
                       src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/deduction.png"
@@ -104,7 +101,7 @@ export const Footer = () => {
                   </MenuListItem>
                 )}
               {session &&
-                (userData?.role == "admin" || userData?.role == "gm") && (
+                (userData.can_add_activity) && (
                   <MenuListItem onClick={() => handleNavigate("/games")}>
                     <img
                       src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/games.png"

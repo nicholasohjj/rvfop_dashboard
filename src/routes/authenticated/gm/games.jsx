@@ -15,9 +15,9 @@ import {
 } from "react95";
 import styled from "styled-components";
 import { motion, useMotionValue, useTransform } from "framer-motion";
-import Loading from "../loading";
-import { fetchAwardedGames } from "../../supabase/services";
-import { useStore, initializeUserData } from "../../context/userContext";
+import Loading from "../../loading";
+import { fetchAwardedGames } from "../../../supabase/services";
+import { useStore, initializeUserData } from "../../../context/userContext";
 import { useNavigate } from "react-router-dom";
 
 const CloseIcon = styled.div`
@@ -73,23 +73,29 @@ const Games = () => {
       if (!userData) {
         setLoading(true);
         try {
-          await initializeUserData();
+          const data = await initializeUserData();
+
+          if (!data.can_add_activity) {
+            navigate("/", { replace: true });
+          }
         } catch (error) {
           console.error("Initialization error:", error);
         }
       } else {
-        if (!(userData.role == "admin" || userData.role === "gm")) {
+        if (!userData.can_add_activity) {
           navigate("/", { replace: true });
         }
-        // Assuming `fetchAwardedGames` is an async function that needs a user ID
-        try {
-          const awardedGames = await fetchAwardedGames(userData.id);
-          setAwardedGames(awardedGames); // Assuming this is what you intend to do with the fetched data
-          console.log("fetchAwardedGames:", awardedGames);
-        } catch (error) {
-          console.error("Failed to fetch awarded games:", error);
-        }
       }
+
+      // Assuming `fetchAwardedGames` is an async function that needs a user ID
+      try {
+        const awardedGames = await fetchAwardedGames(userData.id);
+        setAwardedGames(awardedGames); // Assuming this is what you intend to do with the fetched data
+        console.log("fetchAwardedGames:", awardedGames);
+      } catch (error) {
+        console.error("Failed to fetch awarded games:", error);
+      }
+
       setLoading(false);
     };
 
@@ -141,61 +147,58 @@ const Games = () => {
         maxWidth: "100vw",
         margin: "0 auto",
         position: "relative",
+        maxHeight: "100vh",
+        overflow: "auto",
       }}
     >
       <WindowHeader>Awarded Games</WindowHeader>
       <WindowContent>
         {awardedGames.length > 0 ? (
-          <ScrollView
-            style={{ maxWidth: "100vw", maxHeight: "70vh", overflow: "auto" }}
-          >
-            <Table
-              style={{ maxWidth: "100vw", maxHeight: "70vh", overflow: "auto" }}
+          <Table>
+            <TableHead
+              style={{
+                maxWidth: "100vw",
+                maxHeight: "70vh",
+                overflow: "auto",
+              }}
             >
-              <TableHead
-                style={{
-                  maxWidth: "100vw",
-                  maxHeight: "70vh",
-                  overflow: "auto",
-                }}
-              >
-                <TableRow>
-                  <TableHeadCell>Day</TableHeadCell>
-                  <TableHeadCell>Activity</TableHeadCell>
-                  <TableHeadCell>Group</TableHeadCell>
-                  <TableHeadCell>Points Awarded</TableHeadCell>
-                  <TableHeadCell>Details</TableHeadCell>
+              <TableRow>
+                <TableHeadCell>Day</TableHeadCell>
+                <TableHeadCell>Activity</TableHeadCell>
+                <TableHeadCell>Group</TableHeadCell>
+                <TableHeadCell>Points Awarded</TableHeadCell>
+                <TableHeadCell>Details</TableHeadCell>
+              </TableRow>
+            </TableHead>
+
+            <TableBody
+              style={{
+                maxWidth: "100vw",
+                maxHeight: "70vh",
+                overflow: "auto",
+              }}
+            >
+              {awardedGames.map((game, index) => (
+                <TableRow key={index}>
+                  <TableDataCell>{formatSGT(game.tm_created)}</TableDataCell>
+                  <TableDataCell>{game.activity_name}</TableDataCell>
+                  <TableDataCell>{game.group_name}</TableDataCell>
+                  <TableDataCell>{game.points_earned}</TableDataCell>
+                  <TableDataCell
+                    style={{
+                      gap: 16,
+                      display: "flex",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Button onClick={() => handleViewButtonClick(game)}>
+                      View
+                    </Button>
+                  </TableDataCell>
                 </TableRow>
-              </TableHead>
-              <TableBody
-                style={{
-                  maxWidth: "100vw",
-                  maxHeight: "70vh",
-                  overflow: "auto",
-                }}
-              >
-                {awardedGames.map((game, index) => (
-                  <TableRow key={index}>
-                    <TableDataCell>{formatSGT(game.tm_created)}</TableDataCell>
-                    <TableDataCell>{game.activity_name}</TableDataCell>
-                    <TableDataCell>{game.group_name}</TableDataCell>
-                    <TableDataCell>{game.points_earned}</TableDataCell>
-                    <TableDataCell
-                      style={{
-                        gap: 16,
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Button onClick={() => handleViewButtonClick(game)}>
-                        View
-                      </Button>
-                    </TableDataCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </ScrollView>
+              ))}
+            </TableBody>
+          </Table>
         ) : (
           <div style={{ textAlign: "center", margin: "20px 0" }}>
             No games awarded.

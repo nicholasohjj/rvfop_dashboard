@@ -17,13 +17,13 @@ import {
   fetchActivities,
   addActivity,
   addGroupActivity,
-} from "../../supabase/services";
+} from "../../../supabase/services";
 import {
   useStore,
   initialiseGroups,
   initializeUserData,
-} from "../../context/userContext";
-import Loading from "../loading";
+} from "../../../context/userContext";
+import Loading from "../../loading";
 // Styled components
 const StyledWindow = styled(Window)`
   flex: 1;
@@ -117,7 +117,7 @@ const AddActivity = () => {
       try {
         if (!userData) {
           await initializeUserData();
-          if (userData.role !== "gm" && userData.role !== "admin") {
+          if (!userData.can_add_activity) {
             navigate("/", { replace: true });
             return;
           }

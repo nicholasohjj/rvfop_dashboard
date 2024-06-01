@@ -69,21 +69,23 @@ const Deductions = () => {
   const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
 
   useEffect(() => {
+    const init = async () => {
     if (!userData) {
-      initializeUserData()
-        .then(() => {
-          if (!(userData.role === "deductor" || userData.role === "admin")) {
-            navigate("/", { replace: true });
-          }
-        })
-        .catch((error) => {
-          console.error("Failed to initialize user data:", error);
-        });
+      try {
+        const data = await initializeUserData()
+        if (!data.can_deduct) {
+          navigate("/", { replace: true });
+        }
+      } catch (error) {
+        console.error("Initialization error:", error);
+      }
     } else {
-      if (!(userData.role === "deductor" || userData.role === "admin")) {
+      if (!userData.can_deduct) {
         navigate("/", { replace: true });
       }
     }
+    }
+    init();
   }, [userData, navigate]);
 
   useEffect(() => {

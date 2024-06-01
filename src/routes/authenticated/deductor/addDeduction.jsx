@@ -13,7 +13,11 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import Loading from "../../loading";
 import { motion, useMotionValue, useTransform } from "framer-motion";
-import { fetchGroups, fetchGroup, addDeduction } from "../../../supabase/services";
+import {
+  fetchGroups,
+  fetchGroup,
+  addDeduction,
+} from "../../../supabase/services";
 import { useStore, initializeUserData } from "../../../context/userContext";
 // Styled components
 const StyledWindow = styled(Window)`
@@ -80,11 +84,11 @@ const AddDeduction = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [groups, setGroups] = useState([]); // Add groups state
   const [loading, setLoading] = useState(true);
-  const [comments, setComments] = useState("")
+  const [comments, setComments] = useState("");
   const [group, setGroup] = useState(null);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [deductionPoints, setDeductionPoints] = useState(0);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState(null); 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const constraintsRef = useRef(null);
@@ -98,25 +102,27 @@ const AddDeduction = () => {
     const init = async () => {
       try {
         if (!userData) {
-          await initializeUserData();
-          if (!['deductor', 'admin'].includes(userData?.role)) {
-            navigate('/', { replace: true });
+          const user = await initializeUserData();
+          if (!user.can_deduct) {
+            navigate("/", { replace: true });
+          }
+        } else {
+          if (!userData.can_deduct) {
+            console.log("User cannot deduct points.");
+            navigate("/", { replace: true });
           }
         }
         if (groups.length < 1) {
           fetchGroups().then((data) => {
-          setGroups(data);
-          console.log("Groups", data);
-        });
-      }
+            setGroups(data);
+            console.log("Groups", data);
+          });
+        }
 
-      if (!group) {
-        const groupData = await fetchGroup();
-        setGroup(groupData);  
-      }
-
-
-
+        if (!group) {
+          const groupData = await fetchGroup();
+          setGroup(groupData);
+        }
       } catch (error) {
         setError(error.message);
         console.error("Initialization error:", error);
@@ -125,12 +131,12 @@ const AddDeduction = () => {
       }
     };
 
-      init();
+    init();
   }, [group, groups, navigate, userData]); // Update dependencies
 
   const handleAddDeduction = async () => {
     if (!selectedGroup || deductionPoints <= 0) {
-      setError('Please select a group and specify the points to deduct.');
+      setError("Please select a group and specify the points to deduct.");
       setIsModalOpen(true);
       return;
     }
@@ -139,7 +145,7 @@ const AddDeduction = () => {
       deducted_group_id: selectedGroup.group_id,
       group_id: group.group_id,
       points_deducted: deductionPoints,
-      comments: comments
+      comments: comments,
     };
 
     try {
@@ -150,7 +156,6 @@ const AddDeduction = () => {
       setError(error.message); // Set an error message to display in your modal
       setIsModalOpen(true); // Open the modal to display the error
     }
-
   };
 
   if (loading) return <Loading />;
@@ -183,109 +188,108 @@ const AddDeduction = () => {
         <span>Add Deduction</span>
       </WindowHeader>
       <WindowContent style={{ overflowX: "visible" }}>
-      {group?.total_points>=0 ? (
-        <div>
-          <GroupBox
-          style={{ marginBottom: "20px" }}
-          >
-            You have {group.total_points} points in total. You can deduct a maximum of {group.total_points} points. Note: You can only deduct points from other groups with points.
-          </GroupBox>
-        
+        {group?.total_points >= 0 ? (
+          <div>
+            <GroupBox style={{ marginBottom: "20px" }}>
+              You have {group.total_points} points in total. You can deduct a
+              maximum of {group.total_points} points. Note: You can only deduct
+              points from other groups with points.
+            </GroupBox>
 
-        <GroupBox label="Select Group to Deduct">
-        <Select
-            value={selectedGroup}
-            onChange={handleSelectChange}
-            options={groups.map(group => ({
-              label: `${group.group_name} (${group.total_points} points)`,
-              value: group,
-            }))}
-            width="100%"
-          />
-        </GroupBox>
+            <GroupBox label="Select Group to Deduct">
+              <Select
+                value={selectedGroup}
+                onChange={handleSelectChange}
+                options={groups.map((group) => ({
+                  label: `${group.group_name} (${group.total_points} points)`,
+                  value: group,
+                }))}
+                width="100%"
+              />
+            </GroupBox>
 
-        {group?.total_points >= 0 && selectedGroup && selectedGroup.group_id && (
-          <div style={{ marginTop: "10px" }}>
-
-          <TextInput
-    value={comments}
-    multiline
-    onChange={(e) =>
-      setComments(e.target.value)
-    }
-    placeholder="Comments. Note: Deducted group will see this."
-    style={{ marginBottom: "10px" }}
-  />
-          <PointsSection>
-            <p>Points to deduct: </p>
-            <NumberInput
-              value={deductionPoints}
-              onChange={value => setDeductionPoints(Number(value))}
-              step={20}
-              min={0}
-              max={Math.min(group.total_points, selectedGroup.total_points)}
-            />
-          </PointsSection>
-          </div>
-
-        )}
-                        
-        <ActionButtonsContainer>
-          <Button onClick={() => navigate("/")}>Go back</Button>
-          {selectedGroup && deductionPoints > 0 && (
-            <Button onClick={handleAddDeduction}>Deduct</Button>
-          )}
-        </ActionButtonsContainer>
-        {isModalOpen && (
-          <div
-            ref={constraintsRef}
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              display: "flex", // Use flexbox for centering
-              alignItems: "center", // Vertical center
-              justifyContent: "center", // Horizontal center
-              zIndex: 10, // Ensure it's above other content
-            }}
-          >
-            <motion.div
-              drag
-              dragConstraints={constraintsRef}
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              variants={modalVariants}
-              style={{
-                rotate: rotateValueError,
-                x: dragxError,
-                position: "absolute",
-                top: "50%",
-                left: "0%",
-                width: "80%", // Responsive width
-                maxWidth: "90%", // Ensures it doesn't get too large on big screens
-                zIndex: 10,
-              }}
-            >
-              <Window style={windowStyle}>
-                <StyledWindowHeader>
-                  <span>Error ⚠️</span>
-                  <Button onClick={() => setIsModalOpen(false)}>
-                    <CloseIcon />
-                  </Button>
-                </StyledWindowHeader>
-                <WindowContent>{error}</WindowContent>
-              </Window>
-            </motion.div>
-          </div>
-        )}
+            {group?.total_points >= 0 &&
+              selectedGroup &&
+              selectedGroup.group_id && (
+                <div style={{ marginTop: "10px" }}>
+                  <TextInput
+                    value={comments}
+                    multiline
+                    onChange={(e) => setComments(e.target.value)}
+                    placeholder="Comments. Note: Deducted group will see this."
+                    style={{ marginBottom: "10px" }}
+                  />
+                  <PointsSection>
+                    <p>Points to deduct: </p>
+                    <NumberInput
+                      value={deductionPoints}
+                      onChange={(value) => setDeductionPoints(Number(value))}
+                      step={20}
+                      min={0}
+                      max={Math.min(
+                        group.total_points,
+                        selectedGroup.total_points
+                      )}
+                    />
+                  </PointsSection>
                 </div>
+              )}
 
+            <ActionButtonsContainer>
+              <Button onClick={() => navigate("/")}>Go back</Button>
+              {selectedGroup && deductionPoints > 0 && (
+                <Button onClick={handleAddDeduction}>Deduct</Button>
+              )}
+            </ActionButtonsContainer>
+            {isModalOpen && (
+              <div
+                ref={constraintsRef}
+                style={{
+                  position: "fixed",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  display: "flex", // Use flexbox for centering
+                  alignItems: "center", // Vertical center
+                  justifyContent: "center", // Horizontal center
+                  zIndex: 10, // Ensure it's above other content
+                }}
+              >
+                <motion.div
+                  drag
+                  dragConstraints={constraintsRef}
+                  initial="hidden"
+                  animate="visible"
+                  exit="hidden"
+                  variants={modalVariants}
+                  style={{
+                    rotate: rotateValueError,
+                    x: dragxError,
+                    position: "absolute",
+                    top: "50%",
+                    left: "0%",
+                    width: "80%", // Responsive width
+                    maxWidth: "90%", // Ensures it doesn't get too large on big screens
+                    zIndex: 10,
+                  }}
+                >
+                  <Window style={windowStyle}>
+                    <StyledWindowHeader>
+                      <span>Error ⚠️</span>
+                      <Button onClick={() => setIsModalOpen(false)}>
+                        <CloseIcon />
+                      </Button>
+                    </StyledWindowHeader>
+                    <WindowContent>{error}</WindowContent>
+                  </Window>
+                </motion.div>
+              </div>
+            )}
+          </div>
         ) : (
           <div style={{ textAlign: "center", margin: "20px 0" }}>
-          You are not associated with any Pro-human group.
+            You are not associated with any Pro-human group.
           </div>
         )}
       </WindowContent>

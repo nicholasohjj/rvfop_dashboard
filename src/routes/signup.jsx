@@ -134,6 +134,18 @@ export const Signup = () => {
       return;
     }
 
+    if (
+      selectedRole.needs_group &&
+      !selectedGroup
+    ) {
+      setIsModalOpen(true);
+      setError({
+        name: "Error",
+        message: "Please select a group.",
+      });
+      return;
+    }
+
     if (password.length < 6) {
       setIsModalOpen(true);
       setError({
@@ -152,17 +164,7 @@ export const Signup = () => {
       return;
     }
 
-    if (
-      (selectedRole === "deductor" || selectedRole === "normal") &&
-      !selectedGroup
-    ) {
-      setIsModalOpen(true);
-      setError({
-        name: "Error",
-        message: "Please select a group.",
-      });
-      return;
-    }
+
 
 
     try {

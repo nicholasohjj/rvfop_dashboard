@@ -55,7 +55,7 @@ export const Header = () => {
               />
               My Profile
             </MenuListItem>
-            {(userData.role == "admin" || userData.role == "gm") && (
+            {userData.can_add_activity && (
               <MenuListItem onClick={() => navigate("/addactivity")}>
                 <img
                   src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/sign/rvfop/addactivity.png?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJydmZvcC9hZGRhY3Rpdml0eS5wbmciLCJpYXQiOjE3MTE5NDc5NTIsImV4cCI6MjAyNzMwNzk1Mn0.tBntdvbPBIdWB9Ho16a18nbwW167CwdlYnRAMIq4efw"
@@ -65,7 +65,7 @@ export const Header = () => {
                 Add Activity
               </MenuListItem>
             )}
-            {(userData?.role == "admin" || userData?.role == "deductor") && (
+            {userData.can_deduct && (
               <MenuListItem onClick={() => navigate("/adddeduction")}>
                 <img
                   src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/adddeduction.png"
