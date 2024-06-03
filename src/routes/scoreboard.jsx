@@ -176,7 +176,7 @@ const Scoreboard = () => {
         position: "relative",
       }}
     >
-      <Window style={{ flex: 1, overflow: "auto", maxHeight: "100vh" }}>
+      <Window style={{ flex: 1, overflow: "auto", minHeight:"100vh", maxHeight: "100vh" }}>
         <WindowHeader>Scoreboard</WindowHeader>
         <WindowContent>
           <Table>

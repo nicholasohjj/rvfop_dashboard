@@ -20,6 +20,7 @@ import Filter from "bad-words";
 import styled from "styled-components"; // Import styled-components
 import { useNavigate } from "react-router-dom";
 import { fetchPrivateMessages } from "../../../supabase/services";
+
 const StyledWindowHeader = styled(WindowHeader)`
   color: white; // Adjust the text color as needed for contrast
   display: flex;
@@ -53,8 +54,9 @@ const Matcher = () => {
   const [matching, setMatching] = useState(false);
   const [matched, setMatched] = useState(false);
   const [partner, setPartner] = useState();
-  const [partnerStatus, setPartnerStatus] = useState(false);
-  const [selectedChannel, setSelectedChannel] = useState(); // Default channel
+  const [pendingPartner, setPendingPartner] = useState();
+  const [sharedState, setSharedState] = useState();
+  const [channelName, setChannelName] = useState(); // Default channel
   const [message, setMessage] = useState("");
   const [privateMessages, setPrivateMessages] = useState([]);
   const userData = useStore((state) => state.userData);
@@ -73,65 +75,116 @@ const Matcher = () => {
 
   useEffect(() => {
     if (partner) {
-      console.log("Partner", partner)
+      console.log("Partner", partner);
     }
-  }
-  , [partner])
+  }, [partner]);
 
   useEffect(() => {
     let isSubscribed = true;
 
     const initChannel = async (channelName) => {
       if (!channelName) return;
-      
+
       if (channel) channel.unsubscribe(); // Unsubscribe from the previous channel
 
+      console.log("Initializing channel:", channelName);
       // Initialize and subscribe to the new channel
-      const newChannel = supabaseClient.channel(channelName);
-
-      console.log("Selected channel:", newChannel)
-
-      const data = await fetchPrivateMessages(selectedChannel); // Fetch messages for the selected channel
-      console.log("Data", data)
-      setPrivateMessages(data);
-
-      const userStatus = {
-        ...userData
-      }
+      const newChannel = supabaseClient.channel(channelName, {
+        config: {
+          presence: {
+            key: userData.id,
+          },
+        },
+      });
 
       newChannel
-      .on('presence', { event: 'join' }, ({ key, newPresences }) => {
-        console.log('join', key, newPresences)
+        .on(
+          "broadcast",
+          {
+            event: "chat",
+          },
+          (payload) => {
+            if (payload.target_id === userData.id) {
+              if (
+                payload.user_id !== pendingPartner ||
+                pendingPartner == null
+              ) {
+                // send a response to the new user
+                // message was sent by another user that is not the pending partner
 
-        if (newPresences[0].id && newPresences[0].id != userData.id) {
-          setPartnerStatus(true)
-          setPartner(newPresences[0])
-        }
-      })
-      .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
-        console.log('leave', key, leftPresences)
-        if (partner && leftPresences[0].id == partner.id) {
-          setPartnerStatus(false)
-          setPartner(null)
-        }
-      })
-      .subscribe(async (status) => {
-        if (status !== 'SUBSCRIBED') { return }
-        const presenceTrackStatus = await newChannel.track(userStatus)
-        console.log(presenceTrackStatus)
-      })
+                const response = {
+                  user_id: userData.id,
+                  target_id: payload.user_id,
+                  tm_created: new Date().toISOString(),
+                };
+
+                newChannel.send({
+                  type: "broadcast",
+                  event: "chat",
+                  payload: response,
+                });
+
+                setPendingPartner(payload.user_id);
+                setPartner(payload.user_id);
+
+                const privateChannelName = `private-${userData.id}-${payload.user_id}`;
+                setChannelName(privateChannelName);
+                setChannel(null);
+              } else if (payload.user_id === pendingPartner) {
+                // message was sent by the pending partner as response to the user
+                setPartner(payload.user_id);
+
+                const privateChannelName = `private-${payload.user_id}-${userData.id}`;
+                setChannelName(privateChannelName);
+                setChannel(null);
+              }
+            }
+          }
+        )
+        .on("presence", { event: "sync" }, () => {
+          const newState = newChannel.presenceState();
+          setSharedState(newState);
+        })
+        .on("presence", { event: "join" }, ({ key, newPresences }) => {
+          console.log("join", key, newPresences);
+
+          // send a message to the new user
+
+          const payload = {
+            user_id: userData.id,
+            target_id: key,
+            tm_created: new Date().toISOString(),
+          };
+
+          if (
+            !pendingPartner ||
+            (pendingPartner && pendingPartner in sharedState)
+          ) {
+            newChannel.send({
+              type: "broadcast",
+              event: "chat",
+              payload,
+            });
+
+            setPendingPartner(key);
+          }
+        })
+        .on("presence", { event: "leave" }, ({ key, leftPresences }) => {
+          console.log("leave", key, leftPresences);
+        })
+        .subscribe();
 
       setChannel(newChannel);
-      setLoading(false);
     };
 
     setPrivateMessages([]); // Clear messages from the previous channel
-    initChannel(selectedChannel); // Re-initialize channel subscription
+    initChannel(channelName); // Re-initialize channel subscription
 
     return () => {
       isSubscribed = false;
+      if (channel) channel.unsubscribe(); // Clean up the previous subscription
     };
-  }, [selectedChannel, userData]); // Dependency array includes selectedChannel
+  }, [channelName, userData]); // Dependency array includes channelName
 
   useLayoutEffect(() => {
     const scroll = () => {
@@ -146,39 +199,27 @@ const Matcher = () => {
   }, [privateMessages.length]); // Dependency on messages.length ensures scroll updates with new messages
 
   const handleMatch = async () => {
-
     if (!matching) {
-      setSelectedChannel("chat");
+      setChannelName("matcher");
       setMatching(true);
 
       setTimeout(() => {
         setMatched(true);
       }, 1000);
 
-      setTimeout(() => {
-        window.location.href =
-          "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/Rick%20Astley%20-%20Never%20Gonna%20Give%20You%20Up%20(Official%20Music%20Video).mp4?t=2024-04-08T06%3A12%3A18.440Z";
-      }, 1000);
-
-
+      // setTimeout(() => {
+      //   window.location.href =
+      //     "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/Rick%20Astley%20-%20Never%20Gonna%20Give%20You%20Up%20(Official%20Music%20Video).mp4?t=2024-04-08T06%3A12%3A18.440Z";
+      // }, 1000);
     } else {
-
       if (channel) channel.unsubscribe();
-      
+
       setMatching(false);
+      setChannelName(null);
       setMatched(false);
       setChannel(null);
       setPartner(null);
     }
-    
-      // if (!matching) {
-      //   setMatching(true);
-      //   setTimeout(() => {
-      //     console.log("Navigating to the video");
-      //     window.location.href =
-      //       "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/Rick%20Astley%20-%20Never%20Gonna%20Give%20You%20Up%20(Official%20Music%20Video).mp4?t=2024-04-08T06%3A12%3A18.440Z";
-      //   }, 1000);
-      // }
   };
 
   const handleSend = async () => {
@@ -188,7 +229,7 @@ const Matcher = () => {
 
     console.log("Sending message:", sanitizedMessage);
     console.log("User data:", userData);
-    console.log("Selected channel:", selectedChannel);
+    console.log("Selected channel:", channelName);
 
     const payload = {
       user_id: userData.id,
@@ -203,10 +244,10 @@ const Matcher = () => {
       payload,
     });
 
-    // post the message on messages table
+    // Post the message on messages table
     const { data, error: postError } = await supabaseClient
       .from("messages")
-      .insert([{ ...payload, channel: selectedChannel.toLowerCase() }])
+      .insert([{ ...payload, channel: channelName.toLowerCase() }])
       .single();
 
     if (error || postError) {
@@ -216,7 +257,6 @@ const Matcher = () => {
       setMessage("");
     }
   };
-
 
   return (
     <StyledWindow style={{ flex: 1, width: 320 }}>
@@ -241,7 +281,7 @@ const Matcher = () => {
             margin: "10px",
           }}
         >
-          Love is in the air! Find your match and start chatting.
+          {/* Love is in the air! Find your match and start chatting. */}
         </div>
         <Button
           style={{
@@ -249,7 +289,7 @@ const Matcher = () => {
           }}
           onClick={handleMatch}
         >
-          {!matching ? "Match me!" : "Stop matching"}
+          {/* {!matching ? "Match me!" : "Stop matching"} */}
         </Button>
         {matching && (
           <div
@@ -261,14 +301,11 @@ const Matcher = () => {
               height: "50vh",
             }}
           >
-            {matched ? (
-              `Found a match! You're on your way to cupid's arrow.`
-            ): (
-            `Finding a match for you...`
-            )}
+            {matched
+              ? `Found a match! You're on your way to cupid's arrow.`
+              : `Finding a match for you...`}
             <Hourglass size={32} style={{ margin: 20 }} />
           </div>
-          
         )}
       </WindowContent>
     </StyledWindow>
