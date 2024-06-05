@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import {
   Button,
   Table,
@@ -16,9 +16,9 @@ import styled from "styled-components";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import Loading from "../../loading";
 import { fetchAwardedGames } from "../../../supabase/services";
-import { useStore, initializeUserData } from "../../../context/userContext";
 import { useNavigate } from "react-router-dom";
 import { formatSGT } from "../../../utils/formatsgt";
+import { userContext } from "../../../context/userContext";
 
 const CloseIcon = styled.div`
   display: inline-block;
@@ -57,6 +57,7 @@ const StyledWindowHeader = styled(WindowHeader)`
 `;
 
 const Games = () => {
+  const {user, setUser} = useContext(userContext);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [awardedGames, setAwardedGames] = useState([]); // Initialize to empty array
   const [loading, setLoading] = useState(true);
@@ -64,37 +65,25 @@ const Games = () => {
   const [selectedGame, setSelectedGame] = useState(null);
   const constraintsRef = useRef(null);
   const dragxError = useMotionValue(0);
-  const userData = useStore((state) => state.userData);
+
   const navigate = useNavigate();
   const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!userData) {
-        setLoading(true);
-        try {
-          const data = await initializeUserData();
-
-          if (!data.can_add_activity) {
-            navigate("/", { replace: true });
-          }
-        } catch (error) {
-          console.error("Initialization error:", error);
-        }
-      } else {
-        if (!userData.can_add_activity) {
+        if (!user?.can_add_activity) {
           navigate("/", { replace: true });
         }
-      }
+      
 
-      if (userData && !userData.id) {
+      if (user && !user.id) {
         setLoading(false);
         return;
       }
 
       // Assuming `fetchAwardedGames` is an async function that needs a user ID
       try {
-        const awardedGames = await fetchAwardedGames(userData.id);
+        const awardedGames = await fetchAwardedGames(user.id);
         setAwardedGames(awardedGames); // Assuming this is what you intend to do with the fetched data
       } catch (error) {
         console.error("Failed to fetch awarded games:", error);
@@ -104,7 +93,7 @@ const Games = () => {
     };
 
     fetchData();
-  }, [userData, navigate]); // Dependency array
+  }, [user, navigate]); // Dependency array
 
   const modalVariants = {
     hidden: {

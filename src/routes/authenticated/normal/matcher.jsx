@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect, useContext } from "react";
 import {
   Frame,
   Window,
@@ -14,12 +14,11 @@ import {
   Tooltip,
 } from "react95";
 import Loading from "../../loading";
-import { useStore, initializeUserData } from "../../../context/userContext";
 import { supabaseClient } from "../../../supabase/supabaseClient";
 import Filter from "bad-words";
 import styled from "styled-components"; // Import styled-components
 import { useNavigate } from "react-router-dom";
-import { fetchPrivateMessages } from "../../../supabase/services";
+import { userContext } from "../../../context/userContext";
 
 const StyledWindowHeader = styled(WindowHeader)`
   color: white; // Adjust the text color as needed for contrast
@@ -49,6 +48,7 @@ const MessageBubble = styled.div`
 `;
 
 const Matcher = () => {
+  const {user, setUser} = useContext(userContext);
   const [loading, setLoading] = useState(true);
   const [channel, setChannel] = useState(null);
   const [matching, setMatching] = useState(false);
@@ -59,19 +59,10 @@ const Matcher = () => {
   const [channelName, setChannelName] = useState(); // Default channel
   const [message, setMessage] = useState("");
   const [privateMessages, setPrivateMessages] = useState([]);
-  const userData = useStore((state) => state.userData);
   const scrollViewRef = useRef();
   const filter = new Filter();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const init = async () => {
-      setLoading(true);
-      if (!userData) await initializeUserData();
-      setLoading(false);
-    };
-    init();
-  }, [userData]);
 
   useEffect(() => {
     if (partner) {
@@ -92,7 +83,7 @@ const Matcher = () => {
       const newChannel = supabaseClient.channel(channelName, {
         config: {
           presence: {
-            key: userData.id,
+            key: user.id,
           },
         },
       });
@@ -104,7 +95,7 @@ const Matcher = () => {
             event: "chat",
           },
           (payload) => {
-            if (payload.target_id === userData.id) {
+            if (payload.target_id === user.id) {
               if (
                 payload.user_id !== pendingPartner ||
                 pendingPartner == null
@@ -113,7 +104,7 @@ const Matcher = () => {
                 // message was sent by another user that is not the pending partner
 
                 const response = {
-                  user_id: userData.id,
+                  user_id: user.id,
                   target_id: payload.user_id,
                   tm_created: new Date().toISOString(),
                 };
@@ -127,14 +118,14 @@ const Matcher = () => {
                 setPendingPartner(payload.user_id);
                 setPartner(payload.user_id);
 
-                const privateChannelName = `private-${userData.id}-${payload.user_id}`;
+                const privateChannelName = `private-${user.id}-${payload.user_id}`;
                 setChannelName(privateChannelName);
                 setChannel(null);
               } else if (payload.user_id === pendingPartner) {
                 // message was sent by the pending partner as response to the user
                 setPartner(payload.user_id);
 
-                const privateChannelName = `private-${payload.user_id}-${userData.id}`;
+                const privateChannelName = `private-${payload.user_id}-${user.id}`;
                 setChannelName(privateChannelName);
                 setChannel(null);
               }
@@ -151,7 +142,7 @@ const Matcher = () => {
           // send a message to the new user
 
           const payload = {
-            user_id: userData.id,
+            user_id: user.id,
             target_id: key,
             tm_created: new Date().toISOString(),
           };
@@ -184,7 +175,7 @@ const Matcher = () => {
       isSubscribed = false;
       if (channel) channel.unsubscribe(); // Clean up the previous subscription
     };
-  }, [channelName, userData]); // Dependency array includes channelName
+  }, [channelName, user]); // Dependency array includes channelName
 
   useLayoutEffect(() => {
     const scroll = () => {
@@ -228,12 +219,12 @@ const Matcher = () => {
     const sanitizedMessage = filter.clean(message);
 
     console.log("Sending message:", sanitizedMessage);
-    console.log("User data:", userData);
+    console.log("User data:", user);
     console.log("Selected channel:", channelName);
 
     const payload = {
-      user_id: userData.id,
-      name: userData.profile_name,
+      user_id: user.id,
+      name: user.profile_name,
       message: sanitizedMessage,
       tm_created: new Date().toISOString(),
     };

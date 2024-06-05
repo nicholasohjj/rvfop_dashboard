@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import {
   Button,
   Table,
@@ -16,7 +16,7 @@ import styled from "styled-components";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import Loading from "../../loading";
 import { fetchGroup, fetchDeductions } from "../../../supabase/services";
-import { useStore, initializeUserData } from "../../../context/userContext";
+import { userContext } from "../../../context/userContext";
 import { useNavigate } from "react-router-dom";
 import { formatSGT } from "../../../utils/formatsgt";
 const CloseIcon = styled.div`
@@ -57,6 +57,7 @@ const StyledWindowHeader = styled(WindowHeader)`
 
 const Deductions = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const {user, setUser} = useContext(userContext);
   const [groupData, setGroupData] = useState(null); // Initialize to null for better checks
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -64,39 +65,29 @@ const Deductions = () => {
   const [deductionData, setDeductionData] = useState([]);
   const constraintsRef = useRef(null);
   const dragxError = useMotionValue(0);
-  const userData = useStore((state) => state.userData);
   const navigate = useNavigate();
   const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
 
   useEffect(() => {
     const init = async () => {
       setLoading(true);
-    if (!userData) {
-      try {
-        const data = await initializeUserData()
-        if (data && !data.can_deduct) {
-          navigate("/", { replace: true });
-        }
-      } catch (error) {
-        console.error("Initialization error:", error);
-      }
-    } else {
-      if (!userData.can_deduct) {
+
+      if (!user?.can_deduct) {
         navigate("/", { replace: true });
       }
-    }
+    
 
-    if (userData && !userData.group_id) {
+    if (user && !user.group_id) {
       setLoading(false);
       return;
     }
 
     try {
 
-      const group = await fetchGroup(userData.group_id);
+      const group = await fetchGroup(user.group_id);
       setGroupData(group);
 
-      const deductionData = await fetchDeductions(userData.group_id);
+      const deductionData = await fetchDeductions(user.group_id);
       setDeductionData(deductionData);
     } catch (error) {
       console.error("Failed to fetch data:", error);
@@ -106,7 +97,7 @@ const Deductions = () => {
 
     }
     init();
-  }, [userData, navigate]);
+  }, [user, navigate]);
 
   const modalVariants = {
     hidden: {

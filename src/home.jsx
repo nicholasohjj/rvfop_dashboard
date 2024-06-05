@@ -1,5 +1,4 @@
 import { Footer } from "./components/footer";
-import { useStore, initializeUserData } from "./context/userContext";
 import { useEffect } from "react";
 import styled from "styled-components";
 import "./style.css"; // Make sure this points to your CSS file
@@ -13,13 +12,6 @@ const Container = styled.div`
 
 
 export const Home = () => {
-  const userData = useStore((state) => state.userData);
-
-  useEffect(() => {
-    if (!userData) {
-      initializeUserData();
-    }
-  }, [userData]);
 
   return (
     <Container>

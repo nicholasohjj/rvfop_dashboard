@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import {
   Button,
   Select,
@@ -18,7 +18,7 @@ import {
   fetchGroup,
   addDeduction,
 } from "../../../supabase/services";
-import { useStore, initializeUserData } from "../../../context/userContext";
+import { userContext } from "../../../context/userContext";
 // Styled components
 const StyledWindow = styled(Window)`
   flex: 1;
@@ -91,26 +91,19 @@ const AddDeduction = () => {
   const [deductionPoints, setDeductionPoints] = useState(0);
   const [error, setError] = useState(null); 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const {user, setUser} = useContext(userContext);
 
   const constraintsRef = useRef(null);
   const dragxError = useMotionValue(0);
   const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
 
   const navigate = useNavigate();
-  const userData = useStore((state) => state.userData);
 
   useEffect(() => {
     const init = async () => {
       try {
-        if (!userData) {
-          const user = await initializeUserData();
-          if (user && !user.can_deduct) {
+          if (!user.can_deduct) {
             navigate("/", { replace: true });
-          }
-        } else {
-          if (!userData.can_deduct) {
-            navigate("/", { replace: true });
-          }
         }
         if (groups.length < 1) {
           fetchGroups().then((data) => {
@@ -118,12 +111,12 @@ const AddDeduction = () => {
           });
         }
 
-        if (userData && !userData.group_id) {
+        if (user && !user.group_id) {
           return
         }
 
         if (!group) {
-          const groupData = await fetchGroup(userData.group_id);
+          const groupData = await fetchGroup(user.group_id);
           setGroup(groupData);
         }
       } catch (error) {
@@ -135,7 +128,7 @@ const AddDeduction = () => {
     };
 
     init();
-  }, [group, groups, navigate, userData]); // Update dependencies
+  }, [group, groups, navigate, user]); // Update dependencies
 
   const handleAddDeduction = async () => {
     if (!selectedGroup || deductionPoints <= 0) {
