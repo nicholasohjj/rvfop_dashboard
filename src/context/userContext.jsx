@@ -1,14 +1,11 @@
 import { create } from "zustand";
 import { createContext } from "react";
 // Assuming fetchUser is an async function from your services
-import { fetchUser, fetchGroups } from "../supabase/services";
+import { fetchGroups } from "../supabase/services";
 
 export const userContext = createContext([])
 
 export const useStore = create((set) => ({
-  userData: null, // Initial state can be null or some default value
-  setUserData: (userData) => set({ userData }), // Action to update userData
-
   groups: [], // Initial state can be an empty array or some default value
   setGroups: (groups) => set({ groups }), // Action to update groups
 }));
@@ -18,10 +15,5 @@ export const initialiseGroups = async () => {
   useStore.getState().setGroups(groups);
 };
 
-// Usage example outside the store definition:
-export const initializeUserData = async () => {
-  const userData = await fetchUser();
-  useStore.getState().setUserData(userData);
-};
 
-Promise.all([initializeUserData(), initialiseGroups()]); // Call this function to initialize the userData
+Promise.all([initialiseGroups()]); // Call this function to initialize the userData

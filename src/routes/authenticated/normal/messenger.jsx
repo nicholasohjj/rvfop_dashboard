@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect, useContext } from "react";
 import {
   Frame,
   Window,
@@ -13,7 +13,7 @@ import {
   Anchor
 } from "react95";
 import Loading from "../../loading";
-import { useStore, initializeUserData } from "../../../context/userContext";
+import { userContext } from "../../../context/userContext";
 import { supabaseClient } from "../../../supabase/supabaseClient";
 import Filter from "bad-words";
 import styled from "styled-components"; // Import styled-components
@@ -48,13 +48,13 @@ const MessageBubble = styled.div`
 `;
 
 const Messenger = () => {
+  const {user, setUser} = useContext(userContext);
   const [loading, setLoading] = useState(true);
   const [channel, setChannel] = useState(null);
   const [channels, setChannels] = useState([]); // Example channel names
   const [selectedChannel, setSelectedChannel] = useState("General"); // Default channel
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
-  const userData = useStore((state) => state.userData);
   const scrollViewRef = useRef();
   const filter = new Filter();
   const navigate = useNavigate();
@@ -69,7 +69,7 @@ const Messenger = () => {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
-      if (!userData) await initializeUserData();
+      
       const channels = await fetchChannels();
       setChannels(channels);
       setSelectedChannel(channels[0]);
@@ -84,7 +84,7 @@ const Messenger = () => {
       setLoading(false);
     };
     init();
-  }, [userData]);
+  }, [user]);
 
   useLayoutEffect(() => {
     scrollToBottom();
@@ -133,7 +133,7 @@ const Messenger = () => {
     const sanitizedMessage = filter.clean(message);
 
     const payload = {
-      user_id: userData.id,
+      user_id: user.id,
       message: sanitizedMessage,
       tm_created: new Date().toISOString(),
     };
@@ -155,7 +155,7 @@ const Messenger = () => {
     } else {
       setMessages((prevMessages) => [
         ...prevMessages,
-        { ...payload, profile_name: userData.profile_name },
+        { ...payload, profile_name: user.profile_name },
       ]);
       setMessage("");
       scrollToBottom();
@@ -279,18 +279,18 @@ const Messenger = () => {
                         padding: "10px",
                         display: "flex",
                         flexDirection:
-                          message.user_id === userData.id
+                          message.user_id === user.id
                             ? "row-reverse"
                             : "row",
                         alignItems: "flex-start",
                         gap: "10px",
                         marginBottom: "10px",
                         textAlign:
-                          message.user_id === userData.id ? "right" : "left",
+                          message.user_id === user.id ? "right" : "left",
                       }}
                     >
                       <ProfileAvatar name={message.profile_name} nameColor={message.user_id} />
-                      <MessageBubble isUser={message.user_id === userData.id}>
+                      <MessageBubble isUser={message.user_id === user.id}>
                         <div>
                           <strong>{message.profile_name}</strong>
                         </div>

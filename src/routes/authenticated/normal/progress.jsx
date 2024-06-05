@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import {
   Button,
   Table,
@@ -23,11 +23,8 @@ import {
   fetchMembers,
   fetchDeductedDeductions,
 } from "../../../supabase/services";
-import {
-  useStore,
-  initializeUserData,
-} from "../../../context/userContext";
 import { useNavigate } from "react-router-dom";
+import { userContext } from "../../../context/userContext";
 
 import { formatSGT } from "../../../utils/formatsgt";
 import { ProfileAvatar } from "../../../components/profileavatar";
@@ -81,41 +78,30 @@ const Progress = () => {
   const dragxError = useMotionValue(0);
   const navigate = useNavigate();
   const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
-  const userData = useStore((state) => state.userData);
+  const {user, setUser} = useContext(userContext);
 
   useEffect(() => {
     const init = async () => {
-      console.log("userData", userData);
-      if (!userData) {
-        try {
-          const data = await initializeUserData();
-          
-          if (data && !data.has_progress) {
-            navigate("/", { replace: true });
-          }
-        } catch (error) {
-          console.error("Failed to fetch data:", error);
-        }
-      } else {
-
-        if (!userData.has_progress) {
+        if (!user?.has_progress) {
           navigate("/", { replace: true });
         }
-      }
+      
 
-      if (userData && !userData.group_id) {
+      if (user && !user?.group_id) {
         setLoading(false);
         return;
       }
 
       try {
-        const group = await fetchGroup(userData.group_id);
+        if (user) {
+        const group = await fetchGroup(user?.group_id);
         console.log("group", group);
         setGroupData(group);
 
-        const membersData = await fetchMembers(userData.group_id);
+        const membersData = await fetchMembers(user?.group_id);
         console.log("membersData", membersData);
         setMembers(membersData);
+        
 
         if (group) {
           const activityData = await fetchGroupActivities(group.group_id);
@@ -126,6 +112,7 @@ const Progress = () => {
           );
           setDeductions(deductedDeductions);
         }
+      }
       } catch (error) {
         console.error("Failed to fetch data:", error);
       } finally {
@@ -134,7 +121,7 @@ const Progress = () => {
 
     };
     init();
-  }, [userData, navigate]);
+  }, [user, navigate]);
 
   const modalVariants = {
     hidden: {
