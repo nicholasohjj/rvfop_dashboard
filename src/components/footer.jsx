@@ -1,15 +1,15 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useContext } from "react";
 import { AppBar, Toolbar, Button, MenuList, MenuListItem } from "react95";
 import { useNavigate } from "react-router-dom";
 import { supabaseClient } from "../supabase/supabaseClient";
-import { useStore, initializeUserData } from "../context/userContext";
-
+import { useStore } from "../context/userContext";
+import { userContext } from "../context/userContext";
 export const Footer = () => {
   const [open, setOpen] = useState(false);
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { user, setUser } = useContext(userContext);
   const navigate = useNavigate();
-  const userData = useStore((state) => state.userData);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -24,15 +24,10 @@ export const Footer = () => {
 
     const init = async () => {
       await checkSession();
-
-      if (!userData) {
-        await initializeUserData();
-      }
     };
 
     init();
-    checkSession();
-  }, [userData]);
+  }, [user]);
 
   const handleNavigate = (path) => {
     navigate(path);
@@ -78,7 +73,7 @@ export const Footer = () => {
                 </MenuListItem>
               )}
               {session &&
-                (userData.has_progress) && (
+                (user.has_progress) && (
                   <MenuListItem onClick={() => handleNavigate("/progress")}>
                     <img
                       src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/progress.png"
@@ -90,7 +85,7 @@ export const Footer = () => {
                 )}
 
               {session &&
-                (userData.can_deduct) && (
+                (user.can_deduct) && (
                   <MenuListItem onClick={() => handleNavigate("/deductions")}>
                     <img
                       src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/deduction.png"
@@ -101,7 +96,7 @@ export const Footer = () => {
                   </MenuListItem>
                 )}
               {session &&
-                (userData.can_add_activity) && (
+                (user.can_add_activity) && (
                   <MenuListItem onClick={() => handleNavigate("/games")}>
                     <img
                       src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/games.png"
@@ -113,7 +108,7 @@ export const Footer = () => {
                 )}
               <MenuListItem
                 onClick={
-                  userData
+                  user
                     ? () => handleNavigate("/message")
                     : () => handleNavigate("/login")
                 }

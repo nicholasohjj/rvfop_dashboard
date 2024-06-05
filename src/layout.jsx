@@ -2,8 +2,8 @@ import { Footer } from "./components/footer";
 import { Header } from "./components/header";
 import { Outlet } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useStore, initializeUserData } from "./context/userContext";
-import { useEffect, useCallback, useState, useContext } from "react";
+import { useEffect, useState, useContext } from "react";
+import { fetchUser } from "./supabase/services";
 import styled from "styled-components";
 import "./style.css"; // Make sure this points to your CSS file
 import { supabaseClient } from "./supabase/supabaseClient";
@@ -50,25 +50,37 @@ export const Layout = () => {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const {user, setUser} = useContext(userContext);
-  
-  const userData = useStore((state) => state.userData);
+
 
   useEffect(() => {
     const checkSession = async () => {
+      setLoading(true);
       const {
         data: { session },
       } = await supabaseClient.auth.getSession();
       setSession(session);
       // Set loading to false after the session check
+
+      if (!user) {
+        console.log("No user here!");
+        const data = await fetchUser();
+        console.log("User here!", data);
+
+        setUser(data);
+      }
+
       setLoading(false);
+
+
+
     };
 
     checkSession();
 
-    if (!userData) {
-      initializeUserData();
-    }
-  }, [userData]);
+
+
+
+  }, []);
 
   return (
     <Container>

@@ -1,15 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { AppBar, Toolbar, Button, MenuList, MenuListItem } from "react95";
 import { useNavigate } from "react-router-dom";
-import { useStore, initializeUserData } from "../context/userContext";
 import { supabaseClient } from "../supabase/supabaseClient";
-
+import { userContext } from "../context/userContext";
 export const Header = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
-  const userData = useStore((state) => state.userData);
+  const {user, setUser} = useContext(userContext);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -23,14 +22,7 @@ export const Header = () => {
     };
 
     checkSession();
-    const initialise = async () => {
-      if (!userData) {
-        await initializeUserData();
-      }
-    };
-
-    initialise();
-  }, [userData]);
+  }, []);
 
   return (
     <AppBar style={{ zIndex: 1 }}>
@@ -55,7 +47,7 @@ export const Header = () => {
               />
               My Profile
             </MenuListItem>
-            {userData.can_add_activity && (
+            {user.can_add_activity && (
               <MenuListItem onClick={() => navigate("/addactivity")}>
                 <img
                   src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/sign/rvfop/addactivity.png?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJydmZvcC9hZGRhY3Rpdml0eS5wbmciLCJpYXQiOjE3MTE5NDc5NTIsImV4cCI6MjAyNzMwNzk1Mn0.tBntdvbPBIdWB9Ho16a18nbwW167CwdlYnRAMIq4efw"
@@ -65,7 +57,7 @@ export const Header = () => {
                 Add Activity
               </MenuListItem>
             )}
-            {userData.can_deduct && (
+            {user.can_deduct && (
               <MenuListItem onClick={() => navigate("/adddeduction")}>
                 <img
                   src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/adddeduction.png"

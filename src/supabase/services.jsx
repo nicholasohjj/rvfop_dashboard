@@ -76,6 +76,7 @@ const fetchPrivateMessages = async (input_channel) => {
 
 const fetchUser = async () => {
   const { data, error } = await supabaseClient.rpc("get_profile");
+
   return data;
 };
 
