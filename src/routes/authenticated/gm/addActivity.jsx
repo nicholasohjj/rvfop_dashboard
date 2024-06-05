@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useContext } from "react";
 import {
   Button,
   Select,
@@ -21,9 +21,9 @@ import {
 import {
   useStore,
   initialiseGroups,
-  initializeUserData,
 } from "../../../context/userContext";
 import Loading from "../../loading";
+import { userContext } from "../../../context/userContext";
 // Styled components
 const StyledWindow = styled(Window)`
   flex: 1;
@@ -87,6 +87,7 @@ const AddActivity = () => {
   const [error, setError] = useState(null);
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [selectedGroup, setSelectedGroup] = useState(null);
+  const {user, setUser} = useContext(userContext);
   const [newActivity, setNewActivity] = useState({
     activity_name: "",
     description: "",
@@ -110,17 +111,14 @@ const AddActivity = () => {
   }, [storeGroups]);
 
   const activities = useMemo(() => [{ activity_name: "Select Activity" }, ...activityData], [activityData]);
-  const userData = useStore((state) => state.userData);
 
   useEffect(() => {
     const initializeData = async () => {
       try {
-        if (!userData) {
-          const data = await initializeUserData();
-          if (data && !data.can_add_activity) {
+          if (user && !user.can_add_activity) {
             navigate("/", { replace: true });
             return;
-          }
+          
         }
 
         await initialiseGroups();
@@ -130,7 +128,7 @@ const AddActivity = () => {
     };
 
     initializeData();
-  }, [userData, navigate]);
+  }, [user, navigate]);
 
   // New useEffect hook for fetching activities
   useEffect(() => {
@@ -207,7 +205,7 @@ const AddActivity = () => {
 
     newGroupActivity.activity_id = activityToAdd.activity_id;
     newGroupActivity.group_id = selectedGroup.group_id;
-    newGroupActivity.gm_id = userData.id;
+    newGroupActivity.gm_id = user.id;
 
     try {
       await addGroupActivity(newGroupActivity);

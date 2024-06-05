@@ -46,7 +46,6 @@ export const Layout = () => {
     "b",
     "a",
   ];
-  const [inputSequence, setInputSequence] = useState([]);
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const {user, setUser} = useContext(userContext);
