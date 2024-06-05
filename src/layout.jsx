@@ -3,10 +3,11 @@ import { Header } from "./components/header";
 import { Outlet } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useStore, initializeUserData } from "./context/userContext";
-import { useEffect, useCallback, useState } from "react";
-import styled, { keyframes } from "styled-components";
+import { useEffect, useCallback, useState, useContext } from "react";
+import styled from "styled-components";
 import "./style.css"; // Make sure this points to your CSS file
 import { supabaseClient } from "./supabase/supabaseClient";
+import { userContext } from "./context/userContext";
 const modalVariants = {
   hidden: {
     opacity: 0,
@@ -48,27 +49,8 @@ export const Layout = () => {
   const [inputSequence, setInputSequence] = useState([]);
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  const handleKeyPress = useCallback((event) => {
-    setInputSequence((seq) => {
-      let sequence = [...seq, event.key];
-      if (sequence.length > konamiCode.length) {
-        sequence.shift(); // Keep the array no longer than the Konami Code
-      }
-      if (JSON.stringify(sequence) === JSON.stringify(konamiCode)) {
-
-        window.open("https://t.me/+tPTYz0NmYDBkYjY1", "_blank");
-        sequence = []; // Reset sequence
-      }
-      return sequence;
-    });
-  }, []);
-
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyPress);
-    return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [handleKeyPress]);
-
+  const {user, setUser} = useContext(userContext);
+  
   const userData = useStore((state) => state.userData);
 
   useEffect(() => {

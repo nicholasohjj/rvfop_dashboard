@@ -1,7 +1,9 @@
 import { create } from "zustand";
-
+import { createContext } from "react";
 // Assuming fetchUser is an async function from your services
 import { fetchUser, fetchGroups } from "../supabase/services";
+
+export const userContext = createContext([])
 
 export const useStore = create((set) => ({
   userData: null, // Initial state can be null or some default value

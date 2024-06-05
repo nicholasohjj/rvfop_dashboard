@@ -4,6 +4,7 @@ import {
   RouterProvider,
   Navigate,
 } from "react-router-dom";
+import { userContext } from "./context/userContext";
 import ErrorPage from "./routes/errorpage";
 import { Login } from "./routes/login";
 import { Layout } from "./layout";
@@ -29,6 +30,7 @@ import { ResetForm } from "./routes/resetForm";
 const App = () => {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -205,9 +207,11 @@ const App = () => {
 
   return (
     <>
+    <userContext.Provider value={{ user, setUser }}>
       <RouterProvider router={router} />
       <Analytics />
       <SpeedInsights />
+    </userContext.Provider>
     </>
   );
 };
