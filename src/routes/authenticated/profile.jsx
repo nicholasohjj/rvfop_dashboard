@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import {
   Window,
   Hourglass,
@@ -11,6 +11,7 @@ import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { fetchUser } from "../../supabase/services";
+import { userContext } from "../../context/userContext";
 import { ProfileAvatar } from "../../components/profileavatar";
 const StyledWindowHeader = styled(WindowHeader)`
   background-color: #ff0000;
@@ -21,31 +22,24 @@ const StyledWindowHeader = styled(WindowHeader)`
 `;
 
 export const Profile = () => {
-  const [user, setUser] = useState("");
+  const { user, setUser } = useContext(userContext);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [error, setError] = useState(null);
   const dragX = useMotionValue(0);
-  const dragxError = useMotionValue(0);
 
   const rotateValue = useTransform(dragX, [-100, 100], [-10, 10]);
-  const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]);
 
   const constraintsRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
+    const init = async () => {
+      if (!user) {
+        const user = await fetchUser();
+        setUser(user);
+      }
     };
-
-    window.addEventListener("resize", handleResize);
-
-    Promise.all([fetchUser()]).then(([user]) => {
-      setUser(user);
-    });
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+    init();
+  }, [user, setUser]);
 
   const handleReturnHome = () => {
     navigate("/");

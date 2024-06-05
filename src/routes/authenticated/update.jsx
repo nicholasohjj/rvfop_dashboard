@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 
 import {
   Window,
@@ -6,13 +6,14 @@ import {
   WindowContent,
   TextInput,
   Button,
-  Anchor
+  Anchor,
 } from "react95";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { supabaseClient } from "../../supabase/supabaseClient";
 import styled from "styled-components";
 import { fetchUser } from "../../supabase/services";
+import { userContext } from "../../context/userContext";
 // Styled Close Icon Component
 const CloseIcon = styled.div`
   display: inline-block;
@@ -52,6 +53,7 @@ const StyledWindowHeader = styled(WindowHeader)`
 `;
 
 export const Update = () => {
+  const { user, setUser } = useContext(userContext); // Get the user context
   const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
   const [isloading, setIsloading] = useState(false);
@@ -70,25 +72,19 @@ export const Update = () => {
   const navigate = useNavigate(); // Hook for navigation
 
   useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
+    const init = async () => {
+      if (!user) {
+        const user = await fetchUser();
+        setUser(user);
+        setemail(user.email);
+      }
     };
-
-    window.addEventListener("resize", handleResize);
-    Promise.all([fetchUser()]).then(([user]) => {
-      setemail(user.email);
-    });
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+    init();
+  }, [user, setUser]);
 
   useEffect(() => {
     setPasswordsMatch(password === confirmPassword);
   }, [password, confirmPassword]);
-
-  const handleReturnHome = () => {
-    setPassword("");
-    navigate("/", { replace: true });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -160,7 +156,7 @@ export const Update = () => {
             <span>Update your password</span>
           </WindowHeader>
           <WindowContent>
-          <p style={{ display: "flex" }}>
+            <p style={{ display: "flex" }}>
               Enter your new password below. Make sure it is at least 6
               characters.
             </p>
@@ -205,13 +201,12 @@ export const Update = () => {
                 }}
               />
               <br />
-              <div style={{ display: "flex", flexDirection: "column"}}>
+              <div style={{ display: "flex", flexDirection: "column" }}>
                 <Button type="submit" value="login">
                   Update
                 </Button>
                 <Anchor href="/">Return home</Anchor>
               </div>
-
             </form>
           </WindowContent>
         </Window>

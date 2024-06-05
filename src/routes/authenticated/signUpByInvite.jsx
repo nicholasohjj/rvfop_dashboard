@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import {
   Window,
   WindowHeader,
@@ -10,6 +10,7 @@ import {
   Tooltip,
 } from "react95";
 import { motion, useMotionValue, useTransform } from "framer-motion";
+import { userContext } from "../../context/userContext";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { supabaseClient } from "../../supabase/supabaseClient";
 import styled from "styled-components";
@@ -64,7 +65,7 @@ export const SignupByInvite = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState("");
   const [groups, setGroups] = useState([]); // Add groups state
-  const [user, setUser] = useState(null);
+  const {user, setUser} = useContext(userContext);
 
   const constraintsRef = useRef(null);
   const navigate = useNavigate(); // Hook for navigation
@@ -76,15 +77,21 @@ export const SignupByInvite = () => {
 
   useEffect(() => {
     const fetch = async () => {
-      Promise.all([fetchUser(), fetchGroups(), fetchRoles()]).then((values) => {
-        setUser(values[0]);
-        setGroups(values[1]);
-        setRoles(values[2]);
-      });
+
+      if (!user) {
+        const user = await fetchUser();
+        setUser(user);
+      }
+
+      const groups = await fetchGroups();
+      setGroups(groups);
+
+      const roles = await fetchRoles();
+      setRoles(roles);
     };
 
     fetch();
-  }, []);
+  }, [user, setUser]);
 
   useEffect(() => {
     const handleResize = () => {
