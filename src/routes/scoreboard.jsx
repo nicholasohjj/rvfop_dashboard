@@ -267,6 +267,7 @@ const Scoreboard = () => {
             </WindowContent>
           </Window>
         </motion.div>
+        
       )}
     </div>
   );

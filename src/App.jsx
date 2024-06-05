@@ -4,6 +4,7 @@ import {
   RouterProvider,
   Navigate,
 } from "react-router-dom";
+import Video from "./routes/video";
 import { userContext } from "./context/userContext";
 import ErrorPage from "./routes/errorpage";
 import { Login } from "./routes/login";
@@ -91,7 +92,10 @@ const App = () => {
           path: "/progress",
           element: <Progress />,
         },
-
+        {
+          path: "/video",
+          element: <Video />
+        },
         {
           path: "/deductions",
           element: <Deductions />,
