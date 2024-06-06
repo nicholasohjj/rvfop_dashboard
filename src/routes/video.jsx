@@ -1,12 +1,19 @@
 import { Window, WindowContent, WindowHeader } from "react95";
 import Iframe from "react-iframe";
+import React, { useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
+
+const videos = [
+  "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/GAYLE_-_abcdefu__cover_by_Bongo_Cat____.mp4",
+  "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/Rick%20Astley%20-%20Never%20Gonna%20Give%20You%20Up%20(Official%20Music%20Video).mp4",
+]
 
 const Video = () => {
   return (
     <div
       style={{
-        height: "100vh", // Ensure the container takes up the full height of the viewport
-        width: "100vw", // Ensure the container takes up the full width of the viewport
+        height: "100vh", 
+        width: "100vw",
         display: "flex",
         position: "relative",
       }}
@@ -19,7 +26,7 @@ const Video = () => {
           overflow: "hidden",
         }}
       >
-        <WindowHeader>Video Player</WindowHeader>
+        <WindowHeader>????</WindowHeader>
         <WindowContent
           style={{
             flex: 1,
@@ -28,6 +35,7 @@ const Video = () => {
           }}
         >
           <Iframe
+            url={videos[Math.floor(Math.random() * videos.length)]}
             width="100%"
             height="100%"
             id="myId"
@@ -35,12 +43,10 @@ const Video = () => {
             display="initial"
             position="relative"
             allowFullScreen
-            url="https://www.youtube.com/embed/r3-G5OoLta0?si=al7aGhVUGH_S06-F&amp;controls=0"
             title="Bongo Cat"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerpolicy="strict-origin-when-cross-origin"
-            allowfullscreen
+            frameBorder="0"
+            allow="autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
           />
         </WindowContent>
       </Window>

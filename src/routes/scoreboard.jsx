@@ -16,6 +16,7 @@ import { fetchHouses } from "../supabase/services";
 import styled from "styled-components";
 import { supabaseClient } from "../supabase/supabaseClient";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const Scoreboard = () => {
   const [houses, setHouses] = useState([]);
@@ -25,6 +26,8 @@ const Scoreboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedHouse, setSelectedHouse] = useState(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const sortHousesInitially = (housesData) => {
@@ -177,7 +180,7 @@ const Scoreboard = () => {
       }}
     >
       <Window style={{ flex: 1, overflow: "auto", minHeight:"100vh", maxHeight: "100vh" }}>
-        <WindowHeader>Scoreboard</WindowHeader>
+        <WindowHeader onClick={() => navigate("/video")}>Scoreboard</WindowHeader>
         <WindowContent>
           <Table>
             <TableHead>
