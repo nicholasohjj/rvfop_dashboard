@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { supabaseClient } from "../../supabase/supabaseClient";
 import styled from "styled-components";
 import { fetchGroups, fetchUser, fetchRoles } from "../../supabase/services";
+import { Helmet } from "react-helmet";
 // Styled Close Icon Component
 const CloseIcon = styled.div`
   display: inline-block;
@@ -65,8 +66,7 @@ export const SignupByInvite = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState("");
   const [groups, setGroups] = useState([]); // Add groups state
-  const {user, setUser} = useContext(userContext);
-
+  const { user, setUser } = useContext(userContext);
   const constraintsRef = useRef(null);
   const navigate = useNavigate(); // Hook for navigation
   const dragX = useMotionValue(0);
@@ -77,7 +77,6 @@ export const SignupByInvite = () => {
 
   useEffect(() => {
     const fetch = async () => {
-
       if (!user) {
         const user = await fetchUser();
         setUser(user);
@@ -118,7 +117,6 @@ export const SignupByInvite = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-
     if (!password || !name) {
       setError({
         name: "Error",
@@ -146,10 +144,7 @@ export const SignupByInvite = () => {
       return;
     }
 
-    if (
-      selectedRole?.needs_group &&
-      !selectedGroup
-    ) {
+    if (selectedRole?.needs_group && !selectedGroup) {
       setIsModalOpen(true);
       setError({
         name: "Error",
@@ -159,7 +154,6 @@ export const SignupByInvite = () => {
     }
 
     try {
-
       const { data, error } = await supabaseClient.auth.admin.updateUserById(
         user.id,
         {
@@ -167,10 +161,9 @@ export const SignupByInvite = () => {
             name: name,
             role: selectedRole.role,
             group_id: selectedGroup,
+          },
         }
-      }
       );
-
 
       if (data.user && "email_verified" in data.user.user_metadata) {
         setIsModalOpen(true);
@@ -238,6 +231,13 @@ export const SignupByInvite = () => {
         backgroundColor: "rgb(0, 128, 128)",
       }}
     >
+      <Helmet>
+        <title>Insieme 2024 - Sign Up</title>
+        <meta
+          name="description"
+          content="Received an invitation. Complete your signup process here!"
+        />
+      </Helmet>
       <motion.div
         drag
         initial="hidden"

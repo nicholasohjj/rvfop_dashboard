@@ -7,12 +7,14 @@ import {
   Avatar,
   Button,
 } from "react95";
+
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { fetchUser } from "../../supabase/services";
 import { userContext } from "../../context/userContext";
 import { ProfileAvatar } from "../../components/profileavatar";
+import { Helmet } from "react-helmet";
 const StyledWindowHeader = styled(WindowHeader)`
   background-color: #ff0000;
   color: white;
@@ -62,6 +64,10 @@ export const Profile = () => {
         backgroundColor: "rgb(0, 128, 128)",
       }}
     >
+      <Helmet>
+        <title>Insieme 2024 - Profile</title>
+        <meta name="description" content="Check your user profile here" />
+      </Helmet>
       <motion.div
         drag
         dragConstraints={constraintsRef}

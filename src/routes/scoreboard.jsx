@@ -17,6 +17,7 @@ import styled from "styled-components";
 import { supabaseClient } from "../supabase/supabaseClient";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet";
 
 const Scoreboard = () => {
   const [houses, setHouses] = useState([]);
@@ -179,8 +180,21 @@ const Scoreboard = () => {
         position: "relative",
       }}
     >
-      <Window style={{ flex: 1, overflow: "auto", minHeight:"100vh", maxHeight: "100vh" }}>
-        <WindowHeader onClick={() => navigate("/video")}>Scoreboard</WindowHeader>
+      <Helmet>
+        <title>Insieme 2024 - Scoreboard</title>
+        <meta name="description" content="Scoreboard page" />
+      </Helmet>
+      <Window
+        style={{
+          flex: 1,
+          overflow: "auto",
+          minHeight: "100vh",
+          maxHeight: "100vh",
+        }}
+      >
+        <WindowHeader onClick={() => navigate("/video")}>
+          Scoreboard
+        </WindowHeader>
         <WindowContent>
           <Table>
             <TableHead>
@@ -270,7 +284,6 @@ const Scoreboard = () => {
             </WindowContent>
           </Window>
         </motion.div>
-        
       )}
     </div>
   );

@@ -19,6 +19,7 @@ import { fetchGroup, fetchDeductions } from "../../../supabase/services";
 import { userContext } from "../../../context/userContext";
 import { useNavigate } from "react-router-dom";
 import { formatSGT } from "../../../utils/formatsgt";
+import { Helmet } from "react-helmet";
 const CloseIcon = styled.div`
   display: inline-block;
   width: 16px;
@@ -57,7 +58,7 @@ const StyledWindowHeader = styled(WindowHeader)`
 
 const Deductions = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const {user, setUser} = useContext(userContext);
+  const { user, setUser } = useContext(userContext);
   const [groupData, setGroupData] = useState(null); // Initialize to null for better checks
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -75,27 +76,24 @@ const Deductions = () => {
       if (!user?.can_deduct) {
         navigate("/", { replace: true });
       }
-    
 
-    if (user && !user.group_id) {
-      setLoading(false);
-      return;
-    }
+      if (user && !user.group_id) {
+        setLoading(false);
+        return;
+      }
 
-    try {
+      try {
+        const group = await fetchGroup(user.group_id);
+        setGroupData(group);
 
-      const group = await fetchGroup(user.group_id);
-      setGroupData(group);
-
-      const deductionData = await fetchDeductions(user.group_id);
-      setDeductionData(deductionData);
-    } catch (error) {
-      console.error("Failed to fetch data:", error);
-    } finally {
-      setLoading(false);
-    }
-
-    }
+        const deductionData = await fetchDeductions(user.group_id);
+        setDeductionData(deductionData);
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
     init();
   }, [user, navigate]);
 
@@ -131,6 +129,10 @@ const Deductions = () => {
         position: "relative",
       }}
     >
+      <Helmet>
+        <title>Insieme 2024 - My deductions</title>
+        <meta name="description" content="Track your deductions here" />
+      </Helmet>
       <WindowHeader>My Deductions</WindowHeader>
       <WindowContent>
         <div style={{ marginTop: 10 }}>

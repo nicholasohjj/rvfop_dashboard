@@ -11,6 +11,7 @@ import { useNavigate, useSearchParams } from "react-router-dom"; // Import useNa
 import { supabaseClient } from "../../supabase/supabaseClient";
 import styled from "styled-components";
 import { motion, useMotionValue, useTransform } from "framer-motion";
+import { Helmet } from "react-helmet";
 
 // Styled Close Icon Component
 const CloseIcon = styled.div`
@@ -150,6 +151,10 @@ export const Reset = () => {
         backgroundColor: "rgb(0, 128, 128)",
       }}
     >
+      <Helmet>
+        <title>Insieme 2024 - Password Reset</title>
+        <meta name="description" content="Password reset page" />
+      </Helmet>
       <motion.div
         drag
         dragConstraints={constraintsRef}

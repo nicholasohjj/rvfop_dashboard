@@ -15,6 +15,8 @@ import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { supabaseClient } from "../supabase/supabaseClient";
 import styled from "styled-components";
 import { fetchGroups, fetchRoles } from "../supabase/services";
+import { Helmet } from "react-helmet";
+
 // Styled Close Icon Component
 const CloseIcon = styled.div`
   display: inline-block;
@@ -76,13 +78,13 @@ export const Signup = () => {
 
   useEffect(() => {
     const init = async () => {
-    fetchGroups().then((data) => {
-      setGroups(data);
-    });
-    fetchRoles().then((data) => {
-      setRoles(data);
-    });
-  }
+      fetchGroups().then((data) => {
+        setGroups(data);
+      });
+      fetchRoles().then((data) => {
+        setRoles(data);
+      });
+    };
     init();
   }, []);
 
@@ -129,10 +131,7 @@ export const Signup = () => {
       return;
     }
 
-    if (
-      selectedRole.needs_group &&
-      !selectedGroup
-    ) {
+    if (selectedRole.needs_group && !selectedGroup) {
       setIsModalOpen(true);
       setError({
         name: "Error",
@@ -159,9 +158,6 @@ export const Signup = () => {
       return;
     }
 
-
-
-
     try {
       setIsLoading(true);
 
@@ -178,7 +174,6 @@ export const Signup = () => {
       });
 
       setIsLoading(false);
-
 
       if (data.user && "email_verified" in data.user.user_metadata) {
         setIsModalOpen(true);
@@ -222,7 +217,6 @@ export const Signup = () => {
   }));
 
   groupOptions.sort((a, b) => a.label.localeCompare(b.label));
-  
 
   const roleOptions = roles.map((role) => ({
     label: role.role_name,
@@ -251,6 +245,10 @@ export const Signup = () => {
         backgroundColor: "rgb(0, 128, 128)",
       }}
     >
+      <Helmet>
+        <title>Insieme 2024 - Signup</title>
+        <meta name="description" content="Insieme Signup page" />
+      </Helmet>
       <motion.div
         drag
         initial="hidden"
@@ -274,7 +272,7 @@ export const Signup = () => {
             </Tooltip>
           </div>
           <WindowContent>
-          {isLoading ? (
+            {isLoading ? (
               <div
                 style={{
                   display: "flex",
@@ -286,77 +284,77 @@ export const Signup = () => {
                 Loading...
                 <Hourglass size={32} style={{ margin: 20 }} />
               </div>
-          ) : (
-            <form onSubmit={handleSubmit}>
-              <div>
-                <div style={{ display: "flex" }}>
+            ) : (
+              <form onSubmit={handleSubmit}>
+                <div>
+                  <div style={{ display: "flex" }}>
+                    <TextInput
+                      placeholder="Profile Name (E.g John Doe)"
+                      style={{ flex: 1 }}
+                      value={name}
+                      onChange={(e) => {
+                        setName(e.target.value);
+                      }}
+                    />
+                  </div>
+                  <br />
+                  <div style={{ display: "flex" }}>
+                    <TextInput
+                      placeholder="Email Address"
+                      style={{ flex: 1 }}
+                      value={email}
+                      onChange={(e) => {
+                        setemail(e.target.value);
+                      }}
+                    />
+                  </div>
+                  <br />
                   <TextInput
-                    placeholder="Profile Name (E.g John Doe)"
+                    placeholder="Password"
                     style={{ flex: 1 }}
-                    value={name}
+                    type="password"
+                    value={password}
                     onChange={(e) => {
-                      setName(e.target.value);
+                      setPassword(e.target.value);
                     }}
                   />
-                </div>
-                <br />
-                <div style={{ display: "flex" }}>
-                  <TextInput
-                    placeholder="Email Address"
-                    style={{ flex: 1 }}
-                    value={email}
-                    onChange={(e) => {
-                      setemail(e.target.value);
-                    }}
-                  />
-                </div>
-                <br />
-                <TextInput
-                  placeholder="Password"
-                  style={{ flex: 1 }}
-                  type="password"
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                  }}
-                />
-                <br />
+                  <br />
 
-                <GroupBox label="Select your Role">
-                  <Select
-                    defaultValue={2}
-                    options={roleOptions}
-                    menuMaxHeight={160}
-                    width="100%"
-                    onChange={onRoleChange}
-                  />
-                </GroupBox>
-                {selectedRole?.needs_group && (
-                  <GroupBox label="Select your Orientation Group">
+                  <GroupBox label="Select your Role">
                     <Select
                       defaultValue={2}
-                      options={groupOptions}
+                      options={roleOptions}
                       menuMaxHeight={160}
                       width="100%"
-                      onChange={onGroupChange}
+                      onChange={onRoleChange}
                     />
                   </GroupBox>
-                )}
+                  {selectedRole?.needs_group && (
+                    <GroupBox label="Select your Orientation Group">
+                      <Select
+                        defaultValue={2}
+                        options={groupOptions}
+                        menuMaxHeight={160}
+                        width="100%"
+                        onChange={onGroupChange}
+                      />
+                    </GroupBox>
+                  )}
 
-                <div
-                  style={{
-                    marginTop: "20px",
-                    display: "flex",
-                    justifyContent: "space-around",
-                  }}
-                >
-                  <Button type="submit" value="login">
-                    Submit!
-                  </Button>
+                  <div
+                    style={{
+                      marginTop: "20px",
+                      display: "flex",
+                      justifyContent: "space-around",
+                    }}
+                  >
+                    <Button type="submit" value="login">
+                      Submit!
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </form>
-          )}
+              </form>
+            )}
           </WindowContent>
         </Window>
       </motion.div>

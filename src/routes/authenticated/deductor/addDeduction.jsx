@@ -19,6 +19,7 @@ import {
   addDeduction,
 } from "../../../supabase/services";
 import { userContext } from "../../../context/userContext";
+import { Helmet } from "react-helmet";
 // Styled components
 const StyledWindow = styled(Window)`
   flex: 1;
@@ -89,9 +90,9 @@ const AddDeduction = () => {
   const [group, setGroup] = useState(null);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [deductionPoints, setDeductionPoints] = useState(0);
-  const [error, setError] = useState(null); 
+  const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const {user, setUser} = useContext(userContext);
+  const { user, setUser } = useContext(userContext);
 
   const constraintsRef = useRef(null);
   const dragxError = useMotionValue(0);
@@ -102,8 +103,8 @@ const AddDeduction = () => {
   useEffect(() => {
     const init = async () => {
       try {
-          if (!user.can_deduct) {
-            navigate("/", { replace: true });
+        if (!user.can_deduct) {
+          navigate("/", { replace: true });
         }
         if (groups.length < 1) {
           fetchGroups().then((data) => {
@@ -112,7 +113,7 @@ const AddDeduction = () => {
         }
 
         if (user && !user.group_id) {
-          return
+          return;
         }
 
         if (!group) {
@@ -179,6 +180,10 @@ const AddDeduction = () => {
 
   return (
     <StyledWindow windowWidth={windowWidth}>
+      <Helmet>
+        <title>Insieme 2024 - Add a deduction</title>
+        <meta name="description" content="Add deduction page" />
+      </Helmet>
       <WindowHeader>
         <span>Add Deduction</span>
       </WindowHeader>

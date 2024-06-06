@@ -18,12 +18,10 @@ import {
   addActivity,
   addGroupActivity,
 } from "../../../supabase/services";
-import {
-  useStore,
-  initialiseGroups,
-} from "../../../context/userContext";
+import { useStore, initialiseGroups } from "../../../context/userContext";
 import Loading from "../../loading";
 import { userContext } from "../../../context/userContext";
+import { Helmet } from "react-helmet";
 // Styled components
 const StyledWindow = styled(Window)`
   flex: 1;
@@ -87,7 +85,7 @@ const AddActivity = () => {
   const [error, setError] = useState(null);
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [selectedGroup, setSelectedGroup] = useState(null);
-  const {user, setUser} = useContext(userContext);
+  const { user, setUser } = useContext(userContext);
   const [newActivity, setNewActivity] = useState({
     activity_name: "",
     description: "",
@@ -106,19 +104,21 @@ const AddActivity = () => {
   const groups = useMemo(() => {
     const initialOption = [{ group_name: "Select Group", group_id: null }];
     const updatedGroups = [...initialOption, ...storeGroups];
-    
+
     return updatedGroups;
   }, [storeGroups]);
 
-  const activities = useMemo(() => [{ activity_name: "Select Activity" }, ...activityData], [activityData]);
+  const activities = useMemo(
+    () => [{ activity_name: "Select Activity" }, ...activityData],
+    [activityData]
+  );
 
   useEffect(() => {
     const initializeData = async () => {
       try {
-          if (user && !user.can_add_activity) {
-            navigate("/", { replace: true });
-            return;
-          
+        if (user && !user.can_add_activity) {
+          navigate("/", { replace: true });
+          return;
         }
 
         await initialiseGroups();
@@ -152,7 +152,6 @@ const AddActivity = () => {
     } else {
       setLoading(false);
     }
-    
   }, [storeGroups.length]);
 
   const modalVariants = {
@@ -222,6 +221,10 @@ const AddActivity = () => {
 
   return (
     <StyledWindow windowWidth={windowWidth}>
+      <Helmet>
+        <title>Insieme 2024 - Add an activity</title>
+        <meta name="description" content="Add activity page" />
+      </Helmet>
       <WindowHeader>
         <span>Add Activity</span>
       </WindowHeader>
@@ -310,7 +313,7 @@ const AddActivity = () => {
                 label="Description"
                 style={{ padding: "10px", margin: "0 auto", maxWidth: "90%" }}
               >
-                  {selectedActivity.description || "No description available."}
+                {selectedActivity.description || "No description available."}
               </GroupBox>
             </div>
           )}

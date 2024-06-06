@@ -12,7 +12,7 @@ import {
   WindowHeader,
   GroupBox,
   Separator,
-  Tooltip
+  Tooltip,
 } from "react95";
 import styled from "styled-components";
 import { motion, useMotionValue, useTransform } from "framer-motion";
@@ -28,6 +28,7 @@ import { userContext } from "../../../context/userContext";
 
 import { formatSGT } from "../../../utils/formatsgt";
 import { ProfileAvatar } from "../../../components/profileavatar";
+import { Helmet } from "react-helmet";
 
 const CloseIcon = styled.div`
   display: inline-block;
@@ -78,14 +79,13 @@ const Progress = () => {
   const dragxError = useMotionValue(0);
   const navigate = useNavigate();
   const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
-  const {user, setUser} = useContext(userContext);
+  const { user, setUser } = useContext(userContext);
 
   useEffect(() => {
     const init = async () => {
-        if (!user?.has_progress) {
-          navigate("/", { replace: true });
-        }
-      
+      if (!user?.has_progress) {
+        navigate("/", { replace: true });
+      }
 
       if (user && !user?.group_id) {
         setLoading(false);
@@ -94,31 +94,29 @@ const Progress = () => {
 
       try {
         if (user) {
-        const group = await fetchGroup(user?.group_id);
-        console.log("group", group);
-        setGroupData(group);
+          const group = await fetchGroup(user?.group_id);
+          console.log("group", group);
+          setGroupData(group);
 
-        const membersData = await fetchMembers(user?.group_id);
-        console.log("membersData", membersData);
-        setMembers(membersData);
-        
+          const membersData = await fetchMembers(user?.group_id);
+          console.log("membersData", membersData);
+          setMembers(membersData);
 
-        if (group) {
-          const activityData = await fetchGroupActivities(group.group_id);
-          setActivityData(activityData);
+          if (group) {
+            const activityData = await fetchGroupActivities(group.group_id);
+            setActivityData(activityData);
 
-          const deductedDeductions = await fetchDeductedDeductions(
-            group.group_id
-          );
-          setDeductions(deductedDeductions);
+            const deductedDeductions = await fetchDeductedDeductions(
+              group.group_id
+            );
+            setDeductions(deductedDeductions);
+          }
         }
-      }
       } catch (error) {
         console.error("Failed to fetch data:", error);
       } finally {
         setLoading(false);
       }
-
     };
     init();
   }, [user, navigate]);
@@ -155,6 +153,13 @@ const Progress = () => {
         position: "relative",
       }}
     >
+      <Helmet>
+        <title>Insieme 2024 - My Progress</title>
+        <meta
+          name="description"
+          content="Track your progress here during Insieme 2024"
+        />
+      </Helmet>
       <WindowHeader>My Progress</WindowHeader>
       <WindowContent
         style={{
@@ -165,24 +170,36 @@ const Progress = () => {
       >
         {groupData ? (
           <div>
-            <GroupBox label={`Group: ${groupData.group_name}`} style={{marginBottom:20}}>
+            <GroupBox
+              label={`Group: ${groupData.group_name}`}
+              style={{ marginBottom: 20 }}
+            >
               Total Points Earned: {groupData.total_points}
             </GroupBox>
-            <div style={{ flex: 1, flexDirection: "row", display: "flex", alignItems: "center" }}>
-            {members.length > 0 && (
-              members.map((member, index) => (
-                <div key={index} style={{ margin: "0 5px" }}>
-    <Tooltip text={member.profile_name} enterDelay={100} leaveDelay={100}>
-                  <ProfileAvatar
-                  name={member.profile_name}
-                  nameColor={member.id}
-                  />
-                  </Tooltip>
-                </div>
-              ))
-            )}    
+            <div
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              {members.length > 0 &&
+                members.map((member, index) => (
+                  <div key={index} style={{ margin: "0 5px" }}>
+                    <Tooltip
+                      text={member.profile_name}
+                      enterDelay={100}
+                      leaveDelay={100}
+                    >
+                      <ProfileAvatar
+                        name={member.profile_name}
+                        nameColor={member.id}
+                      />
+                    </Tooltip>
+                  </div>
+                ))}
             </div>
-
 
             <div style={{ marginTop: 10 }}>
               {ActivityData.length > 0 ? (

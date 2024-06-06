@@ -19,6 +19,7 @@ import { fetchAwardedGames } from "../../../supabase/services";
 import { useNavigate } from "react-router-dom";
 import { formatSGT } from "../../../utils/formatsgt";
 import { userContext } from "../../../context/userContext";
+import { Helmet } from "react-helmet";
 
 const CloseIcon = styled.div`
   display: inline-block;
@@ -57,7 +58,7 @@ const StyledWindowHeader = styled(WindowHeader)`
 `;
 
 const Games = () => {
-  const {user, setUser} = useContext(userContext);
+  const { user, setUser } = useContext(userContext);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [awardedGames, setAwardedGames] = useState([]); // Initialize to empty array
   const [loading, setLoading] = useState(true);
@@ -71,10 +72,9 @@ const Games = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-        if (!user?.can_add_activity) {
-          navigate("/", { replace: true });
-        }
-      
+      if (!user?.can_add_activity) {
+        navigate("/", { replace: true });
+      }
 
       if (user && !user.id) {
         setLoading(false);
@@ -129,6 +129,10 @@ const Games = () => {
         overflow: "auto",
       }}
     >
+      <Helmet>
+        <title>Insieme 2024 - Awarded Games</title>
+        <meta name="description" content="Track games awarded by you here" />
+      </Helmet>
       <WindowHeader>Awarded Games</WindowHeader>
       <WindowContent>
         {awardedGames.length > 0 ? (

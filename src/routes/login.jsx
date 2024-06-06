@@ -13,6 +13,7 @@ import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { supabaseClient } from "../supabase/supabaseClient";
 import styled from "styled-components";
+import { Helmet } from "react-helmet";
 
 // Styled Close Icon Component
 const CloseIcon = styled.div`
@@ -159,6 +160,10 @@ export const Login = () => {
         backgroundColor: "rgb(0, 128, 128)",
       }}
     >
+      <Helmet>
+        <title>Insieme 2024 - Login</title>
+        <meta name="description" content="Insieme Login page" />
+      </Helmet>
       <motion.div
         drag
         initial="hidden"
