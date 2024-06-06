@@ -1,7 +1,6 @@
 import { Window, WindowContent, WindowHeader } from "react95";
 import Iframe from "react-iframe";
 import React, { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
 
 const videos = [
   "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/GAYLE_-_abcdefu__cover_by_Bongo_Cat____.mp4",

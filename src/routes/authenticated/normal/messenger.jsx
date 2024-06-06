@@ -7,11 +7,11 @@ import {
   ScrollView,
   TextInput,
   Button,
-  Avatar,
   Select,
   GroupBox,
   Anchor
 } from "react95";
+import { Helmet } from 'react-helmet';
 import Loading from "../../loading";
 import { userContext } from "../../../context/userContext";
 import { supabaseClient } from "../../../supabase/supabaseClient";
@@ -195,6 +195,10 @@ const Messenger = () => {
 
   return (
     <StyledWindow style={{ flex: 1, width: 320 }}>
+            <Helmet>
+        <title>Insieme 2024 - Messenger</title>
+        <meta name="description" content="Chat with anyone here from RVFOP! Note: This is a public chat." />
+      </Helmet>
       <StyledWindowHeader
         onClick={() => {
           navigate("/match", { replace: true });
