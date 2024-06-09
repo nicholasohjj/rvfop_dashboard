@@ -61,9 +61,7 @@ export const Layout = () => {
       // Set loading to false after the session check
 
       if (!user) {
-        console.log("No user here!");
         const data = await fetchUser();
-        console.log("User here!", data);
 
         setUser(data);
       }
