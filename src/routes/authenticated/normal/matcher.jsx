@@ -61,8 +61,6 @@ const Matcher = () => {
             payload.new.usersid.length === 2
           ) {
             setMatched(true);
-
-            console.log("Matched with", payload.new.usersid);
             setPartnerId(payload.new.usersid.filter((id) => id !== user.id)[0]);
           }
         }
@@ -160,7 +158,7 @@ const Matcher = () => {
               height: "50vh",
             }}
           >
-            {matched
+            {matched && partner
               ? `Found a match! Your partner is ${partner.profile_name}`
               : `Finding a match for you...`}
             <Hourglass size={32} style={{ margin: 20 }} />

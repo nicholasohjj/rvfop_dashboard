@@ -80,7 +80,7 @@ const fetchUser = async () => {
 };
 
 const fetchOtherUser = async (user_id) => {
-  const { data, error } = await supabaseClient.rpc("get_profile")
+  const { data, error } = await supabaseClient.from("profiles").select("*").eq("id", user_id).single();
   return data;
 }
 
