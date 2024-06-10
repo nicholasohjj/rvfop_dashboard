@@ -14,6 +14,7 @@ import {
 } from "react95";
 import { findRoom, leaveRoom } from "../../../supabase/roomService";
 import usePresence from "../../../supabase/usePresence";
+import { fetchOtherUser } from "../../../supabase/services";
 const StyledWindowHeader = styled(WindowHeader)`
   color: white;
   display: flex;
@@ -32,6 +33,7 @@ const Matcher = () => {
   const [loading, setLoading] = useState(true);
   const [matching, setMatching] = useState(false);
   const [matched, setMatched] = useState(false);
+  const [partnerId, setPartnerId] = useState(null);
   const [partner, setPartner] = useState(null);
   const navigate = useNavigate();
 
@@ -47,16 +49,6 @@ const Matcher = () => {
       .on(
         "postgres_changes",
         {
-          event: "INSERT",
-          schema: "public",
-        },
-        (payload) => {
-          console.log(payload);
-        }
-      )
-      .on(
-        "postgres_changes",
-        {
           event: "UPDATE",
           schema: "public",
         },
@@ -64,13 +56,14 @@ const Matcher = () => {
           // filter such that payload.new.usersid array contains the user.id
           console.log(payload.new.usersid);
 
-          if (payload.new.usersid.includes(user.id) && payload.new.usersid.length === 2) {
+          if (
+            payload.new.usersid.includes(user.id) &&
+            payload.new.usersid.length === 2
+          ) {
             setMatched(true);
 
             console.log("Matched with", payload.new.usersid);
-            setPartner(
-              payload.new.usersid.filter((id) => id !== user.id)[0]
-            );
+            setPartnerId(payload.new.usersid.filter((id) => id !== user.id)[0]);
           }
         }
       )
@@ -82,13 +75,23 @@ const Matcher = () => {
   }, []);
 
   useEffect(() => {
+    if (partnerId) {
+      fetchOtherUser(partnerId).then((data) => {
+        setPartner(data);
+
+        console.log("Partner", data);
+      });
+    }
+  }, [partnerId]);
+
+  useEffect(() => {
     const handleBeforeUnload = (event) => {
       if (matching) {
         leaveRoom(user.id);
       }
       // If you want to show a confirmation dialog to the user before leaving
       event.preventDefault();
-      event.returnValue = '';
+      event.returnValue = "";
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
@@ -97,8 +100,6 @@ const Matcher = () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [matching, user]);
-
-  
 
   const handleMatch = async () => {
     setMatching((prevMatching) => !prevMatching);
@@ -110,11 +111,11 @@ const Matcher = () => {
     } else {
       console.log("Stopped matching");
       await leaveRoom(user.id);
+      setMatched(false);
+      setPartner(null);
       // Add more logic here if needed for when matching stops
     }
   };
-
-
 
   return (
     <StyledWindow style={{ flex: 1, width: 320 }}>
@@ -159,8 +160,8 @@ const Matcher = () => {
               height: "50vh",
             }}
           >
-            {(matched && partner)
-              ? `Found a match! You're on your way to cupid's arrow.`
+            {matched
+              ? `Found a match! Your partner is ${partner.profile_name}`
               : `Finding a match for you...`}
             <Hourglass size={32} style={{ margin: 20 }} />
           </div>

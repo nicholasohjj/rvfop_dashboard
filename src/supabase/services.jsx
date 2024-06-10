@@ -76,9 +76,13 @@ const fetchPrivateMessages = async (input_channel) => {
 
 const fetchUser = async () => {
   const { data, error } = await supabaseClient.rpc("get_profile");
-
   return data;
 };
+
+const fetchOtherUser = async (user_id) => {
+  const { data, error } = await supabaseClient.rpc("get_profile")
+  return data;
+}
 
 const fetchGroups = async () => {
   const { data, error } = await supabaseClient.from("groups").select("*");
@@ -227,4 +231,5 @@ export {
   fetchMessages,
   fetchPrivateMessages,
   fetchDeductedDeductions,
+  fetchOtherUser
 };
