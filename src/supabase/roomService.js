@@ -1,10 +1,13 @@
 import { supabaseClient } from './supabaseClient';
 
-export const createOrFindRoom = async (userId) => {
-  let { data: rooms, error } = await supabaseClient
+export const findRoom = async (userId) => {
+  // Ensure userId is treated as an array for the query
+
+  
+  const { data: rooms, error } = await supabaseClient
     .from('matches')
     .select('*')
-    .eq('usersId', `{${userId}}`);
+    .contains('usersId', [userId]);
 
   if (error) throw error;
 
@@ -12,6 +15,7 @@ export const createOrFindRoom = async (userId) => {
     return rooms[0];
   }
 
+  // Create a new room if no existing rooms are found
   const { data, error: insertError } = await supabaseClient
     .from('matches')
     .insert([{ usersId: [userId] }])
@@ -22,23 +26,28 @@ export const createOrFindRoom = async (userId) => {
   return data[0];
 };
 
-export const joinRoom = async (userId) => {
-  const { data: room, error } = await supabaseClient
+export const leaveRoom = async (userId) => {
+  const { data: rooms, error } = await supabaseClient
     .from('matches')
     .select('*')
-    .neq('usersId', `{${userId}}`)
-    .eq('usersId', '1')
-    .limit(1)
-    .single();
+    .contains('usersId', [userId]);
 
   if (error) throw error;
 
-  const { data: updateRoom, error: updateError } = await supabaseClient
-    .from('matches')
-    .update({ usersId: [...room.usersId, userId] })
-    .eq('id', room.id);
+  if (rooms.length > 0) {
+    const room = rooms[0];
+    const updatedUsersId = room.usersId.filter(id => id !== userId);
 
-  if (updateError) throw updateError;
+    const { data, error: updateError } = await supabaseClient
+      .from('matches')
+      .update({ usersId: updatedUsersId })
+      .eq('id', room.id)
+      .select();
 
-  return updateRoom;
+    if (updateError) throw updateError;
+
+    return data[0];
+  }
+
+  return null;
 };

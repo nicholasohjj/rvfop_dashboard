@@ -12,7 +12,7 @@ import {
   Button,
   Hourglass,
 } from "react95";
-import { createOrFindRoom } from "../../../supabase/roomService";
+import { findRoom, leaveRoom } from "../../../supabase/roomService";
 import usePresence from "../../../supabase/usePresence";
 const StyledWindowHeader = styled(WindowHeader)`
   color: white;
@@ -36,10 +36,14 @@ const Matcher = () => {
   const [matcherChannel, setMatcherChannel] = useState(null);
   const navigate = useNavigate();
 
+  
+
   useEffect(() => {
     const init = async () => {
       setLoading(true);
-      const room = await createOrFindRoom(user.id);
+
+      console.log("user", user);
+      const room = await findRoom(user.id);
       const channel = supabaseClient.channel(`room-${room.id}`, {
         // Create channel variable
         config: {
@@ -84,33 +88,23 @@ const Matcher = () => {
     };
   }, [user]);
 
-  useEffect(() => {
-    const leaveRoom = () => {
-      if (matcherChannel) {
-        matcherChannel.unsubscribe();
+  const handleMatch = async () => {
+    if (matching) {
+      setMatching(false);
+      setMatched(false);
+      setPartner(null);
+      matcherChannel.updatePresence({
+        id: user.id.toString(),
+        matched: false,
+      });
+      if (partner) {
         matcherChannel.updatePresence({
-          id: user.id.toString(),
+          id: partner,
           matched: false,
         });
       }
-    };
-
-    window.addEventListener("beforeunload", leaveRoom);
-
-    const TIMEOUT_DURATION = 1000 * 60 * 5; // 5 minutes
-
-    const timeout = setTimeout(() => {
-      leaveRoom();
-    }, TIMEOUT_DURATION);
-
-    return () => {
-      window.removeEventListener("beforeunload", leaveRoom);
-      clearTimeout(timeout);
-    };
-  }, [user, matcherChannel]);
-
-  const handleMatch = async () => {
-    setMatching(!matching);
+      await leaveRoom(user.id);
+    }
   };
 
   return (
