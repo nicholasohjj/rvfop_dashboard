@@ -1,53 +1,23 @@
-import { supabaseClient } from './supabaseClient';
+import { supabaseClient } from "./supabaseClient";
 
 export const findRoom = async (userId) => {
-  // Ensure userId is treated as an array for the query
+  //Find a room with strictly 1 user excluding the current user
+  const { data: rooms, error } = await supabaseClient.rpc("findroom", {
+    id: userId,
+  });
 
-  
-  const { data: rooms, error } = await supabaseClient
-    .from('matches')
-    .select('*')
-    .contains('usersId', [userId]);
+  console.log("rooms", rooms);
 
   if (error) throw error;
-
-  if (rooms.length > 0) {
-    return rooms[0];
-  }
-
-  // Create a new room if no existing rooms are found
-  const { data, error: insertError } = await supabaseClient
-    .from('matches')
-    .insert([{ usersId: [userId] }])
-    .select();
-
-  if (insertError) throw insertError;
-
-  return data[0];
 };
 
 export const leaveRoom = async (userId) => {
-  const { data: rooms, error } = await supabaseClient
-    .from('matches')
-    .select('*')
-    .contains('usersId', [userId]);
+  console.log("Leaving room");
+  const { data: rooms, error } = await supabaseClient.rpc("leaveroom", {
+    id: userId,
+  });
 
-  if (error) throw error;
-
-  if (rooms.length > 0) {
-    const room = rooms[0];
-    const updatedUsersId = room.usersId.filter(id => id !== userId);
-
-    const { data, error: updateError } = await supabaseClient
-      .from('matches')
-      .update({ usersId: updatedUsersId })
-      .eq('id', room.id)
-      .select();
-
-    if (updateError) throw updateError;
-
-    return data[0];
-  }
+  console.log("rooms", rooms, error );
 
   return null;
 };

@@ -33,79 +33,88 @@ const Matcher = () => {
   const [matching, setMatching] = useState(false);
   const [matched, setMatched] = useState(false);
   const [partner, setPartner] = useState(null);
-  const [matcherChannel, setMatcherChannel] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      setLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    const channel = supabaseClient
+      .channel("schema-db-changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+        },
+        (payload) => {
+          console.log(payload);
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+        },
+        (payload) => {
+          // filter such that payload.new.usersid array contains the user.id
+          console.log(payload.new.usersid);
+
+          if (payload.new.usersid.includes(user.id) && payload.new.usersid.length === 2) {
+            setMatched(true);
+
+            console.log("Matched with", payload.new.usersid);
+            setPartner(
+              payload.new.usersid.filter((id) => id !== user.id)[0]
+            );
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      channel.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      if (matching) {
+        leaveRoom(user.id);
+      }
+      // If you want to show a confirmation dialog to the user before leaving
+      event.preventDefault();
+      event.returnValue = '';
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [matching, user]);
 
   
 
-  useEffect(() => {
-    const init = async () => {
-      setLoading(true);
-
-      console.log("user", user);
-      const room = await findRoom(user.id);
-      const channel = supabaseClient.channel(`room-${room.id}`, {
-        // Create channel variable
-        config: {
-          presence: {
-            key: user.id.toString(),
-          },
-        },
-      });
-      channel
-        .on("presence", { event: "sync" }, () => {
-          const state = channel.presenceState(); // Update to channel
-          const availableUsers = Object.keys(state).filter(
-            (id) => id !== user.id.toString() && !state[id].matched
-          );
-          if (availableUsers.length > 0) {
-            const partnerId = availableUsers[0];
-            setPartner(partnerId);
-            setMatched(true);
-            channel.updatePresence({
-              id: user.id.toString(),
-              matched: true,
-            });
-            channel.updatePresence({
-              id: partnerId,
-              matched: true,
-            });
-          }
-        })
-        .subscribe();
-      setLoading(false);
-      setMatcherChannel(channel); // Set matcherChannel state
-    };
-    init();
-    return () => {
-      if (matcherChannel) {
-        matcherChannel.unsubscribe();
-        matcherChannel.updatePresence({
-          id: user.id.toString(),
-          matched: false,
-        });
-      }
-    };
-  }, [user]);
-
   const handleMatch = async () => {
-    if (matching) {
-      setMatching(false);
-      setMatched(false);
-      setPartner(null);
-      matcherChannel.updatePresence({
-        id: user.id.toString(),
-        matched: false,
-      });
-      if (partner) {
-        matcherChannel.updatePresence({
-          id: partner,
-          matched: false,
-        });
-      }
+    setMatching((prevMatching) => !prevMatching);
+
+    if (!matching) {
+      console.log("Matching now");
+      // Add more logic here if needed for when matching starts
+      await findRoom(user.id);
+    } else {
+      console.log("Stopped matching");
       await leaveRoom(user.id);
+      // Add more logic here if needed for when matching stops
     }
   };
+
+
 
   return (
     <StyledWindow style={{ flex: 1, width: 320 }}>
@@ -138,7 +147,7 @@ const Matcher = () => {
           }}
           onClick={handleMatch}
         >
-          {!matching ? "Match me!" : "Stop matching"}
+          {!matching ? "" : "Stop"}
         </Button>
         {matching && (
           <div
@@ -150,7 +159,7 @@ const Matcher = () => {
               height: "50vh",
             }}
           >
-            {matched
+            {(matched && partner)
               ? `Found a match! You're on your way to cupid's arrow.`
               : `Finding a match for you...`}
             <Hourglass size={32} style={{ margin: 20 }} />
