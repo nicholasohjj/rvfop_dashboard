@@ -35,6 +35,8 @@ const Matcher = () => {
   const [matched, setMatched] = useState(false);
   const [partnerId, setPartnerId] = useState(null);
   const [partner, setPartner] = useState(null);
+  const [channel, setChannel] = useState(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -44,33 +46,42 @@ const Matcher = () => {
   }, [user]);
 
   useEffect(() => {
-    const channel = supabaseClient
-      .channel("schema-db-changes")
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-        },
-        (payload) => {
-          // filter such that payload.new.usersid array contains the user.id
-          console.log(payload.new.usersid);
+    if (matching) {
+      const newChannel = supabaseClient
+        .channel("schema-db-changes")
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+          },
+          (payload) => {
+            // filter such that payload.new.usersid array contains the user.id
+            console.log(payload.new.usersid);
 
-          if (
-            payload.new.usersid.includes(user.id) &&
-            payload.new.usersid.length === 2
-          ) {
-            setMatched(true);
-            setPartnerId(payload.new.usersid.filter((id) => id !== user.id)[0]);
+            if (
+              payload.new.usersid.includes(user.id) &&
+              payload.new.usersid.length === 2
+            ) {
+              setMatched(true);
+
+              setPartnerId(
+                payload.new.usersid.filter((id) => id !== user.id)[0]
+              );
+            }
           }
-        }
-      )
-      .subscribe();
+        )
+        .subscribe();
+
+      setChannel(newChannel);
+    }
 
     return () => {
-      channel.unsubscribe();
+      if (channel) {
+        channel.unsubscribe();
+      }
     };
-  }, []);
+  }, [matching, user]);
 
   useEffect(() => {
     if (partnerId) {
