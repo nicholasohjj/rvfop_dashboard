@@ -2,7 +2,6 @@ import { useState, useEffect, useContext } from "react";
 import { AppBar, Toolbar, Button, MenuList, MenuListItem } from "react95";
 import { useNavigate } from "react-router-dom";
 import { supabaseClient } from "../supabase/supabaseClient";
-import { useStore } from "../context/userContext";
 import { userContext } from "../context/userContext";
 export const Footer = () => {
   const [open, setOpen] = useState(false);

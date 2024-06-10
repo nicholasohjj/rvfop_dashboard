@@ -17,7 +17,7 @@ import { motion, useMotionValue, useTransform } from "framer-motion";
 import Loading from "../../loading";
 import { fetchAwardedGames } from "../../../supabase/services";
 import { useNavigate } from "react-router-dom";
-import { formatSGT } from "../../../utils/formatsgt";
+import { formatSGT } from "../../../utils/time";
 import { userContext } from "../../../context/userContext";
 import { Helmet } from "react-helmet";
 

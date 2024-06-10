@@ -26,7 +26,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { userContext } from "../../../context/userContext";
 
-import { formatSGT } from "../../../utils/formatsgt";
+import { formatSGT } from "../../../utils/time";
 import { ProfileAvatar } from "../../../components/profileavatar";
 import { Helmet } from "react-helmet";
 

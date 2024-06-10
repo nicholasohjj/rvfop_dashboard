@@ -11,3 +11,10 @@ export const formatSGT = (utcString) => {
     hour12: false,
   }).format(sgtDate);
 };
+
+
+export const isNewDay = (currentMessageDate, previousMessageDate) => {
+  const currentDate = new Date(currentMessageDate).setHours(0, 0, 0, 0);
+  const previousDate = new Date(previousMessageDate).setHours(0, 0, 0, 0);
+  return currentDate > previousDate;
+};

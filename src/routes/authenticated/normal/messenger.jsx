@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef, useLayoutEffect, useContext } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useLayoutEffect,
+  useContext,
+} from "react";
 import {
   Frame,
   Window,
@@ -9,9 +15,8 @@ import {
   Button,
   Select,
   GroupBox,
-  Anchor
 } from "react95";
-import { Helmet } from 'react-helmet';
+import { Helmet } from "react-helmet";
 import Loading from "../../loading";
 import { userContext } from "../../../context/userContext";
 import { supabaseClient } from "../../../supabase/supabaseClient";
@@ -20,6 +25,8 @@ import styled from "styled-components"; // Import styled-components
 import { useNavigate } from "react-router-dom";
 import { fetchChannels, fetchMessages } from "../../../supabase/services";
 import { ProfileAvatar } from "../../../components/profileavatar";
+import { createLinkMarkup } from "../../../utils/createLinkMarkup";
+import { isNewDay } from "../../../utils/time";
 const StyledWindowHeader = styled(WindowHeader)`
   color: white; // Adjust the text color as needed for contrast
   display: flex;
@@ -48,7 +55,7 @@ const MessageBubble = styled.div`
 `;
 
 const Messenger = () => {
-  const {user, setUser} = useContext(userContext);
+  const { user, setUser } = useContext(userContext);
   const [loading, setLoading] = useState(true);
   const [channel, setChannel] = useState(null);
   const [channels, setChannels] = useState([]); // Example channel names
@@ -69,7 +76,7 @@ const Messenger = () => {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
-      
+
       const channels = await fetchChannels();
       setChannels(channels);
       setSelectedChannel(channels[0]);
@@ -167,37 +174,16 @@ const Messenger = () => {
     setMessages([]); // Clear messages when changing channels
   };
 
-  const isNewDay = (currentMessageDate, previousMessageDate) => {
-    const currentDate = new Date(currentMessageDate).setHours(0, 0, 0, 0);
-    const previousDate = new Date(previousMessageDate).setHours(0, 0, 0, 0);
-    return currentDate > previousDate;
-  };
-
-  const createLinkMarkup = (text) => {
-    const urlPattern = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])|(\bwww\.[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi;
-    const parts = text.split(urlPattern);
-    return parts.map((part, index) => {
-      if (/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])|(\bwww\.[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi.test(part)) {
-        const url = part.startsWith('www.') ? `http://${part}` : part;
-        return (
-          <Anchor key={index} href={url} target="_blank">
-            {part}
-          </Anchor>
-        );
-      } else {
-        return part;
-      }
-    });
-  };
-
-
   if (loading) return <Loading />;
 
   return (
     <StyledWindow style={{ flex: 1, width: 320 }}>
-            <Helmet>
+      <Helmet>
         <title>Insieme 2024 - Messenger</title>
-        <meta name="description" content="Chat with anyone here from RVFOP! Note: This is a public chat." />
+        <meta
+          name="description"
+          content="Chat with anyone here from RVFOP! Note: This is a public chat."
+        />
       </Helmet>
       <StyledWindowHeader
         onClick={() => {
@@ -283,9 +269,7 @@ const Messenger = () => {
                         padding: "10px",
                         display: "flex",
                         flexDirection:
-                          message.user_id === user.id
-                            ? "row-reverse"
-                            : "row",
+                          message.user_id === user.id ? "row-reverse" : "row",
                         alignItems: "flex-start",
                         gap: "10px",
                         marginBottom: "10px",
@@ -293,7 +277,10 @@ const Messenger = () => {
                           message.user_id === user.id ? "right" : "left",
                       }}
                     >
-                      <ProfileAvatar name={message.profile_name} nameColor={message.user_id} />
+                      <ProfileAvatar
+                        name={message.profile_name}
+                        nameColor={message.user_id}
+                      />
                       <MessageBubble isUser={message.user_id === user.id}>
                         <div>
                           <strong>{message.profile_name}</strong>

@@ -18,7 +18,7 @@ import Loading from "../../loading";
 import { fetchGroup, fetchDeductions } from "../../../supabase/services";
 import { userContext } from "../../../context/userContext";
 import { useNavigate } from "react-router-dom";
-import { formatSGT } from "../../../utils/formatsgt";
+import { formatSGT } from "../../../utils/time";
 import { Helmet } from "react-helmet";
 const CloseIcon = styled.div`
   display: inline-block;
