@@ -1,10 +1,5 @@
 import { useState, useRef, useEffect, useContext } from "react";
-import {
-  Window,
-  WindowHeader,
-  WindowContent,
-  Button,
-} from "react95";
+import { Window, WindowHeader, WindowContent, Button } from "react95";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -76,9 +71,7 @@ export const Profile = () => {
             <span>My Profile</span>
           </StyledWindowHeader>
           <WindowContent>
-            {!user && (
-              <LoadingHourglass/>
-            )}
+            {!user && <LoadingHourglass />}
             {user && (
               <div
                 style={{
@@ -100,7 +93,9 @@ export const Profile = () => {
                     marginBottom: "10px",
                   }}
                 >
+                  <div onClick={() => navigate("/video")}>
                   <ProfileAvatar name={user.profile_name} nameColor={user.id} />
+                  </div>
                   <div>
                     <strong>{user.profile_name}</strong>
                   </div>

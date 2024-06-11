@@ -56,7 +56,24 @@ const Video = () => {
             alignItems: "center",
           }}
         >
-          {isLoading && <LoadingHourglass />}
+          {isLoading && (
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "white", // Optional: Add a background color to cover the content beneath
+                zIndex: 1,
+              }}
+            >
+              <LoadingHourglass />
+            </div>
+          )}{" "}
           <Iframe
             url={videoUrl}
             width="100%"
