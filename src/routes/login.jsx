@@ -7,13 +7,13 @@ import {
   Button,
   Anchor,
   Tooltip,
-  Hourglass,
 } from "react95";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { supabaseClient } from "../supabase/supabaseClient";
 import styled from "styled-components";
 import { Helmet } from "react-helmet";
+import { LoadingHourglass } from "../components/loadinghourglass";
 
 // Styled Close Icon Component
 const CloseIcon = styled.div`
@@ -191,17 +191,7 @@ export const Login = () => {
           </div>
           <WindowContent>
             {isLoading ? (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                Loading...
-                <Hourglass size={32} style={{ margin: 20 }} />
-              </div>
+              <LoadingHourglass/>
             ) : (
               <form onSubmit={handleSubmit}>
                 <div>

@@ -1,13 +1,10 @@
 import { useState, useRef, useEffect, useContext } from "react";
 import {
   Window,
-  Hourglass,
   WindowHeader,
   WindowContent,
-  Avatar,
   Button,
 } from "react95";
-
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -15,6 +12,7 @@ import { fetchUser } from "../../supabase/services";
 import { userContext } from "../../context/userContext";
 import { ProfileAvatar } from "../../components/profileavatar";
 import { Helmet } from "react-helmet";
+import { LoadingHourglass } from "../../components/loadinghourglass";
 const StyledWindowHeader = styled(WindowHeader)`
   background-color: #ff0000;
   color: white;
@@ -79,17 +77,7 @@ export const Profile = () => {
           </StyledWindowHeader>
           <WindowContent>
             {!user && (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                Loading...
-                <Hourglass size={32} style={{ margin: 20 }} />
-              </div>
+              <LoadingHourglass/>
             )}
             {user && (
               <div
