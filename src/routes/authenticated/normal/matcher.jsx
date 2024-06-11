@@ -291,7 +291,10 @@ const Matcher = () => {
                 margin: "10px",
               }}
             >
-              Love is in the air! Find your match and start chatting.
+              <p>
+                Love is in the air! Find your match and start chatting. (Under
+                development)
+              </p>
             </div>
             <Button
               style={{
