@@ -14,8 +14,12 @@ import {
   Hourglass,
 } from "react95";
 import { findRoom, leaveRoom } from "../../../supabase/roomService";
-import { fetchOtherUser } from "../../../supabase/services";
+import {
+  fetchOtherUser,
+  fetchPrivateMessages,
+} from "../../../supabase/services";
 import { Helmet } from "react-helmet";
+import Filter from "bad-words";
 import { isNewDay } from "../../../utils/time";
 import { createLinkMarkup } from "../../../utils/createLinkMarkup";
 import { ProfileAvatar } from "../../../components/profileavatar";
@@ -49,8 +53,8 @@ const Matcher = () => {
   const { user } = useContext(userContext);
   const [loading, setLoading] = useState(true);
   const [matching, setMatching] = useState(false);
-  const [matched, setMatched] = useState(false);
-  const [partnerId, setPartnerId] = useState(null);
+  const [isMatched, setIsMatched] = useState(false);
+  const [match, setMatch] = useState(null);
   const [partner, setPartner] = useState(null);
   const [channel, setChannel] = useState(null);
   const [messageChannel, setMessageChannel] = useState(null);
@@ -58,6 +62,8 @@ const Matcher = () => {
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
   const scrollViewRef = useRef();
+  const filter = new Filter();
+
 
   useEffect(() => {
     if (user) {
@@ -66,7 +72,7 @@ const Matcher = () => {
   }, [user]);
 
   useEffect(() => {
-    if (matching && !channel) {
+    if (matching) {
       const newChannel = supabaseClient
         .channel("schema-db-changes")
         .on(
@@ -76,18 +82,13 @@ const Matcher = () => {
             schema: "public",
           },
           (payload) => {
-            // filter such that payload.new.usersid array contains the user.id
-            console.log(payload.new.usersid);
+            console.log("Channel payload", payload);
 
             if (
               payload.new.usersid.includes(user.id) &&
               payload.new.usersid.length === 2
             ) {
-              setMatched(true);
-
-              setPartnerId(
-                payload.new.usersid.filter((id) => id !== user.id)[0]
-              );
+              setMatch(payload.new);
             }
           }
         )
@@ -104,36 +105,66 @@ const Matcher = () => {
   }, [matching, user]);
 
   useEffect(() => {
-    if (partnerId) {
-      fetchOtherUser(partnerId).then((data) => {
-        setPartner(data);
+    const fetchPartnerData = async () => {
+      if (match) {
+        let partnerId = match.usersid.filter((id) => id !== user.id)[0];
 
-        console.log("Partner", data);
-      });
+        const partnerData = await fetchOtherUser(partnerId);
 
-      //Enter unique channel for messaging
-      const newMessageChannel = supabaseClient.channel(`room-${user.id}`)
+        if (partnerData) {
+          console.log("Partner data", partnerData);
 
+          setPartner(partnerData);
 
+          const channel = supabaseClient
+            .channel(`chat:${match.match_id}`)
+            .subscribe((payload) => {
+              console.log("Message payload", payload);
 
-      newMessageChannel
-        .on("broadcast", { event: "chat" }, (payload) => console.log(payload))
-        .subscribe();
+              if (scrollViewRef.current) {
+                scrollViewRef.current.scrollTop = scrollViewRef.current.scrollHeight;
+              }
+            });
 
+          setMessageChannel(channel);
+        } else {
+          await supabaseClient
+            .from("matches")
+            .delete()
+            .eq("match_id", match.match_id);
+          setMatch(null);
 
-      setMessageChannel(newMessageChannel);
-    }
-  }, [partnerId]);
+          await findRoom(user.id);
+        }
+      }
+    };
+
+    fetchPartnerData();
+  }, [match]);
 
   useEffect(() => {
+    const init = async () => {
+      if (messageChannel) {
+        console.log("Subscribing to messages", messageChannel);
+
+        const messagesData = await fetchPrivateMessages(match.match_id);
+
+        if (messagesData) {
+          console.log("Messages data", messagesData);
+          setMessages(messagesData);
+          scrollViewRef.current.scrollTop = scrollViewRef.current.scrollHeight;
+        }
+      }
+    };
+
+    init();
+
     if (messageChannel) {
-      console.log("Subscribing to messages", messageChannel);
-
-
       return () => {
         messageChannel.unsubscribe();
       };
     }
+
   }, [messageChannel]);
 
   useEffect(() => {
@@ -159,19 +190,64 @@ const Matcher = () => {
     if (!matching) {
       console.log("Matching now");
       // Add more logic here if needed for when matching starts
-      await findRoom(user.id);
+      const room = await findRoom(user.id);
     } else {
       console.log("Stopped matching");
       await leaveRoom(user.id);
-      setMatched(false);
+      setIsMatched(false);
       setPartner(null);
-      setPartnerId(null);
+      setMatch(null);
       setMessageChannel(null);
       // Add more logic here if needed for when matching stops
     }
   };
 
-  const handleSend = async () => {};
+  const scrollToBottom = () => {
+    const elem = scrollViewRef.current;
+    if (elem) {
+      elem.scrollTop = elem.scrollHeight;
+    }
+  };
+
+  const handleSend = async () => {
+    if (!message.trim()) return;
+
+    const sanitizedMessage = filter.clean(message);
+
+    const payload = {
+      user_id: user.id,
+      message: sanitizedMessage,
+      tm_created: new Date().toISOString(),
+      match_id: match.match_id,
+    };
+
+    const { error } = await messageChannel.send({
+      type: "broadcast",
+      event: "chat",
+      payload,
+    });
+
+    const { data, error: postError } = await supabaseClient
+    .from("private_messages")
+    .insert([payload])
+    .single();
+    
+
+    if (error || postError) {
+      console.error("Sending message error:", error, postError);
+    } else {
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { ...payload, profile_name: user.profile_name },
+      ]);
+      setMessage("");
+      scrollToBottom();
+    }
+
+
+
+
+  };
 
   const handleChange = (e) => {
     setMessage(e.target.value);
@@ -202,7 +278,7 @@ const Matcher = () => {
           marginBottom: "20px",
         }}
       >
-        {!(messageChannel) ? (
+        {!messageChannel ? (
           <>
             <div
               style={{
@@ -229,7 +305,7 @@ const Matcher = () => {
                   height: "50vh",
                 }}
               >
-                {matched && partner
+                {setIsMatched && partner
                   ? `Found a match! Your partner is ${partner.profile_name}`
                   : `Finding a match for you...`}
                 <Hourglass size={32} style={{ margin: 20 }} />
@@ -238,7 +314,7 @@ const Matcher = () => {
           </>
         ) : (
           <>
-          Your partner is {partner.profile_name}. Say hi!
+            Your partner is {partner.profile_name}. Say hi!
             <Frame
               variant="field"
               style={{

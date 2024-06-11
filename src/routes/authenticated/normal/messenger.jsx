@@ -143,6 +143,7 @@ const Messenger = () => {
       user_id: user.id,
       message: sanitizedMessage,
       tm_created: new Date().toISOString(),
+      channel: selectedChannel.toLowerCase(),
     };
 
     const { error } = await channel.send({
@@ -154,7 +155,7 @@ const Messenger = () => {
     // post the message on messages table
     const { data, error: postError } = await supabaseClient
       .from("messages")
-      .insert([{ ...payload, channel: selectedChannel.toLowerCase() }])
+      .insert([payload])
       .single();
 
     if (error || postError) {

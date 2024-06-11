@@ -64,13 +64,32 @@ const fetchMessages = async (input_channel) => {
   return data;
 };
 
-const fetchPrivateMessages = async (input_channel) => {
-  const { data, error } = await supabaseClient.rpc("fetch_private_messages", {
-    input_channel,
-  });
+const fetchPrivateMessages = async (match_id) => {
+  const { data, error } = await supabaseClient
+    .from("private_messages")
+    .select(
+      `
+  message_id,
+  tm_created,
+  match_id,
+    message,
+    user_id,
+    profiles:user_id (
+      profile_name
+    )
+  `
+    )
+    .eq("match_id", match_id);
   if (error) {
     throw new Error(error.message);
   }
+
+  //flatten the data
+  data.forEach((message) => {
+    message.profile_name = message.profiles.profile_name;
+    delete message.profiles;
+  });
+
   return data;
 };
 
@@ -80,8 +99,20 @@ const fetchUser = async () => {
 };
 
 const fetchOtherUser = async (user_id) => {
-  const { data, error } = await supabaseClient.from("profiles").select("*").eq("id", user_id).single();
-  return data;
+  try {
+    const { data, error } = await supabaseClient.from("profiles").select("*").eq("id", user_id).single();
+
+    if (error) {
+      return null;
+    }
+
+    return data;
+  }
+  catch (error) {    
+    
+    return null;
+  }
+
 }
 
 const fetchGroups = async () => {
