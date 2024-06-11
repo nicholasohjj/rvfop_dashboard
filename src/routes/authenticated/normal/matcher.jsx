@@ -54,7 +54,6 @@ const Matcher = () => {
   const { user } = useContext(userContext);
   const [loading, setLoading] = useState(true);
   const [matching, setMatching] = useState(false);
-  const [isMatched, setIsMatched] = useState(false);
   const [match, setMatch] = useState(null);
   const [partner, setPartner] = useState(null);
   const [channel, setChannel] = useState(null);
@@ -190,11 +189,10 @@ const Matcher = () => {
     if (!matching) {
       console.log("Matching now");
       // Add more logic here if needed for when matching starts
-      const room = await findRoom(user.id);
+      await findRoom(user.id);
     } else {
       console.log("Stopped matching");
       await leaveRoom(user.id);
-      setIsMatched(false);
       setPartner(null);
       setMatch(null);
       setMessageChannel(null);
@@ -246,6 +244,19 @@ const Matcher = () => {
 
   const handleChange = (e) => {
     setMessage(e.target.value);
+  };
+
+  const handleLeave = async () => {
+    await leaveRoom(user.id);
+
+    messageChannel.unsubscribe();
+
+    setMatch(null);
+    setMatching(false);
+    setPartner(null);
+    setMessageChannel(null);
+    setMessages([]);
+    setMessage("");
   };
 
   return (
@@ -300,7 +311,7 @@ const Matcher = () => {
                   height: "50vh",
                 }}
               >
-                {setIsMatched && partner
+                {partner
                   ? `Found a match! Your partner is ${partner.profile_name}`
                   : `Finding a match for you...`}
                 <Hourglass size={32} style={{ margin: 20 }} />
@@ -454,6 +465,14 @@ const Matcher = () => {
                 </Button>
               </div>
             </Frame>
+            <Button
+              style={{
+                margin: "10px",
+              }}
+              onClick={handleLeave}
+            >
+              Leave chat
+            </Button>
           </>
         )}
       </WindowContent>
