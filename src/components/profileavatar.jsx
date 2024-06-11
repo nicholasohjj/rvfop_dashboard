@@ -2,11 +2,9 @@ import PropTypes from 'prop-types';
 import { Avatar } from "react95";
 
 export const ProfileAvatar = ({ name, nameColor }) => {
-  console.log(name, nameColor);
 
   const generateColorFromName = () => {
     let hash = 0;
-    console.log(nameColor);
 
     for (let i = 0; i < nameColor.length; i++) {
       hash = nameColor.charCodeAt(i) + ((hash << 5) - hash);

@@ -12,6 +12,7 @@ import {
   TextInput,
   ScrollView,
   Hourglass,
+  Tooltip,
 } from "react95";
 import { findRoom, leaveRoom } from "../../../supabase/roomService";
 import {
@@ -63,7 +64,6 @@ const Matcher = () => {
   const navigate = useNavigate();
   const scrollViewRef = useRef();
   const filter = new Filter();
-
 
   useEffect(() => {
     if (user) {
@@ -122,7 +122,8 @@ const Matcher = () => {
               console.log("Message payload", payload);
 
               if (scrollViewRef.current) {
-                scrollViewRef.current.scrollTop = scrollViewRef.current.scrollHeight;
+                scrollViewRef.current.scrollTop =
+                  scrollViewRef.current.scrollHeight;
               }
             });
 
@@ -164,7 +165,6 @@ const Matcher = () => {
         messageChannel.unsubscribe();
       };
     }
-
   }, [messageChannel]);
 
   useEffect(() => {
@@ -228,10 +228,9 @@ const Matcher = () => {
     });
 
     const { data, error: postError } = await supabaseClient
-    .from("private_messages")
-    .insert([payload])
-    .single();
-    
+      .from("private_messages")
+      .insert([payload])
+      .single();
 
     if (error || postError) {
       console.error("Sending message error:", error, postError);
@@ -243,10 +242,6 @@ const Matcher = () => {
       setMessage("");
       scrollToBottom();
     }
-
-
-
-
   };
 
   const handleChange = (e) => {
@@ -315,6 +310,36 @@ const Matcher = () => {
         ) : (
           <>
             Your partner is {partner.profile_name}. Say hi!
+            <div
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <div style={{ margin: "0 5px" }}>
+                <Tooltip
+                  text={user.profile_name}
+                  enterDelay={100}
+                  leaveDelay={100}
+                >
+                  <ProfileAvatar name={user.profile_name} nameColor={user.id} />
+                </Tooltip>
+              </div>
+              <div style={{ margin: "0 5px" }}>
+                <Tooltip
+                  text={partner.profile_name}
+                  enterDelay={100}
+                  leaveDelay={100}
+                >
+                  <ProfileAvatar
+                    name={partner.profile_name}
+                    nameColor={partner.id}
+                  />
+                </Tooltip>
+              </div>
+            </div>
             <Frame
               variant="field"
               style={{
