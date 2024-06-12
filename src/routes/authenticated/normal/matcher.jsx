@@ -71,9 +71,11 @@ const Matcher = () => {
   }, [user]);
 
   useEffect(() => {
+    const newChannel = supabaseClient
+    .channel("schema-db-changes")
     if (matching) {
-      const newChannel = supabaseClient
-        .channel("schema-db-changes")
+
+      newChannel
         .on(
           "postgres_changes",
           {
@@ -82,10 +84,10 @@ const Matcher = () => {
           },
           (payload) => {
             console.log("Channel payload", payload);
-
             if (
               payload.new.usersid.includes(user.id) &&
-              payload.new.usersid.length === 2
+              payload.new.usersid.length === 2 &&
+              payload.new.is_ongoing
             ) {
               setMatch(payload.new);
             }
@@ -94,6 +96,8 @@ const Matcher = () => {
         .subscribe();
 
       setChannel(newChannel);
+    } else {
+      newChannel.unsubscribe();
     }
 
     return () => {
@@ -117,14 +121,11 @@ const Matcher = () => {
 
           const channel = supabaseClient
             .channel(`chat:${match.match_id}`)
-            .subscribe((payload) => {
-              console.log("Message payload", payload);
+            .on("broadcast", { event: "chat" }, (payload) => {
+              setMessages((prevMessages) => [...prevMessages, payload.payload]);
+            })
+            .subscribe();
 
-              if (scrollViewRef.current) {
-                scrollViewRef.current.scrollTop =
-                  scrollViewRef.current.scrollHeight;
-              }
-            });
 
           setMessageChannel(channel);
         } else {
@@ -145,7 +146,6 @@ const Matcher = () => {
   useEffect(() => {
     const init = async () => {
       if (messageChannel) {
-        console.log("Subscribing to messages", messageChannel);
 
         const messagesData = await fetchPrivateMessages(match.match_id);
 
