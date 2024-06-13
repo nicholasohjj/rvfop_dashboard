@@ -149,7 +149,7 @@ const Messenger = () => {
     const { error } = await channel.send({
       type: "broadcast",
       event: "chat",
-      payload,
+      payload: { ...payload, profile_name: user.profile_name },
     });
 
     // post the message on messages table
