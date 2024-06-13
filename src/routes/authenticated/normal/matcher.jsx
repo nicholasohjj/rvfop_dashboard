@@ -222,7 +222,7 @@ const Matcher = () => {
     const { error } = await messageChannel.send({
       type: "broadcast",
       event: "chat",
-      payload,
+      payload: { ...payload, profile_name: user.profile_name}
     });
 
     const { data, error: postError } = await supabaseClient
