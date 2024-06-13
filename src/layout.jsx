@@ -6,7 +6,6 @@ import { useEffect, useState, useContext } from "react";
 import { fetchUser } from "./supabase/services";
 import styled from "styled-components";
 import "./style.css"; // Make sure this points to your CSS file
-import { supabaseClient } from "./supabase/supabaseClient";
 import { userContext } from "./context/userContext";
 const modalVariants = {
   hidden: {
@@ -46,19 +45,35 @@ export const Layout = () => {
     "b",
     "a",
   ];
-  const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
-  const {user, setUser} = useContext(userContext);
-
+  const { user, setUser } = useContext(userContext);
+  const [inputSequence, setInputSequence] = useState([]);
+  const [isRotating, setIsRotating] = useState(false);
 
   useEffect(() => {
-    const checkSession = async () => {
+    const handleKeyDown = (event) => {
+      setInputSequence((prevSequence) => {
+        const newSequence = [...prevSequence, event.key].slice(
+          -konamiCode.length
+        );
+        if (newSequence.join(" ") === konamiCode.join(" ")) {
+          setIsRotating(true);
+          setTimeout(() => setIsRotating(false), 2000); // Reset after 2 seconds
+        }
+        return newSequence;
+      });
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
+  useEffect(() => {
+    const init = async () => {
       setLoading(true);
-      const {
-        data: { session },
-      } = await supabaseClient.auth.getSession();
-      setSession(session);
-      // Set loading to false after the session check
 
       if (!user) {
         const data = await fetchUser();
@@ -67,20 +82,13 @@ export const Layout = () => {
       }
 
       setLoading(false);
-
-
-
     };
 
-    checkSession();
-
-
-
-
+    init();
   }, []);
 
   return (
-    <Container>
+    <Container className={isRotating ? "rotate" : ""}>
       <Header />
       <motion.div
         initial="hidden"

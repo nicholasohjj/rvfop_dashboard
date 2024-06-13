@@ -71,54 +71,53 @@ export const Footer = () => {
                   Scoreboard
                 </MenuListItem>
               )}
-              {session &&
-                (user.has_progress) && (
-                  <MenuListItem onClick={() => handleNavigate("/progress")}>
-                    <img
-                      src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/progress.png"
-                      alt="progress_logo"
-                      style={{ height: "20px", marginRight: 4 }}
-                    />
-                    Progress
-                  </MenuListItem>
-                )}
+              {session && user.has_progress && (
+                <MenuListItem onClick={() => handleNavigate("/progress")}>
+                  <img
+                    src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/progress.png"
+                    alt="progress_logo"
+                    style={{ height: "20px", marginRight: 4 }}
+                  />
+                  Progress
+                </MenuListItem>
+              )}
 
-              {session &&
-                (user.can_deduct) && (
-                  <MenuListItem onClick={() => handleNavigate("/deductions")}>
-                    <img
-                      src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/deduction.png"
-                      alt="deduction_logo"
-                      style={{ height: "20px", marginRight: 4 }}
-                    />
-                    Deductions
-                  </MenuListItem>
-                )}
-              {session &&
-                (user.can_add_activity) && (
-                  <MenuListItem onClick={() => handleNavigate("/games")}>
-                    <img
-                      src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/games.png"
-                      alt="game_logo"
-                      style={{ height: "20px", marginRight: 4 }}
-                    />
-                    Awarded Games
-                  </MenuListItem>
-                )}
-              <MenuListItem
-                onClick={
-                  user
-                    ? () => handleNavigate("/message")
-                    : () => handleNavigate("/login")
-                }
-              >
-                <img
-                  src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/messenger.png"
-                  alt="messenger_logo"
-                  style={{ height: "20px", marginRight: 4 }}
-                />
-                Messenger
-              </MenuListItem>
+              {session && user.can_deduct && (
+                <MenuListItem onClick={() => handleNavigate("/deductions")}>
+                  <img
+                    src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/deduction.png"
+                    alt="deduction_logo"
+                    style={{ height: "20px", marginRight: 4 }}
+                  />
+                  Deductions
+                </MenuListItem>
+              )}
+              {session && user.can_add_activity && (
+                <MenuListItem onClick={() => handleNavigate("/games")}>
+                  <img
+                    src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/games.png"
+                    alt="game_logo"
+                    style={{ height: "20px", marginRight: 4 }}
+                  />
+                  Awarded Games
+                </MenuListItem>
+              )}
+              {session && (
+                <MenuListItem
+                  onClick={
+                    user
+                      ? () => handleNavigate("/message")
+                      : () => handleNavigate("/login")
+                  }
+                >
+                  <img
+                    src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/messenger.png"
+                    alt="messenger_logo"
+                    style={{ height: "20px", marginRight: 4 }}
+                  />
+                  Messenger
+                </MenuListItem>
+              )}
               {session && (
                 <div>
                   <MenuListItem onClick={() => handleLogout()}>
