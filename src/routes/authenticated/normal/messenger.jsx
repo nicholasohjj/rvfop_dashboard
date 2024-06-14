@@ -63,14 +63,12 @@ const Messenger = () => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const scrollViewRef = useRef();
+  const lastMessageRef = useRef(null);
   const filter = new Filter();
   const navigate = useNavigate();
 
   const scrollToBottom = () => {
-    const elem = scrollViewRef.current;
-    if (elem) {
-      elem.scrollTop = elem.scrollHeight;
-    }
+    lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -252,6 +250,8 @@ const Messenger = () => {
                   })}`;
                 };
 
+                const isLastMessage = index === messages.length - 1;
+
                 return (
                   <React.Fragment key={index}>
                     {isStartOfNewDay && (
@@ -277,6 +277,7 @@ const Messenger = () => {
                         textAlign:
                           message.user_id === user.id ? "right" : "left",
                       }}
+                      ref={isLastMessage ? lastMessageRef : null}
                     >
                       <ProfileAvatar
                         name={message.profile_name}

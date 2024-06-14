@@ -62,6 +62,7 @@ const Matcher = () => {
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
   const scrollViewRef = useRef();
+  const lastMessageRef = useRef();
   const filter = new Filter();
 
   useEffect(() => {
@@ -71,10 +72,8 @@ const Matcher = () => {
   }, [user]);
 
   useEffect(() => {
-    const newChannel = supabaseClient
-    .channel("schema-db-changes")
+    const newChannel = supabaseClient.channel("schema-db-changes");
     if (matching) {
-
       newChannel
         .on(
           "postgres_changes",
@@ -126,7 +125,6 @@ const Matcher = () => {
             })
             .subscribe();
 
-
           setMessageChannel(channel);
         } else {
           await supabaseClient
@@ -146,7 +144,6 @@ const Matcher = () => {
   useEffect(() => {
     const init = async () => {
       if (messageChannel) {
-
         const messagesData = await fetchPrivateMessages(match.match_id);
 
         if (messagesData) {
@@ -201,10 +198,7 @@ const Matcher = () => {
   };
 
   const scrollToBottom = () => {
-    const elem = scrollViewRef.current;
-    if (elem) {
-      elem.scrollTop = elem.scrollHeight;
-    }
+    lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const handleSend = async () => {
@@ -222,7 +216,7 @@ const Matcher = () => {
     const { error } = await messageChannel.send({
       type: "broadcast",
       event: "chat",
-      payload: { ...payload, profile_name: user.profile_name}
+      payload: { ...payload, profile_name: user.profile_name },
     });
 
     const { data, error: postError } = await supabaseClient
@@ -380,6 +374,8 @@ const Matcher = () => {
                           previousMessage.tm_created
                         ));
 
+                    const isLastMessage = index === messages.length - 1;
+
                     // Format the date as "30 March"
                     const formatDate = (dateString) => {
                       const date = new Date(dateString);
@@ -418,6 +414,7 @@ const Matcher = () => {
                             textAlign:
                               message.user_id === user.id ? "right" : "left",
                           }}
+                          ref={isLastMessage ? lastMessageRef : null}
                         >
                           <ProfileAvatar
                             name={message.profile_name}
