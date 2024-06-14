@@ -45,29 +45,94 @@ export const Layout = () => {
     "b",
     "a",
   ];
+
+  const konamiCodeMobile = [
+    "swipeUp",
+    "swipeUp",
+    "swipeDown",
+    "swipeDown",
+    "swipeLeft",
+    "swipeRight",
+    "swipeLeft",
+    "swipeRight",
+    "tapB",
+    "tapA",
+  ];
   const [loading, setLoading] = useState(true);
   const { user, setUser } = useContext(userContext);
   const [inputSequence, setInputSequence] = useState([]);
   const [isRotating, setIsRotating] = useState(false);
+  let touchStartX = 0;
+  let touchStartY = 0;
+
+  const handleTouchStart = (event) => {
+    touchStartX = event.touches[0].clientX;
+    touchStartY = event.touches[0].clientY;
+  };
+
+  const handleTouchMove = (event) => {
+    if (!touchStartX || !touchStartY) return;
+
+    let touchEndX = event.changedTouches[0].clientX;
+    let touchEndY = event.changedTouches[0].clientY;
+
+    let diffX = touchEndX - touchStartX;
+    let diffY = touchEndY - touchStartY;
+
+    if (Math.abs(diffX) > Math.abs(diffY)) {
+      // Horizontal swipe
+      if (diffX > 0) {
+        updateInputSequence("swipeRight");
+      } else {
+        updateInputSequence("swipeLeft");
+      }
+    } else {
+      // Vertical swipe
+      if (diffY > 0) {
+        updateInputSequence("swipeDown");
+      } else {
+        updateInputSequence("swipeUp");
+      }
+    }
+
+    touchStartX = 0;
+    touchStartY = 0;
+  };
+
+  const handleTouchEnd = () => {
+    touchStartX = 0;
+    touchStartY = 0;
+  };
+
+  const updateInputSequence = (input) => {
+    setInputSequence((prevSequence) => {
+      const newSequence = [...prevSequence, input].slice(-konamiCode.length);
+      if (
+        newSequence.join(" ") === konamiCode.join(" ") ||
+        newSequence.join(" ") === konamiCodeMobile.join(" ")
+      ) {
+        setIsRotating(true);
+        setTimeout(() => setIsRotating(false), 2000); // Reset after 2 seconds
+      }
+      return newSequence;
+    });
+  };
 
   useEffect(() => {
     const handleKeyDown = (event) => {
-      setInputSequence((prevSequence) => {
-        const newSequence = [...prevSequence, event.key].slice(
-          -konamiCode.length
-        );
-        if (newSequence.join(" ") === konamiCode.join(" ")) {
-          setIsRotating(true);
-          setTimeout(() => setIsRotating(false), 2000); // Reset after 2 seconds
-        }
-        return newSequence;
-      });
+      updateInputSequence(event.key);
     };
 
     window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("touchstart", handleTouchStart);
+    window.addEventListener("touchmove", handleTouchMove);
+    window.addEventListener("touchend", handleTouchEnd);
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleTouchEnd);
     };
   }, []);
 
