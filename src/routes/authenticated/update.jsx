@@ -77,6 +77,8 @@ export const Update = () => {
         const user = await fetchUser();
         setUser(user);
         setemail(user.email);
+      } else {
+        setemail(user.email);
       }
     };
     init();
