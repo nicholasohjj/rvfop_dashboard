@@ -33,7 +33,9 @@ export const Footer = () => {
   };
 
   const handleLogout = () => {
-    supabaseClient.auth.signOut();
+    console.log("Logging out", user);
+    const {error} = supabaseClient.auth.signOut();
+    console.log("Error", error);
     navigate("/login");
   };
 
