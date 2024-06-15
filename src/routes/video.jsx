@@ -73,9 +73,9 @@ const Video = () => {
             >
               <LoadingHourglass />
             </div>
-          )}{" "}
+          )}
           <Iframe
-            url={videoUrl}
+            url={`${videoUrl}#t=0.5&controls=0&autoplay=1&disablekb=1`}
             width="100%"
             height="100%"
             id="myId"
@@ -85,7 +85,7 @@ const Video = () => {
             allowFullScreen
             title="Bongo Cat"
             frameBorder="0"
-            allow="autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allow="autoplay; encrypted-media"
             referrerPolicy="strict-origin-when-cross-origin"
             style={{ display: isLoading ? "none" : "block" }}
           />

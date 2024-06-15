@@ -68,7 +68,7 @@ const Messenger = () => {
   const navigate = useNavigate();
 
   const scrollToBottom = () => {
-    lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
+    lastMessageRef.current?.scrollIntoView({  block: "end", behavior: "auto" });
   };
 
   useEffect(() => {

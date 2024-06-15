@@ -3,8 +3,6 @@ import { Avatar } from "react95";
 
 export const ProfileAvatar = ({ name, nameColor }) => {
 
-  console.log("ProfileAvatar -> nameColor", name, nameColor);
-
   const generateColorFromName = () => {
     let hash = 0;
 

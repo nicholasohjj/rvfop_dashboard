@@ -198,7 +198,7 @@ const Matcher = () => {
   };
 
   const scrollToBottom = () => {
-    lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
+    lastMessageRef.current?.scrollIntoView({ behavior: "auto" });
   };
 
   const handleSend = async () => {
