@@ -1,28 +1,12 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useContext } from "react";
 import { AppBar, Toolbar, Button, MenuList, MenuListItem } from "react95";
 import { useNavigate } from "react-router-dom";
-import { supabaseClient } from "../supabase/supabaseClient";
-import { userContext } from "../context/userContext";
+import { userContext, sessionContext } from "../context/userContext";
 export const Header = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const [session, setSession] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const {user, setUser} = useContext(userContext);
-
-  useEffect(() => {
-    const checkSession = async () => {
-      const {
-        data: { session },
-      } = await supabaseClient.auth.getSession();
-
-      setSession(session);
-      // Set loading to false after the session check
-      setLoading(false);
-    };
-
-    checkSession();
-  }, []);
+  const { session, setSession } = useContext(sessionContext);
+  const { user, setUser } = useContext(userContext);
 
   return (
     <AppBar style={{ zIndex: 1 }}>
@@ -39,15 +23,17 @@ export const Header = () => {
             }}
             onClick={() => setOpen(false)}
           >
-            <MenuListItem onClick={() => navigate("/profile")}>
-              <img
-                src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/password.png"
-                alt="password"
-                style={{ height: "20px", marginRight: 4 }}
-              />
-              My Profile
-            </MenuListItem>
-            {user.can_add_activity && (
+            {session && user && (
+              <MenuListItem onClick={() => navigate("/profile")}>
+                <img
+                  src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/password.png"
+                  alt="password"
+                  style={{ height: "20px", marginRight: 4 }}
+                />
+                My Profile
+              </MenuListItem>
+            )}
+            {session && user?.can_add_activity && (
               <MenuListItem onClick={() => navigate("/addactivity")}>
                 <img
                   src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/sign/rvfop/addactivity.png?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJydmZvcC9hZGRhY3Rpdml0eS5wbmciLCJpYXQiOjE3MTE5NDc5NTIsImV4cCI6MjAyNzMwNzk1Mn0.tBntdvbPBIdWB9Ho16a18nbwW167CwdlYnRAMIq4efw"
@@ -57,7 +43,7 @@ export const Header = () => {
                 Add Activity
               </MenuListItem>
             )}
-            {user.can_deduct && (
+            {session && user?.can_deduct && (
               <MenuListItem onClick={() => navigate("/adddeduction")}>
                 <img
                   src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/adddeduction.png"
@@ -67,6 +53,15 @@ export const Header = () => {
                 Add Deduction
               </MenuListItem>
             )}
+
+            <MenuListItem onClick={() => navigate("/about")}>
+              <img
+                src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/tip.png"
+                alt="about"
+                style={{ height: "20px", marginRight: 4 }}
+              />
+              About
+            </MenuListItem>
           </MenuList>
         )}
       </Toolbar>

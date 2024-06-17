@@ -5,7 +5,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import Video from "./routes/video";
-import { userContext } from "./context/userContext";
+import { userContext, sessionContext } from "./context/userContext";
 import ErrorPage from "./routes/errorpage";
 import { Login } from "./routes/login";
 import { Layout } from "./layout";
@@ -25,9 +25,9 @@ import Messenger from "./routes/authenticated/normal/messenger";
 import Matcher from "./routes/authenticated/normal/matcher";
 import { Profile } from "./routes/authenticated/profile";
 import { Signup } from "./routes/signup";
-import { Home } from "./home";
 import { SignupByInvite } from "./routes/authenticated/signUpByInvite";
 import { ResetForm } from "./routes/resetForm";
+import About from "./routes/about";
 const App = () => {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -40,7 +40,6 @@ const App = () => {
       } = await supabaseClient.auth.getSession();
 
       setSession(session);
-      // Set loading to false after the session check
       setLoading(false);
     };
 
@@ -61,16 +60,14 @@ const App = () => {
       path: "/",
       element: loading ? (
         <Loading />
-      ) : session ? (
-        <Layout />
       ) : (
-        <Navigate to="/home" replace />
+        <Layout />
       ),
       errorElement: <ErrorPage />,
       children: [
         {
           path: "/",
-          element: <Navigate to="/scoreboard" replace />,
+          element: <Scoreboard />,
         },
         {
           path: "/match",
@@ -111,6 +108,16 @@ const App = () => {
       ],
     },
     {
+      path: "/about",
+      element: <Layout />,
+      children: [
+        {
+          path: "",
+          element: <About  />,
+        }
+      ]
+    },
+    {
       path: "/login",
       element: loading ? (
         <Loading />
@@ -128,7 +135,7 @@ const App = () => {
       ) : !session ? (
         <Signup />
       ) : (
-        <Navigate to="/home" replace />
+        <Navigate to="/" replace />
       ),
       errorElement: <ErrorPage />,
     },
@@ -139,7 +146,7 @@ const App = () => {
       ) : !session ? (
         <ResetForm />
       ) : (
-        <Navigate to="/home" replace />
+        <Navigate to="/" replace />
       ),
       errorElement: <ErrorPage />,
     },
@@ -156,13 +163,8 @@ const App = () => {
     },
     {
       path: "/home",
-      element: loading ? (
-        <Loading />
-      ) : !session ? (
-        <Home />
-      ) : (
-        <Navigate to="/" replace />
-      ),
+      element:<Navigate to="/" replace />
+      ,
       errorElement: <ErrorPage />,
     },
     {
@@ -211,11 +213,13 @@ const App = () => {
 
   return (
     <>
+    <sessionContext.Provider value={{ session, setSession }}>
     <userContext.Provider value={{ user, setUser }}>
       <RouterProvider router={router} />
       <Analytics />
       <SpeedInsights />
     </userContext.Provider>
+    </sessionContext.Provider>
     </>
   );
 };

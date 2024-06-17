@@ -2,31 +2,14 @@ import { useState, useEffect, useContext } from "react";
 import { AppBar, Toolbar, Button, MenuList, MenuListItem } from "react95";
 import { useNavigate } from "react-router-dom";
 import { supabaseClient } from "../supabase/supabaseClient";
-import { userContext } from "../context/userContext";
+import { userContext, sessionContext } from "../context/userContext";
 export const Footer = () => {
   const [open, setOpen] = useState(false);
-  const [session, setSession] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const {session, setSession} = useContext(sessionContext);
+  const [loading, setLoading] = useState(false);
   const { user, setUser } = useContext(userContext);
+
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const checkSession = async () => {
-      const {
-        data: { session },
-      } = await supabaseClient.auth.getSession();
-
-      setSession(session);
-      // Set loading to false after the session check
-      setLoading(false);
-    };
-
-    const init = async () => {
-      await checkSession();
-    };
-
-    init();
-  }, [user]);
 
   const handleNavigate = (path) => {
     navigate(path);

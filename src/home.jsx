@@ -1,5 +1,5 @@
 import { Footer } from "./components/footer";
-import { useEffect } from "react";
+import { Header } from "./components/header";
 import styled from "styled-components";
 import "./style.css"; // Make sure this points to your CSS file
 import Scoreboard from "./routes/scoreboard";
@@ -15,6 +15,7 @@ export const Home = () => {
 
   return (
     <Container>
+      <Header />
         <Scoreboard />
       <Footer />
     </Container>
