@@ -12,7 +12,9 @@ const About = () => {
     >
       <Helmet>
         <title>Insieme 2024 - About</title>
-        <meta name="description" content="about" />
+        <meta name="description" content="Learn more about Insieme 2024" />
+        <meta name="keywords" content="Insieme, 2024, About, Nicholas Oh" />
+        <meta name="author" content="Nicholas Oh" />
       </Helmet>
       <Window
         style={{
@@ -22,23 +24,23 @@ const About = () => {
           overflow: "hidden",
         }}
       >
-        <WindowHeader>About</WindowHeader>
+        <WindowHeader style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <span>About Insieme 2024</span>
+        </WindowHeader>
         <WindowContent
           style={{
-            flex: 1,
+            padding: "20px",
             display: "flex",
-            overflow: "hidden",
-            justifyContent: "center",
+            flexDirection: "column",
             alignItems: "center",
           }}
         >
-          <p>© 2024 Insieme. All rights reserved.</p>
-          <p>
+          <p style={{ marginBottom: "1em" }}>© 2024 Insieme. All rights reserved.</p>
+          <p style={{ textAlign: "center" }}>
             Website designed by{" "}
-            <Anchor href="https://www.linkedin.com/in/nicholasohjj">
+            <Anchor href="https://www.linkedin.com/in/nicholasohjj" target="_blank" rel="noopener noreferrer">
               Nicholas Oh
-            </Anchor>
-            .
+            </Anchor>.
           </p>
         </WindowContent>
       </Window>
