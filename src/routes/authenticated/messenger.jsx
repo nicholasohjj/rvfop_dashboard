@@ -17,16 +17,16 @@ import {
   GroupBox,
 } from "react95";
 import { Helmet } from "react-helmet";
-import Loading from "../../loading";
-import { userContext } from "../../../context/userContext";
-import { supabaseClient } from "../../../supabase/supabaseClient";
+import Loading from "../loading";
+import { userContext } from "../../context/userContext";
+import { supabaseClient } from "../../supabase/supabaseClient";
 import Filter from "bad-words";
 import styled from "styled-components"; // Import styled-components
 import { useNavigate } from "react-router-dom";
-import { fetchChannels, fetchMessages } from "../../../supabase/services";
-import { ProfileAvatar } from "../../../components/profileavatar";
-import { createLinkMarkup } from "../../../utils/createLinkMarkup";
-import { isNewDay } from "../../../utils/time";
+import { fetchChannels, fetchMessages } from "../../supabase/services";
+import { ProfileAvatar } from "../../components/profileavatar";
+import { createLinkMarkup } from "../../utils/createLinkMarkup";
+import { isNewDay } from "../../utils/time";
 const StyledWindowHeader = styled(WindowHeader)`
   color: white; // Adjust the text color as needed for contrast
   display: flex;

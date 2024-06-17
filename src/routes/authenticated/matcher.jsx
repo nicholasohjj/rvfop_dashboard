@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect, useContext } from "react";
-import { supabaseClient } from "../../../supabase/supabaseClient";
-import { userContext } from "../../../context/userContext";
+import { supabaseClient } from "../../supabase/supabaseClient";
+import { userContext } from "../../context/userContext";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import {
@@ -14,16 +14,16 @@ import {
   Hourglass,
   Tooltip,
 } from "react95";
-import { findRoom, leaveRoom } from "../../../supabase/roomService";
+import { findRoom, leaveRoom } from "../../supabase/roomService";
 import {
   fetchOtherUser,
   fetchPrivateMessages,
-} from "../../../supabase/services";
+} from "../../supabase/services";
 import { Helmet } from "react-helmet";
 import Filter from "bad-words";
-import { isNewDay } from "../../../utils/time";
-import { createLinkMarkup } from "../../../utils/createLinkMarkup";
-import { ProfileAvatar } from "../../../components/profileavatar";
+import { isNewDay } from "../../utils/time";
+import { createLinkMarkup } from "../../utils/createLinkMarkup";
+import { ProfileAvatar } from "../../components/profileavatar";
 const StyledWindowHeader = styled(WindowHeader)`
   color: white;
   display: flex;

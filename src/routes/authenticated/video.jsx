@@ -2,7 +2,7 @@ import { Window, WindowContent, WindowHeader } from "react95";
 import Iframe from "react-iframe";
 import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
-import { LoadingHourglass } from "../components/loadinghourglass";
+import { LoadingHourglass } from "../../components/loadinghourglass";
 const videos = [
   "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/GAYLE_-_abcdefu__cover_by_Bongo_Cat____.mp4",
   "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/Bongo_Cat_-_BLACKPINK__DDU-DU_DDU-DU___K-POP_.mp4?t=2024-06-11T15%3A21%3A42.696Z",

@@ -4,7 +4,7 @@ import {
   RouterProvider,
   Navigate,
 } from "react-router-dom";
-import Video from "./routes/video";
+import Video from "./routes/authenticated/video";
 import { userContext, sessionContext } from "./context/userContext";
 import ErrorPage from "./routes/errorpage";
 import { Login } from "./routes/login";
@@ -21,8 +21,8 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import Deductions from "./routes/authenticated/deductor/deductions";
 import Games from "./routes/authenticated/gm/games";
-import Messenger from "./routes/authenticated/normal/messenger";
-import Matcher from "./routes/authenticated/normal/matcher";
+import Messenger from "./routes/authenticated/messenger";
+import Matcher from "./routes/authenticated/matcher";
 import { Profile } from "./routes/authenticated/profile";
 import { Signup } from "./routes/signup";
 import { SignupByInvite } from "./routes/authenticated/signUpByInvite";
@@ -159,12 +159,6 @@ const App = () => {
       ) : (
         <Navigate to="/" replace />
       ),
-      errorElement: <ErrorPage />,
-    },
-    {
-      path: "/home",
-      element:<Navigate to="/" replace />
-      ,
       errorElement: <ErrorPage />,
     },
     {
