@@ -5,7 +5,7 @@ import { supabaseClient } from "../supabase/supabaseClient";
 import { userContext, sessionContext } from "../context/userContext";
 export const Footer = () => {
   const [open, setOpen] = useState(false);
-  const {session, setSession} = useContext(sessionContext);
+  const { session, setSession } = useContext(sessionContext);
   const [loading, setLoading] = useState(false);
   const { user, setUser } = useContext(userContext);
 
@@ -17,7 +17,7 @@ export const Footer = () => {
 
   const handleLogout = () => {
     console.log("Logging out", user);
-    const {error} = supabaseClient.auth.signOut();
+    const { error } = supabaseClient.auth.signOut();
     console.log("Error", error);
     navigate("/login");
   };

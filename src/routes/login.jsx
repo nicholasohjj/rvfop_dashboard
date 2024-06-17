@@ -191,7 +191,7 @@ export const Login = () => {
           </div>
           <WindowContent>
             {isLoading ? (
-              <LoadingHourglass/>
+              <LoadingHourglass />
             ) : (
               <form onSubmit={handleSubmit}>
                 <div>

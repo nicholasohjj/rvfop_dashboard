@@ -15,10 +15,7 @@ import {
   Tooltip,
 } from "react95";
 import { findRoom, leaveRoom } from "../../supabase/roomService";
-import {
-  fetchOtherUser,
-  fetchPrivateMessages,
-} from "../../supabase/services";
+import { fetchOtherUser, fetchPrivateMessages } from "../../supabase/services";
 import { Helmet } from "react-helmet";
 import Filter from "bad-words";
 import { isNewDay } from "../../utils/time";
