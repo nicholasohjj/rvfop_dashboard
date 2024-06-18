@@ -1,4 +1,11 @@
-import { useState, useRef, useEffect, useContext } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useContext,
+  useMemo,
+  useCallback,
+} from "react";
 import { Window, WindowHeader, WindowContent, Button } from "react95";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -19,6 +26,7 @@ const StyledWindowHeader = styled(WindowHeader)`
 export const Profile = () => {
   const { user, setUser } = useContext(userContext);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
   const dragX = useMotionValue(0);
 
   const rotateValue = useTransform(dragX, [-100, 100], [-10, 10]);
@@ -26,24 +34,28 @@ export const Profile = () => {
   const constraintsRef = useRef(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const init = async () => {
-      if (!user) {
-        const user = await fetchUser();
-        setUser(user);
-      }
-    };
-    init();
+  const fetchUserMemoized = useCallback(async () => {
+    if (!user) {
+      const fetchedUser = await fetchUser();
+      setUser(fetchedUser);
+    }
   }, [user, setUser]);
 
-  const handleReturnHome = () => {
-    navigate("/");
-  };
+  useEffect(() => {
+    fetchUserMemoized();
+  }, [fetchUserMemoized]);
 
-  const windowStyle = {
-    width: windowWidth > 500 ? 500 : "90%",
-    margin: "0%",
-  };
+  const handleReturnHome = useCallback(() => {
+    navigate("/");
+  }, [navigate]);
+
+  const windowStyle = useMemo(
+    () => ({
+      width: windowWidth > 500 ? 500 : "90%",
+      margin: "0%",
+    }),
+    [windowWidth]
+  );
 
   return (
     <div
@@ -94,7 +106,10 @@ export const Profile = () => {
                   }}
                 >
                   <div onClick={() => navigate("/video")}>
-                  <ProfileAvatar name={user.profile_name} nameColor={user.id} />
+                    <ProfileAvatar
+                      name={user.profile_name}
+                      nameColor={user.id}
+                    />
                   </div>
                   <div>
                     <strong>{user.profile_name}</strong>
@@ -108,7 +123,7 @@ export const Profile = () => {
               <Button onClick={() => navigate("/update")}>
                 Update Password
               </Button>
-              <Button onClick={() => handleReturnHome()}>Return home</Button>
+              <Button onClick={handleReturnHome}>Return home</Button>
             </div>
           </WindowContent>
         </Window>
