@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import { AppBar, Toolbar, Button, MenuList, MenuListItem } from "react95";
 import { useNavigate } from "react-router-dom";
-import { userContext, sessionContext } from "../context/userContext";
+import { userContext, sessionContext } from "../context/context";
 export const Header = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);

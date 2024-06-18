@@ -5,7 +5,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import Video from "./routes/authenticated/video";
-import { userContext, sessionContext } from "./context/userContext";
+import { userContext, sessionContext, groupsContext } from "./context/context";
 import ErrorPage from "./routes/errorpage";
 import { Login } from "./routes/login";
 import { Layout } from "./layout";
@@ -31,6 +31,7 @@ import About from "./routes/about";
 const App = () => {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [groups, setGroups] = useState([]);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -207,6 +208,8 @@ const App = () => {
 
   return (
     <>
+    
+    <groupsContext.Provider value={{ groups, setGroups }}>
     <sessionContext.Provider value={{ session, setSession }}>
     <userContext.Provider value={{ user, setUser }}>
       <RouterProvider router={router} />
@@ -214,6 +217,7 @@ const App = () => {
       <SpeedInsights />
     </userContext.Provider>
     </sessionContext.Provider>
+    </groupsContext.Provider>
     </>
   );
 };

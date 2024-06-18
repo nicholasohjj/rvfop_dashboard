@@ -18,7 +18,7 @@ import Loading from "../../loading";
 import { fetchAwardedGames } from "../../../supabase/services";
 import { useNavigate } from "react-router-dom";
 import { formatSGT } from "../../../utils/time";
-import { userContext } from "../../../context/userContext";
+import { userContext } from "../../../context/context";
 import { Helmet } from "react-helmet";
 
 const CloseIcon = styled.div`

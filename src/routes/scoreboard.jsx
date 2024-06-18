@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Table,
   TableBody,
@@ -19,58 +19,92 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
 
-const Scoreboard = () => {
+const useHouses = () => {
   const [houses, setHouses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [sortKey, setSortKey] = useState("overall_points"); // Default sort column to overall_points
-  const [sortDirection, setSortDirection] = useState("desc"); // Start with points descending
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedHouse, setSelectedHouse] = useState(null);
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-  const navigate = useNavigate();
-
-  const sortHousesInitially = (housesData) => {
-    return [...housesData].sort((a, b) => {
-      const aVal = a.total_points;
-      const bVal = b.total_points;
-
-      return sortDirection === "asc" ? aVal - bVal : bVal - aVal;
-    });
-  };
-
-  const handleUpdate = (payload) => {
-    const updatedHouse = payload.new;
-    // Update the state to reflect the changes
-    setHouses((currentHouses) => {
-      return currentHouses.map((house) =>
-        house.house_id === updatedHouse.house_id ? updatedHouse : house
-      );
-    });
-  };
+  const sortHousesInitially = useCallback((housesData) => {
+    return housesData.sort((a, b) => b.total_points - a.total_points);
+  }, []);
 
   useEffect(() => {
-    fetchHouses().then((housesData) => {
-      // After fetching, sort the houses by overall_points in descending order
+    const fetchData = async () => {
+      const housesData = await fetchHouses();
       const sortedHouses = sortHousesInitially(housesData);
       setHouses(sortedHouses);
       setLoading(false);
-    });
+    };
+
+    fetchData();
 
     const channel = supabaseClient
       .channel("houses")
       .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "houses" },
-        handleUpdate
+        (payload) => {
+          const updatedHouse = payload.new;
+          setHouses((currentHouses) =>
+            currentHouses.map((house) =>
+              house.house_id === updatedHouse.house_id ? updatedHouse : house
+            )
+          );
+        }
       )
       .subscribe();
 
-    // Cleanup function to unsubscribe from the channel
     return () => {
       supabaseClient.removeChannel(channel);
     };
+  }, [sortHousesInitially]);
+
+  return { houses, loading };
+};
+
+const useWindowWidth = () => {
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  return windowWidth;
+};
+
+const Scoreboard = () => {
+  const { houses, loading } = useHouses();
+  const windowWidth = useWindowWidth();
+  const navigate = useNavigate();
+
+  const [sortKey, setSortKey] = useState("total_points");
+  const [sortDirection, setSortDirection] = useState("desc");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedHouse, setSelectedHouse] = useState(null);
+
+  const sortedHouses = useMemo(() => {
+    return [...houses].sort((a, b) => {
+      const aVal = a[sortKey];
+      const bVal = b[sortKey];
+
+      if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
+      if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
+      return 0;
+    });
+  }, [houses, sortKey, sortDirection]);
+
+  const handleSort = (key) => {
+    setSortKey(key);
+    setSortDirection((prevDirection) =>
+      sortKey === key && prevDirection === "asc" ? "desc" : "asc"
+    );
+  };
+
+  const toggleModal = (house) => {
+    setSelectedHouse(house);
+    setIsModalOpen(!isModalOpen);
+  };
 
   const CloseIcon = styled.div`
     display: inline-block;
@@ -108,18 +142,6 @@ const Scoreboard = () => {
     align-items: center;
   `;
 
-  const FullScreenModal = styled.div`
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: rgba(0, 0, 0, 0.6); // Semi-transparent background
-  `;
-
   const modalVariants = {
     hidden: {
       opacity: 0,
@@ -132,31 +154,8 @@ const Scoreboard = () => {
   };
 
   const windowStyle = {
-    width: windowWidth > 500 ? 500 : "90%", // Adjust width here
+    width: windowWidth > 500 ? 500 : "90%",
     margin: "0%",
-  };
-
-  const sortHouses = (key) => {
-    const direction =
-      sortKey === key && sortDirection === "asc" ? "desc" : "asc";
-    setSortKey(key);
-    setSortDirection(direction);
-
-    const sortedHouses = [...houses].sort((a, b) => {
-      let aVal = a[key];
-      let bVal = b[key];
-
-      if (aVal < bVal) return direction === "asc" ? -1 : 1;
-      if (aVal > bVal) return direction === "asc" ? 1 : -1;
-      return 0;
-    });
-
-    setHouses(sortedHouses);
-  };
-
-  const toggleModal = (house) => {
-    setSelectedHouse(house);
-    setIsModalOpen(!isModalOpen);
   };
 
   if (loading) return <Loading />;
@@ -188,19 +187,19 @@ const Scoreboard = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableHeadCell onClick={() => sortHouses("house_name")}>
+                <TableHeadCell onClick={() => handleSort("house_name")}>
                   House
                 </TableHeadCell>
-                <TableHeadCell onClick={() => sortHouses("total_points")}>
+                <TableHeadCell onClick={() => handleSort("total_points")}>
                   Points (Tribal)
                 </TableHeadCell>
-                <TableHeadCell onClick={() => sortHouses("pro_human_points")}>
+                <TableHeadCell onClick={() => handleSort("pro_human_points")}>
                   Points (Pro-humans)
                 </TableHeadCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {houses.map((house) => (
+              {sortedHouses.map((house) => (
                 <TableRow
                   key={house.house_id}
                   onClick={() => toggleModal(house)}
@@ -253,7 +252,7 @@ const Scoreboard = () => {
               <div>
                 <img
                   src={selectedHouse.house_logo}
-                  alt={selectedHouse.house_name + "-logo"}
+                  alt={`${selectedHouse.house_name}-logo`}
                   width={100}
                   onClick={() => {
                     window.open(selectedHouse.house_ig, "_blank");

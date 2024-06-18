@@ -1,6 +1,12 @@
-import React, { useRef, useState, useEffect, useContext } from "react";
+import React, {
+  useRef,
+  useState,
+  useEffect,
+  useContext,
+  useCallback,
+} from "react";
 import { supabaseClient } from "../../supabase/supabaseClient";
-import { userContext } from "../../context/userContext";
+import { userContext } from "../../context/context";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import {
@@ -177,12 +183,11 @@ const Matcher = () => {
     };
   }, [matching, user]);
 
-  const handleMatch = async () => {
+  const handleMatch = useCallback(async () => {
     setMatching((prevMatching) => !prevMatching);
 
     if (!matching) {
       console.log("Matching now");
-      // Add more logic here if needed for when matching starts
       await findRoom(user.id);
     } else {
       console.log("Stopped matching");
@@ -190,15 +195,14 @@ const Matcher = () => {
       setPartner(null);
       setMatch(null);
       setMessageChannel(null);
-      // Add more logic here if needed for when matching stops
     }
-  };
+  }, [matching, user]);
 
-  const scrollToBottom = () => {
+  const scrollToBottom = useCallback(() => {
     lastMessageRef.current?.scrollIntoView({ behavior: "auto" });
-  };
+  }, []);
 
-  const handleSend = async () => {
+  const handleSend = useCallback(async () => {
     if (!message.trim()) return;
 
     const sanitizedMessage = filter.clean(message);
@@ -231,13 +235,13 @@ const Matcher = () => {
       setMessage("");
       scrollToBottom();
     }
-  };
+  }, [message, user, match, messageChannel, scrollToBottom, filter]);
 
-  const handleChange = (e) => {
+  const handleChange = useCallback((e) => {
     setMessage(e.target.value);
-  };
+  }, []);
 
-  const handleLeave = async () => {
+  const handleLeave = useCallback(async () => {
     await leaveRoom(user.id);
 
     messageChannel.unsubscribe();
@@ -248,7 +252,7 @@ const Matcher = () => {
     setMessageChannel(null);
     setMessages([]);
     setMessage("");
-  };
+  }, [user, messageChannel]);
 
   return (
     <StyledWindow style={{ flex: 1, width: 320 }}>

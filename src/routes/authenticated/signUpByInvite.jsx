@@ -10,7 +10,7 @@ import {
   Tooltip,
 } from "react95";
 import { motion, useMotionValue, useTransform } from "framer-motion";
-import { userContext } from "../../context/userContext";
+import { userContext } from "../../context/context";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { supabaseClient } from "../../supabase/supabaseClient";
 import styled from "styled-components";

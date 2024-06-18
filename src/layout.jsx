@@ -6,7 +6,7 @@ import { useEffect, useState, useContext } from "react";
 import { fetchUser } from "./supabase/services";
 import styled from "styled-components";
 import "./style.css"; // Make sure this points to your CSS file
-import { userContext } from "./context/userContext";
+import { userContext } from "./context/context";
 const modalVariants = {
   hidden: {
     opacity: 0,
@@ -142,7 +142,6 @@ export const Layout = () => {
 
       if (!user) {
         const data = await fetchUser();
-
         setUser(data);
       }
 

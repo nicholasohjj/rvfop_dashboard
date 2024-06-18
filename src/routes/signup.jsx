@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useContext, useCallback } from "react";
 import {
   Window,
   WindowHeader,
@@ -16,7 +16,7 @@ import styled from "styled-components";
 import { fetchGroups, fetchRoles } from "../supabase/services";
 import { Helmet } from "react-helmet";
 import { LoadingHourglass } from "../components/loadinghourglass";
-
+import { groupsContext } from "../context/context";
 // Styled Close Icon Component
 const CloseIcon = styled.div`
   display: inline-block;
@@ -56,62 +56,73 @@ const StyledWindowHeader = styled(WindowHeader)`
     messageType === "success" ? "green" : "red"};
 `;
 
-export const Signup = () => {
-  const [name, setName] = useState("");
-  const [email, setemail] = useState("");
-  const [password, setPassword] = useState("");
-  const [selectedGroup, setSelectedGroup] = useState(null); // Add selectedGroup state
-  const [selectedRole, setSelectedRole] = useState(null); // Add selectedRole state
+const useWindowWidth = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return windowWidth;
+};
+
+const useFetchData = () => {
+  const { groups, setGroups } = useContext(groupsContext);
+  const [roles, setRoles] = useState([]);
+
+  useEffect(() => {
+    const init = async () => {
+      if (!groups.length) {
+        const groupData = await fetchGroups();
+        setGroups(groupData);
+      }
+
+      const roleData = await fetchRoles();
+      setRoles(roleData);
+    };
+    init();
+  }, [groups, setGroups]);
+
+  return { groups, roles };
+};
+
+export const Signup = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    selectedGroup: null,
+    selectedRole: null,
+  });
+  const windowWidth = useWindowWidth();
+  const { groups, roles } = useFetchData();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState("");
-  const [roles, setRoles] = useState([]); // Add roles state
-  const [groups, setGroups] = useState([]); // Add groups state
   const [isLoading, setIsLoading] = useState(false); // Add isLoading state
   const constraintsRef = useRef(null);
   const navigate = useNavigate(); // Hook for navigation
   const dragX = useMotionValue(0);
   const dragxError = useMotionValue(0);
+  const rotateValue = useTransform(dragX, [-100, 100], [-10, 10]);
+  const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]);
 
-  const rotateValue = useTransform(dragX, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
-  const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
+  const handleChange = useCallback(
+    (e) => setFormData({ ...formData, [e.target.name]: e.target.value }),
+    [formData]
+  );
 
-  useEffect(() => {
-    const init = async () => {
-      fetchGroups().then((data) => {
-        setGroups(data);
-      });
-      fetchRoles().then((data) => {
-        setRoles(data);
-      });
-    };
-    init();
-  }, []);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    // Cleanup the event listener on component unmount
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  const modalVariants = {
-    hidden: {
-      opacity: 0,
-      scale: 0,
-    },
-    visible: {
-      opacity: 1,
-      scale: 1,
-    },
+  const handleSelectChange = (selectedOption, field) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      [field]: selectedOption.value,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const { email, password, name, selectedGroup, selectedRole } = formData;
 
     if (!email || !password || !name) {
       setError({
@@ -123,44 +134,37 @@ export const Signup = () => {
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setIsModalOpen(true);
       setError({
         name: "Error",
         message: "Please enter a valid email address.",
       });
+      setIsModalOpen(true);
       return;
     }
 
-    if (selectedRole.needs_group && !selectedGroup) {
+    if (selectedRole?.needs_group && !selectedGroup) {
+      setError({ name: "Error", message: "Please select a group." });
       setIsModalOpen(true);
-      setError({
-        name: "Error",
-        message: "Please select a group.",
-      });
       return;
     }
 
     if (password.length < 6) {
-      setIsModalOpen(true);
       setError({
         name: "Error",
         message: "Password must be at least 6 characters.",
       });
+      setIsModalOpen(true);
       return;
     }
 
     if (!selectedRole) {
+      setError({ name: "Error", message: "Please select a role." });
       setIsModalOpen(true);
-      setError({
-        name: "Error",
-        message: "Please select a role.",
-      });
       return;
     }
 
     try {
       setIsLoading(true);
-
       const { data, error } = await supabaseClient.auth.signUp({
         email,
         password,
@@ -173,65 +177,59 @@ export const Signup = () => {
         },
       });
 
-      setIsLoading(false);
+      if (error) throw error;
 
-      if (data.user && "email_verified" in data.user.user_metadata) {
-        setIsModalOpen(true);
+      setIsLoading(false);
+      if (data.user && data.user.user_metadata?.email_verified) {
         setError({
           name: "Account registered successfully!",
           message:
             "Please verify your email address by clicking the link in the email we sent you.",
-          type: "success", // Add this line
+          type: "success",
         });
-        setemail("");
-        setPassword("");
-        setSelectedRole(null);
-        setSelectedGroup(null);
+        setIsModalOpen(true);
+        setFormData({
+          name: "",
+          email: "",
+          password: "",
+          selectedGroup: null,
+          selectedRole: null,
+        });
         return;
       } else {
-        setIsLoading(false);
+        setError({ name: "Error", message: "Email already registered" });
         setIsModalOpen(true);
-        setError({
-          name: "Error",
-          message: "Email already registered",
-        });
-      }
-
-      if (error) {
-        throw error;
       }
     } catch (error) {
+      setIsLoading(false);
+      setError({ name: "Error", message: error.message });
       setIsModalOpen(true);
-      setError(error);
     }
   };
 
+  const modalVariants = {
+    hidden: {
+      opacity: 0,
+      scale: 0,
+    },
+    visible: {
+      opacity: 1,
+      scale: 1,
+    },
+  };
+
   const windowStyle = {
-    width: windowWidth > 500 ? 500 : "90%", // Adjust width here
+    width: windowWidth > 500 ? 500 : "90%",
     margin: "0%",
   };
 
-  const groupOptions = groups.map((group) => ({
-    label: group.group_name,
-    value: group.group_id,
-  }));
+  const groupOptions = groups
+    .map((group) => ({ label: group.group_name, value: group.group_id }))
+    .sort((a, b) => a.label.localeCompare(b.label));
 
-  groupOptions.sort((a, b) => a.label.localeCompare(b.label));
-
-  const roleOptions = roles.map((role) => ({
-    label: role.role_name,
-    value: role,
-  }));
-
-  roleOptions.sort((a, b) => a.label.localeCompare(b.label));
-
-  const onGroupChange = (selectedOption) => {
-    setSelectedGroup(selectedOption.value);
-  };
-
-  const onRoleChange = (selectedOption) => {
-    setSelectedRole(selectedOption.value);
-  };
+  const roleOptions = roles
+    .map((role) => ({ label: role.role_name, value: role }))
+    .sort((a, b) => a.label.localeCompare(b.label));
 
   return (
     <div
@@ -254,7 +252,10 @@ export const Signup = () => {
         initial="hidden"
         animate="visible"
         exit="hidden"
-        variants={modalVariants}
+        variants={{
+          hidden: { opacity: 0, scale: 0 },
+          visible: { opacity: 1, scale: 1 },
+        }}
         dragConstraints={constraintsRef}
         style={{ rotate: rotateValue, x: dragX }} // Apply the dynamic rotation and x position
       >
@@ -281,10 +282,9 @@ export const Signup = () => {
                     <TextInput
                       placeholder="Profile Name (E.g John Doe)"
                       style={{ flex: 1 }}
-                      value={name}
-                      onChange={(e) => {
-                        setName(e.target.value);
-                      }}
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
                     />
                   </div>
                   <br />
@@ -292,10 +292,9 @@ export const Signup = () => {
                     <TextInput
                       placeholder="Email Address"
                       style={{ flex: 1 }}
-                      value={email}
-                      onChange={(e) => {
-                        setemail(e.target.value);
-                      }}
+                      value={formData.email}
+                      name="email"
+                      onChange={handleChange}
                     />
                   </div>
                   <br />
@@ -303,30 +302,31 @@ export const Signup = () => {
                     placeholder="Password"
                     style={{ flex: 1 }}
                     type="password"
-                    value={password}
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                    }}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
                   />
                   <br />
 
                   <GroupBox label="Select your Role">
                     <Select
-                      defaultValue={2}
                       options={roleOptions}
                       menuMaxHeight={160}
                       width="100%"
-                      onChange={onRoleChange}
+                      onChange={(option) =>
+                        handleSelectChange(option, "selectedRole")
+                      }
                     />
                   </GroupBox>
-                  {selectedRole?.needs_group && (
+                  {formData.selectedRole?.needs_group && (
                     <GroupBox label="Select your Orientation Group">
                       <Select
-                        defaultValue={2}
                         options={groupOptions}
                         menuMaxHeight={160}
                         width="100%"
-                        onChange={onGroupChange}
+                        onChange={(option) =>
+                          handleSelectChange(option, "selectedGroup")
+                        }
                       />
                     </GroupBox>
                   )}
@@ -369,7 +369,10 @@ export const Signup = () => {
             initial="hidden"
             animate="visible"
             exit="hidden"
-            variants={modalVariants}
+            variants={{
+              hidden: { opacity: 0, scale: 0 },
+              visible: { opacity: 1, scale: 1 },
+            }}
             style={{
               rotate: rotateValueError,
               x: dragxError,

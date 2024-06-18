@@ -4,7 +4,7 @@ import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { fetchUser } from "../../supabase/services";
-import { userContext } from "../../context/userContext";
+import { userContext } from "../../context/context";
 import { ProfileAvatar } from "../../components/profileavatar";
 import { Helmet } from "react-helmet";
 import { LoadingHourglass } from "../../components/loadinghourglass";

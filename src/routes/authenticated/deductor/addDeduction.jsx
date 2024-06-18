@@ -18,7 +18,7 @@ import {
   fetchGroup,
   addDeduction,
 } from "../../../supabase/services";
-import { userContext } from "../../../context/userContext";
+import { groupsContext, userContext } from "../../../context/context";
 import { Helmet } from "react-helmet";
 import { supabaseClient } from "../../../supabase/supabaseClient";
 
@@ -86,7 +86,7 @@ const PointsSection = styled.div`
 // Main component
 const AddDeduction = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const [groups, setGroups] = useState([]); // Add groups state
+  const { groups, setGroups } = useContext(groupsContext);
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState("");
   const [group, setGroup] = useState(null);
@@ -109,7 +109,7 @@ const AddDeduction = () => {
           return;
         }
 
-        if (groups.length < 1) {
+        if (!groups.length) {
           fetchGroups().then((data) => {
             setGroups(data);
           });

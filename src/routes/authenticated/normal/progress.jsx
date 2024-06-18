@@ -24,7 +24,7 @@ import {
   fetchDeductedDeductions,
 } from "../../../supabase/services";
 import { useNavigate } from "react-router-dom";
-import { userContext } from "../../../context/userContext";
+import { userContext } from "../../../context/context";
 
 import { formatSGT } from "../../../utils/time";
 import { ProfileAvatar } from "../../../components/profileavatar";

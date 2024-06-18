@@ -15,12 +15,13 @@ import { useNavigate } from "react-router-dom";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import {
   fetchActivities,
+  fetchGroups,
   addActivity,
   addGroupActivity,
 } from "../../../supabase/services";
-import { useStore, initialiseGroups } from "../../../context/userContext";
+import { useStore, initialiseGroups, groupsContext } from "../../../context/context";
 import Loading from "../../loading";
-import { userContext } from "../../../context/userContext";
+import { userContext } from "../../../context/context";
 import { Helmet } from "react-helmet";
 // Styled components
 const StyledWindow = styled(Window)`
@@ -85,6 +86,7 @@ const AddActivity = () => {
   const [error, setError] = useState(null);
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [selectedGroup, setSelectedGroup] = useState(null);
+  const { groups, setGroups } = useContext(groupsContext);
   const { user, setUser } = useContext(userContext);
   const [newActivity, setNewActivity] = useState({
     activity_name: "",
@@ -101,12 +103,6 @@ const AddActivity = () => {
   const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
   const navigate = useNavigate();
   const storeGroups = useStore((state) => state.groups);
-  const groups = useMemo(() => {
-    const initialOption = [{ group_name: "Select Group", group_id: null }];
-    const updatedGroups = [...initialOption, ...storeGroups];
-
-    return updatedGroups;
-  }, [storeGroups]);
 
   const activities = useMemo(
     () => [{ activity_name: "Select Activity" }, ...activityData],
@@ -114,21 +110,15 @@ const AddActivity = () => {
   );
 
   useEffect(() => {
-    const initializeData = async () => {
-      try {
-        if (user && !user.can_add_activity) {
-          navigate("/", { replace: true });
-          return;
-        }
+    const init = async () => {
 
-        await initialiseGroups();
-      } catch (error) {
-        console.error("Failed to initialize data:", error);
+      if (!groups.length) {
+        const groups = await fetchGroups();
+        setGroups(groups);
       }
     };
-
-    initializeData();
-  }, [user, navigate]);
+    init();
+  }, [groups, navigate]);
 
   // New useEffect hook for fetching activities
   useEffect(() => {

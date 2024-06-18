@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { supabaseClient } from "../../supabase/supabaseClient";
 import styled from "styled-components";
 import { fetchUser } from "../../supabase/services";
-import { userContext } from "../../context/userContext";
+import { userContext } from "../../context/context";
 // Styled Close Icon Component
 const CloseIcon = styled.div`
   display: inline-block;

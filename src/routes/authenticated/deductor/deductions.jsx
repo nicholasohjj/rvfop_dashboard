@@ -16,7 +16,7 @@ import styled from "styled-components";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import Loading from "../../loading";
 import { fetchGroup, fetchDeductions } from "../../../supabase/services";
-import { userContext } from "../../../context/userContext";
+import { userContext } from "../../../context/context";
 import { useNavigate } from "react-router-dom";
 import { formatSGT } from "../../../utils/time";
 import { Helmet } from "react-helmet";

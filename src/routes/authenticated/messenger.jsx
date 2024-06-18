@@ -4,6 +4,8 @@ import React, {
   useRef,
   useLayoutEffect,
   useContext,
+  useCallback,
+  useMemo,
 } from "react";
 import {
   Frame,
@@ -18,7 +20,7 @@ import {
 } from "react95";
 import { Helmet } from "react-helmet";
 import Loading from "../loading";
-import { userContext } from "../../context/userContext";
+import { userContext } from "../../context/context";
 import { supabaseClient } from "../../supabase/supabaseClient";
 import Filter from "bad-words";
 import styled from "styled-components"; // Import styled-components
@@ -55,7 +57,7 @@ const MessageBubble = styled.div`
 `;
 
 const Messenger = () => {
-  const { user, setUser } = useContext(userContext);
+  const { user } = useContext(userContext);
   const [loading, setLoading] = useState(true);
   const [channel, setChannel] = useState(null);
   const [channels, setChannels] = useState([]); // Example channel names
@@ -64,12 +66,12 @@ const Messenger = () => {
   const [messages, setMessages] = useState([]);
   const scrollViewRef = useRef();
   const lastMessageRef = useRef(null);
-  const filter = new Filter();
+  const filter = useMemo(() => new Filter(), []);
   const navigate = useNavigate();
 
-  const scrollToBottom = () => {
-    lastMessageRef.current?.scrollIntoView({  block: "end", behavior: "auto" });
-  };
+  const scrollToBottom = useCallback(() => {
+    lastMessageRef.current?.scrollIntoView({ behavior: "auto" });
+  }, []);
 
   useEffect(() => {
     const init = async () => {
@@ -130,9 +132,9 @@ const Messenger = () => {
     };
   }, [selectedChannel]); // Dependency array includes selectedChannel
 
-  const handleChange = (e) => setMessage(e.target.value);
+  const handleChange = useCallback((e) => setMessage(e.target.value), []);
 
-  const handleSend = async () => {
+  const handleSend = useCallback(async () => {
     if (!message.trim()) return;
 
     const sanitizedMessage = filter.clean(message);
@@ -166,12 +168,12 @@ const Messenger = () => {
       setMessage("");
       scrollToBottom();
     }
-  };
+  }, [message, user, selectedChannel, channel, filter, scrollToBottom]);
 
-  const handleChannelChange = (e) => {
+  const handleChannelChange = useCallback((e) => {
     setSelectedChannel(e.value);
     setMessages([]); // Clear messages when changing channels
-  };
+  }, []);
 
   if (loading) return <Loading />;
 
