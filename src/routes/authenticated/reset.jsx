@@ -1,5 +1,4 @@
-import { useState, useRef, useEffect } from "react";
-
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import {
   Window,
   WindowHeader,
@@ -52,7 +51,7 @@ const StyledWindowHeader = styled(WindowHeader)`
 `;
 
 export const Reset = () => {
-  const [email, setemail] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordsMatch, setPasswordsMatch] = useState(true);
@@ -71,10 +70,9 @@ export const Reset = () => {
   const navigate = useNavigate(); // Hook for navigation
 
   useEffect(() => {
-    console.log(searchParams);
     const getEmail = async () => {
       const { data } = await supabaseClient.auth.getUser();
-      setemail(data.user.email);
+      setEmail(data.user.email);
     };
 
     const handleResize = () => {
@@ -83,15 +81,17 @@ export const Reset = () => {
 
     window.addEventListener("resize", handleResize);
     getEmail();
-    // Cleanup the event listener on component unmount
-    return () => window.removeEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, [searchParams]);
 
   useEffect(() => {
     setPasswordsMatch(password === confirmPassword);
   }, [password, confirmPassword]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     if (!passwordsMatch) {
       setError({
@@ -121,14 +121,14 @@ export const Reset = () => {
       setIsModalOpen(true);
       setError(error);
     }
-  };
+  }, [password, confirmPassword, passwordsMatch, navigate]);
 
-  const windowStyle = {
+  const windowStyle = useMemo(() => ({
     width: windowWidth > 500 ? 500 : "90%", // Adjust width here
     margin: "0%",
-  };
+  }), [windowWidth]);
 
-  const modalVariants = {
+  const modalVariants = useMemo(() => ({
     hidden: {
       opacity: 0,
       scale: 0,
@@ -137,7 +137,11 @@ export const Reset = () => {
       opacity: 1,
       scale: 1,
     },
-  };
+  }), []);
+
+  const closeModal = useCallback(() => {
+    setIsModalOpen(false);
+  }, []);
 
   return (
     <div
@@ -258,7 +262,7 @@ export const Reset = () => {
             <Window style={windowStyle}>
               <StyledWindowHeader>
                 <span>{error.name} ⚠️</span>
-                <Button onClick={() => setIsModalOpen(false)}>
+                <Button onClick={closeModal}>
                   <CloseIcon />
                 </Button>
               </StyledWindowHeader>

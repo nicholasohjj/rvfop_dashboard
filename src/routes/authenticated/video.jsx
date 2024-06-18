@@ -1,6 +1,6 @@
 import { Window, WindowContent, WindowHeader } from "react95";
 import Iframe from "react-iframe";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Helmet } from "react-helmet";
 import { LoadingHourglass } from "../../components/loadinghourglass";
 const videos = [
@@ -12,18 +12,22 @@ const videos = [
 
 const Video = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const videoUrl = videos[Math.floor(Math.random() * videos.length)];
+  const videoUrl = useMemo(() => {
+    return videos[Math.floor(Math.random() * videos.length)];
+  }, []);
+
+  // Memoize handleLoad callback
+  const handleLoad = useCallback(() => {
+    setIsLoading(false);
+  }, []);
 
   useEffect(() => {
     const iframe = document.getElementById("myId");
-    const handleLoad = () => {
-      setIsLoading(false);
-    };
     iframe.addEventListener("load", handleLoad);
     return () => {
       iframe.removeEventListener("load", handleLoad);
     };
-  }, [videoUrl]);
+  }, [handleLoad]);
 
   return (
     <div
