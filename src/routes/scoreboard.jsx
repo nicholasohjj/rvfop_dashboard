@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -30,32 +30,32 @@ const Scoreboard = () => {
 
   const navigate = useNavigate();
 
+  const sortHousesInitially = (housesData) => {
+    return [...housesData].sort((a, b) => {
+      const aVal = a.total_points;
+      const bVal = b.total_points;
+
+      return sortDirection === "asc" ? aVal - bVal : bVal - aVal;
+    });
+  };
+
+  const handleUpdate = (payload) => {
+    const updatedHouse = payload.new;
+    // Update the state to reflect the changes
+    setHouses((currentHouses) => {
+      return currentHouses.map((house) =>
+        house.house_id === updatedHouse.house_id ? updatedHouse : house
+      );
+    });
+  };
+
   useEffect(() => {
-    const sortHousesInitially = (housesData) => {
-      return [...housesData].sort((a, b) => {
-        const aVal = a.total_points;
-        const bVal = b.total_points;
-
-        return sortDirection === "asc" ? aVal - bVal : bVal - aVal;
-      });
-    };
-
     fetchHouses().then((housesData) => {
       // After fetching, sort the houses by overall_points in descending order
       const sortedHouses = sortHousesInitially(housesData);
       setHouses(sortedHouses);
       setLoading(false);
     });
-
-    const handleUpdate = (payload) => {
-      const updatedHouse = payload.new;
-      // Update the state to reflect the changes
-      setHouses((currentHouses) => {
-        return currentHouses.map((house) =>
-          house.house_id === updatedHouse.house_id ? updatedHouse : house
-        );
-      });
-    };
 
     const channel = supabaseClient
       .channel("houses")
@@ -70,7 +70,7 @@ const Scoreboard = () => {
     return () => {
       supabaseClient.removeChannel(channel);
     };
-  }, [sortDirection]);
+  }, []);
 
   const CloseIcon = styled.div`
     display: inline-block;
@@ -131,17 +131,6 @@ const Scoreboard = () => {
     },
   };
 
-  // Mimics the Window component without size constraints
-  const StyledModalContent = styled.div`
-    background: white;
-    padding: 16px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    border-radius: 4px;
-    max-width: 90%;
-    max-height: 90%;
-    overflow: auto;
-  `;
-
   const windowStyle = {
     width: windowWidth > 500 ? 500 : "90%", // Adjust width here
     margin: "0%",
@@ -199,21 +188,13 @@ const Scoreboard = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableHeadCell onClick={() => sortHouses("name")}>
+                <TableHeadCell onClick={() => sortHouses("house_name")}>
                   House
                 </TableHeadCell>
-                <TableHeadCell
-                  onClick={() => sortHouses("total_points")}
-                  sort={sortKey === "total_points" ? sortDirection : undefined}
-                >
+                <TableHeadCell onClick={() => sortHouses("total_points")}>
                   Points (Tribal)
                 </TableHeadCell>
-                <TableHeadCell
-                  onClick={() => sortHouses("pro_human_points")}
-                  sort={
-                    sortKey === "pro_human_points" ? sortDirection : undefined
-                  }
-                >
+                <TableHeadCell onClick={() => sortHouses("pro_human_points")}>
                   Points (Pro-humans)
                 </TableHeadCell>
               </TableRow>

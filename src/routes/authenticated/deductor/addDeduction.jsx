@@ -20,6 +20,8 @@ import {
 } from "../../../supabase/services";
 import { userContext } from "../../../context/userContext";
 import { Helmet } from "react-helmet";
+import { supabaseClient } from "../../../supabase/supabaseClient";
+
 // Styled components
 const StyledWindow = styled(Window)`
   flex: 1;
@@ -103,17 +105,14 @@ const AddDeduction = () => {
   useEffect(() => {
     const init = async () => {
       try {
-        if (!user.can_deduct) {
-          navigate("/", { replace: true });
+        if (!user?.group_id) {
+          return;
         }
+
         if (groups.length < 1) {
           fetchGroups().then((data) => {
             setGroups(data);
           });
-        }
-
-        if (user && !user.group_id) {
-          return;
         }
 
         if (!group) {
@@ -130,6 +129,42 @@ const AddDeduction = () => {
 
     init();
   }, [group, groups, navigate, user]); // Update dependencies
+
+  const handleUpdate = (payload) => {
+    const updatedGroup = payload.new;
+
+    // update group in groups state
+    setGroups((currentGroups) => {
+      return currentGroups.map((group) =>
+        group.group_id === updatedGroup.group_id ? updatedGroup : group
+      );
+    });
+
+    // if group is my group, update it as well
+    if (group?.group_id === updatedGroup.group_id) {
+      setGroup(updatedGroup);
+    }
+
+    // if group is selected group, update it as well
+    if (selectedGroup?.group_id === updatedGroup.group_id) {
+      setSelectedGroup(updatedGroup);
+    }
+  };
+
+  useEffect(() => {
+    const channel = supabaseClient
+      .channel("groups")
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "groups" },
+        handleUpdate
+      )
+      .subscribe();
+
+    return () => {
+      supabaseClient.removeChannel(channel);
+    };
+  }, []);
 
   const handleAddDeduction = async () => {
     if (!selectedGroup || deductionPoints <= 0) {
