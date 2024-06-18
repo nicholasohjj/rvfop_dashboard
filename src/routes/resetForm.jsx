@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import {
   Window,
   WindowHeader,
@@ -50,6 +50,17 @@ const StyledWindowHeader = styled(WindowHeader)`
   align-items: center;
 `;
 
+const modalVariants = {
+  hidden: {
+    opacity: 0,
+    scale: 0,
+  },
+  visible: {
+    opacity: 1,
+    scale: 1,
+  },
+};
+
 export const ResetForm = () => {
   const [email, setemail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -65,27 +76,14 @@ export const ResetForm = () => {
   const rotateValue = useTransform(dragX, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
   const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
 
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    // Cleanup the event listener on component unmount
-    return () => window.removeEventListener("resize", handleResize);
+  const handleResize = useCallback(() => {
+    setWindowWidth(window.innerWidth);
   }, []);
 
-  const modalVariants = {
-    hidden: {
-      opacity: 0,
-      scale: 0,
-    },
-    visible: {
-      opacity: 1,
-      scale: 1,
-    },
-  };
+  useEffect(() => {
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [handleResize]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -121,6 +119,14 @@ export const ResetForm = () => {
     }
   };
 
+  const closeModal = () => {
+    if (sent) {
+      navigate("/");
+      setSent(false);
+    }
+    setIsModalOpen(false);
+  };
+
   const windowStyle = {
     width: windowWidth > 500 ? 500 : "90%", // Adjust width here
     margin: "0%",
@@ -152,25 +158,27 @@ export const ResetForm = () => {
             <span>Reset your password</span>
           </WindowHeader>
 
-
           <WindowContent>
-          <p style={{display:"flex"}}>
-          Enter your user account&apos;s verified email address and we will send you a password reset link.
-          </p>
+            <p style={{ display: "flex" }}>
+              Enter your user account&apos;s verified email address and we will
+              send you a password reset link.
+            </p>
             {isLoading ? (
-              <LoadingHourglass/>
+              <LoadingHourglass />
             ) : (
               <form onSubmit={handleSubmit}>
                 <div>
-                  <p style={{ display:"flex", justifySelf: "left" }}>Email address</p>
-                    <TextInput
-                      style={{ flex: 1 }}
-                      placeholder=""
-                      value={email}
-                      onChange={(e) => {
-                        setemail(e.target.value);
-                      }}
-                    />
+                  <p style={{ display: "flex", justifySelf: "left" }}>
+                    Email address
+                  </p>
+                  <TextInput
+                    style={{ flex: 1 }}
+                    placeholder=""
+                    value={email}
+                    onChange={(e) => {
+                      setemail(e.target.value);
+                    }}
+                  />
                   <br />
                   <div
                     style={{
@@ -225,12 +233,7 @@ export const ResetForm = () => {
             <Window style={windowStyle}>
               <StyledWindowHeader>
                 <span>{error.name} ⚠️</span>
-                <Button onClick={() => {
-                  if (setSent) {
-                    navigate("/");
-                  setSent(false);
-                  }
-                  setIsModalOpen(false)}}>
+                <Button onClick={closeModal}>
                   <CloseIcon />
                 </Button>
               </StyledWindowHeader>

@@ -1,5 +1,4 @@
-import { useState, useRef, useEffect } from "react";
-
+import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { Window, WindowHeader, WindowContent, Button, Tooltip } from "react95";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
@@ -21,22 +20,23 @@ const ErrorPage = () => {
 
   const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
 
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    // Cleanup the event listener on component unmount
-    return () => window.removeEventListener("resize", handleResize);
+  const handleResize = useCallback(() => {
+    setWindowWidth(window.innerWidth);
   }, []);
 
-  const windowStyle = {
-    width: windowWidth > 500 ? 500 : "90%", // Adjust width here
+  useEffect(() => {
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [handleResize]);
+
+  const windowStyle = useMemo(() => ({
+    width: windowWidth > 500 ? 500 : "90%",
     margin: "0%",
-  };
-  const modalVariants = {
+  }), [windowWidth]);
+
+  const modalVariants = useMemo(() => ({
     hidden: {
       opacity: 0,
       scale: 0,
@@ -45,7 +45,9 @@ const ErrorPage = () => {
       opacity: 1,
       scale: 1,
     },
-  };
+  }), []);
+
+  
 
   return (
     <div

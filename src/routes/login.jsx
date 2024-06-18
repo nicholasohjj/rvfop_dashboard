@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import {
   Window,
   WindowHeader,
@@ -79,7 +79,7 @@ export const Login = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const modalVariants = {
+  const modalVariants = useMemo(() => ({
     hidden: {
       opacity: 0,
       scale: 0,
@@ -88,9 +88,9 @@ export const Login = () => {
       opacity: 1,
       scale: 1,
     },
-  };
+  }), []);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
 
     if (!email || !password) {
@@ -141,12 +141,12 @@ export const Login = () => {
       setIsModalOpen(true);
       setError(error);
     }
-  };
+  }, [email, password, navigate]);
 
-  const windowStyle = {
+  const windowStyle = useMemo(() => ({
     width: windowWidth > 500 ? 500 : "90%", // Adjust width here
     margin: "0%",
-  };
+  }), [windowWidth]);
 
   return (
     <div

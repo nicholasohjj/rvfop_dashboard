@@ -1,38 +1,48 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { ProgressBar } from "react95";
 import { useNavigate } from "react-router-dom";
+
 const Loading = () => {
   const [percent, setPercent] = useState(0);
   const navigate = useNavigate();
 
+  const originalStyles = useMemo(() => ({
+    backgroundColor: document.body.style.backgroundColor,
+    margin: document.body.style.margin,
+    htmlHeight: document.documentElement.style.height,
+  }), []);
+
+  const restoreOriginalStyles = useCallback(() => {
+    document.body.style.backgroundColor = originalStyles.backgroundColor;
+    document.body.style.margin = originalStyles.margin;
+    document.documentElement.style.height = originalStyles.htmlHeight;
+  }, [originalStyles]);
+
   useEffect(() => {
-    const originalBackgroundColor = document.body.style.backgroundColor;
     document.body.style.backgroundColor = "rgb(0, 128, 128)";
-    document.body.style.margin = "0"; // Remove default margin
-    document.documentElement.style.height = "100%"; // Ensure html element covers full height
+    document.body.style.margin = "0";
+    document.documentElement.style.height = "100%";
 
     const timer = setInterval(() => {
-      setPercent((previousPercent) => {
-        if (previousPercent >= 100) {
-          clearInterval(timer); // Clear interval immediately to prevent unnecessary updates
+      setPercent(prevPercent => {
+        if (prevPercent >= 100) {
+          clearInterval(timer);
           return 100;
         }
         const diff = Math.random() * 20;
-        return Math.min(previousPercent + diff, 100);
+        return Math.min(prevPercent + diff, 100);
       });
     }, 500);
 
     return () => {
-      document.body.style.backgroundColor = originalBackgroundColor;
-      document.body.style.margin = "";
-      document.documentElement.style.height = "";
       clearInterval(timer);
+      restoreOriginalStyles();
     };
-  }, []);
+  }, [restoreOriginalStyles]);
 
   useEffect(() => {
     if (percent === 100) {
-      navigate("/", { replace: true }); // Replace '/next-route' with your actual route
+      navigate("/", { replace: true });
     }
   }, [percent, navigate]);
 
@@ -43,10 +53,10 @@ const Loading = () => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        width: "100vw", // Ensure it covers full width
-        height: "100vh", // Ensure it covers full height
-        padding: 0, // Remove any default padding
-        boxSizing: "border-box", // Ensure padding and border are included in total width and height
+        width: "100vw",
+        height: "100vh",
+        padding: 0,
+        boxSizing: "border-box",
         minHeight: "90vh",
         maxHeight: "90vh",
         paddingTop: "48px",
