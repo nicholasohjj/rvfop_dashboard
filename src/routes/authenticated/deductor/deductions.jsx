@@ -70,7 +70,7 @@ const Deductions = () => {
   useEffect(() => {
     const init = async () => {
 
-      if (!user?.can_deduct) {
+      if (user && !user.can_deduct) {
         navigate("/", { replace: true });
       }
 

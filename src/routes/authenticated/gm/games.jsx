@@ -77,7 +77,7 @@ const Games = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!user?.can_add_activity) {
+      if (user && !user.can_add_activity) {
         navigate("/", { replace: true });
       }
 

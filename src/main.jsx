@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import ReactDOM from "react-dom/client";
 import original from "react95/dist/themes/original";
 // original Windows95 font (optionally)
@@ -26,6 +26,8 @@ const GlobalStyles = createGlobalStyle`
     font-family: 'ms_sans_serif';
   }
 `;
+
+const [session, setSession] = useState(null);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

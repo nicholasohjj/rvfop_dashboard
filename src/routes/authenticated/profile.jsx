@@ -34,6 +34,10 @@ export const Profile = () => {
   const constraintsRef = useRef(null);
   const navigate = useNavigate();
 
+  const handleReturnHome = useCallback(() => {
+    navigate("/");
+  }, [navigate]);
+
   const fetchUserMemoized = useCallback(async () => {
     if (!user) {
       const fetchedUser = await fetchUser();
@@ -45,9 +49,7 @@ export const Profile = () => {
     fetchUserMemoized();
   }, [fetchUserMemoized]);
 
-  const handleReturnHome = useCallback(() => {
-    navigate("/");
-  }, [navigate]);
+
 
   const windowStyle = useMemo(
     () => ({
