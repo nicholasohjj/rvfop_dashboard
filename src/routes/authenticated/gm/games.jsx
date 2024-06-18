@@ -1,4 +1,11 @@
-import { useState, useEffect, useRef, useContext } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  useContext,
+  useMemo,
+  useCallback,
+} from "react";
 import {
   Button,
   Table,
@@ -106,17 +113,24 @@ const Games = () => {
     },
   };
 
-  if (loading) return <Loading />;
+  const handleViewButtonClick = useCallback(
+    (game) => {
+      setIsModalOpen(!isModalOpen);
+      setSelectedGame(game); // Set the selected activity
+    },
+    [isModalOpen]
+  );
 
-  const handleViewButtonClick = (game) => {
-    setIsModalOpen(!isModalOpen);
-    setSelectedGame(game); // Set the selected activity
-  };
+  const handleCloseModal = useCallback(() => {
+    setIsModalOpen(false);
+  }, []);
 
   const windowStyle = {
     width: windowWidth > 500 ? 500 : "90%", // Adjust width here
     margin: "0%",
   };
+
+  if (loading) return <Loading />;
 
   return (
     <Window
@@ -222,7 +236,7 @@ const Games = () => {
               <Window style={windowStyle}>
                 <StyledWindowHeader>
                   <span>{selectedGame.activity_name}</span>
-                  <Button onClick={() => setIsModalOpen(false)}>
+                  <Button onClick={handleCloseModal}>
                     <CloseIcon />
                   </Button>
                 </StyledWindowHeader>
