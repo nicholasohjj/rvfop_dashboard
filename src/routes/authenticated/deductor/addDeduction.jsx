@@ -11,7 +11,6 @@ import {
 } from "react95";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import Loading from "../../loading";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import {
   fetchGroups,
@@ -87,7 +86,6 @@ const PointsSection = styled.div`
 const AddDeduction = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const { groups, setGroups } = useContext(groupsContext);
-  const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState("");
   const [group, setGroup] = useState(null);
   const [selectedGroup, setSelectedGroup] = useState(null);
@@ -122,8 +120,6 @@ const AddDeduction = () => {
       } catch (error) {
         setError(error.message);
         console.error("Initialization error:", error);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -190,7 +186,6 @@ const AddDeduction = () => {
     }
   };
 
-  if (loading) return <Loading />;
 
   const modalVariants = {
     hidden: {

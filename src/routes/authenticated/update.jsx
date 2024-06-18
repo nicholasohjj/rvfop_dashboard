@@ -56,7 +56,6 @@ export const Update = () => {
   const { user, setUser } = useContext(userContext); // Get the user context
   const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
-  const [isloading, setIsloading] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordsMatch, setPasswordsMatch] = useState(true);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -99,7 +98,6 @@ export const Update = () => {
       return;
     }
 
-    setIsloading(true);
 
     try {
       const { data, error } = await supabaseClient.auth.updateUser({
@@ -111,10 +109,8 @@ export const Update = () => {
       }
 
       supabaseClient.auth.getSession().then(({ data: { session } }) => {});
-      setIsloading(false);
       navigate("/", { replace: true });
     } catch (error) {
-      setIsloading(false);
       setIsModalOpen(true);
       setError(error);
     }

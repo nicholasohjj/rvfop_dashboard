@@ -19,7 +19,6 @@ import {
   GroupBox,
 } from "react95";
 import { Helmet } from "react-helmet";
-import Loading from "../loading";
 import { userContext } from "../../context/context";
 import { supabaseClient } from "../../supabase/supabaseClient";
 import Filter from "bad-words";
@@ -58,7 +57,6 @@ const MessageBubble = styled.div`
 
 const Messenger = () => {
   const { user } = useContext(userContext);
-  const [loading, setLoading] = useState(true);
   const [channel, setChannel] = useState(null);
   const [channels, setChannels] = useState([]); // Example channel names
   const [selectedChannel, setSelectedChannel] = useState("General"); // Default channel
@@ -75,7 +73,6 @@ const Messenger = () => {
 
   useEffect(() => {
     const init = async () => {
-      setLoading(true);
 
       const channels = await fetchChannels();
       setChannels(channels);
@@ -88,7 +85,6 @@ const Messenger = () => {
 
       console.log("Messages", data);
       setMessages(data);
-      setLoading(false);
     };
     init();
   }, [user]);
@@ -175,7 +171,6 @@ const Messenger = () => {
     setMessages([]); // Clear messages when changing channels
   }, []);
 
-  if (loading) return <Loading />;
 
   return (
     <StyledWindow style={{ flex: 1, width: 320 }}>

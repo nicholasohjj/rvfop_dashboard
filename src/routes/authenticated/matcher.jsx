@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useContext,
   useCallback,
+  useMemo
 } from "react";
 import { supabaseClient } from "../../supabase/supabaseClient";
 import { userContext } from "../../context/context";
@@ -55,7 +56,6 @@ const MessageBubble = styled.div`
 
 const Matcher = () => {
   const { user } = useContext(userContext);
-  const [loading, setLoading] = useState(true);
   const [matching, setMatching] = useState(false);
   const [match, setMatch] = useState(null);
   const [partner, setPartner] = useState(null);
@@ -66,13 +66,8 @@ const Matcher = () => {
   const navigate = useNavigate();
   const scrollViewRef = useRef();
   const lastMessageRef = useRef();
-  const filter = new Filter();
+  const filter = useMemo(() => new Filter(), []);
 
-  useEffect(() => {
-    if (user) {
-      setLoading(false);
-    }
-  }, [user]);
 
   useEffect(() => {
     const newChannel = supabaseClient.channel("schema-db-changes");

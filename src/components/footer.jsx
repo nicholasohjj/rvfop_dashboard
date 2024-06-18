@@ -1,13 +1,12 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useContext } from "react";
 import { AppBar, Toolbar, Button, MenuList, MenuListItem } from "react95";
 import { useNavigate } from "react-router-dom";
 import { supabaseClient } from "../supabase/supabaseClient";
 import { userContext, sessionContext } from "../context/context";
 export const Footer = () => {
   const [open, setOpen] = useState(false);
-  const { session, setSession } = useContext(sessionContext);
-  const [loading, setLoading] = useState(false);
-  const { user, setUser } = useContext(userContext);
+  const { session } = useContext(sessionContext);
+  const { user } = useContext(userContext);
 
   const navigate = useNavigate();
 

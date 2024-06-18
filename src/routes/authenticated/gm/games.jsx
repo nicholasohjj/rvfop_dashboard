@@ -21,7 +21,6 @@ import {
 } from "react95";
 import styled from "styled-components";
 import { motion, useMotionValue, useTransform } from "framer-motion";
-import Loading from "../../loading";
 import { fetchAwardedGames } from "../../../supabase/services";
 import { useNavigate } from "react-router-dom";
 import { formatSGT } from "../../../utils/time";
@@ -68,7 +67,6 @@ const Games = () => {
   const { user, setUser } = useContext(userContext);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [awardedGames, setAwardedGames] = useState([]); // Initialize to empty array
-  const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedGame, setSelectedGame] = useState(null);
   const constraintsRef = useRef(null);
@@ -84,7 +82,6 @@ const Games = () => {
       }
 
       if (user && !user.id) {
-        setLoading(false);
         return;
       }
 
@@ -96,7 +93,6 @@ const Games = () => {
         console.error("Failed to fetch awarded games:", error);
       }
 
-      setLoading(false);
     };
 
     fetchData();
@@ -129,8 +125,6 @@ const Games = () => {
     width: windowWidth > 500 ? 500 : "90%", // Adjust width here
     margin: "0%",
   };
-
-  if (loading) return <Loading />;
 
   return (
     <Window

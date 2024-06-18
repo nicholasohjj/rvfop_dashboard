@@ -55,7 +55,6 @@ export const Reset = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordsMatch, setPasswordsMatch] = useState(true);
-  const [isloading, setIsloading] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState(null);
@@ -102,8 +101,6 @@ export const Reset = () => {
       return;
     }
 
-    setIsloading(true);
-
     try {
       const { data, error } = await supabaseClient.auth.updateUser({
         password,
@@ -114,10 +111,8 @@ export const Reset = () => {
       }
 
       supabaseClient.auth.getSession().then(({ data: { session } }) => {});
-      setIsloading(false);
       navigate("/", { replace: true });
     } catch (error) {
-      setIsloading(false);
       setIsModalOpen(true);
       setError(error);
     }

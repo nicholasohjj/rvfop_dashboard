@@ -14,7 +14,6 @@ import {
 } from "react95";
 import styled from "styled-components";
 import { motion, useMotionValue, useTransform } from "framer-motion";
-import Loading from "../../loading";
 import { fetchGroup, fetchDeductions } from "../../../supabase/services";
 import { userContext } from "../../../context/context";
 import { useNavigate } from "react-router-dom";
@@ -60,7 +59,6 @@ const Deductions = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const { user, setUser } = useContext(userContext);
   const [groupData, setGroupData] = useState(null); // Initialize to null for better checks
-  const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDeduction, setSelectedDeduction] = useState(null);
   const [deductionData, setDeductionData] = useState([]);
@@ -71,14 +69,12 @@ const Deductions = () => {
 
   useEffect(() => {
     const init = async () => {
-      setLoading(true);
 
       if (!user?.can_deduct) {
         navigate("/", { replace: true });
       }
 
       if (user && !user.group_id) {
-        setLoading(false);
         return;
       }
 
@@ -90,8 +86,6 @@ const Deductions = () => {
         setDeductionData(deductionData);
       } catch (error) {
         console.error("Failed to fetch data:", error);
-      } finally {
-        setLoading(false);
       }
     };
     init();
@@ -108,7 +102,6 @@ const Deductions = () => {
     },
   };
 
-  if (loading) return <Loading />;
 
   const handleViewButtonClick = (deduction) => {
     setIsModalOpen(!isModalOpen);

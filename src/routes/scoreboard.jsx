@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, Suspense } from "react";
 import {
   Table,
   TableBody,
@@ -11,7 +11,6 @@ import {
   WindowHeader,
   Button,
 } from "react95";
-import Loading from "./loading";
 import { fetchHouses } from "../supabase/services";
 import styled from "styled-components";
 import { supabaseClient } from "../supabase/supabaseClient";
@@ -21,7 +20,7 @@ import { Helmet } from "react-helmet";
 
 const useHouses = () => {
   const [houses, setHouses] = useState([]);
-  const [loading, setLoading] = useState(true);
+
 
   const sortHousesInitially = useCallback((housesData) => {
     return housesData.sort((a, b) => b.total_points - a.total_points);
@@ -32,7 +31,6 @@ const useHouses = () => {
       const housesData = await fetchHouses();
       const sortedHouses = sortHousesInitially(housesData);
       setHouses(sortedHouses);
-      setLoading(false);
     };
 
     fetchData();
@@ -58,7 +56,7 @@ const useHouses = () => {
     };
   }, [sortHousesInitially]);
 
-  return { houses, loading };
+  return { houses };
 };
 
 const useWindowWidth = () => {
@@ -74,7 +72,7 @@ const useWindowWidth = () => {
 };
 
 const Scoreboard = () => {
-  const { houses, loading } = useHouses();
+  const { houses } = useHouses();
   const windowWidth = useWindowWidth();
   const navigate = useNavigate();
 
@@ -158,7 +156,6 @@ const Scoreboard = () => {
     margin: "0%",
   };
 
-  if (loading) return <Loading />;
   return (
     <div
       style={{

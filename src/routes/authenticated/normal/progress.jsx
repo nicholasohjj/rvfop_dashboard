@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useContext } from "react";
+import { useState, useEffect, useRef, useContext, Suspense } from "react";
 import {
   Button,
   Table,
@@ -16,7 +16,6 @@ import {
 } from "react95";
 import styled from "styled-components";
 import { motion, useMotionValue, useTransform } from "framer-motion";
-import Loading from "../../loading";
 import {
   fetchGroupActivities,
   fetchGroup,
@@ -70,7 +69,6 @@ const Progress = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [groupData, setGroupData] = useState(null); // Initialize to null for better checks
   const [ActivityData, setActivityData] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [deductions, setDeductions] = useState([]); // Initialize to an empty array
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState(null);
@@ -79,16 +77,14 @@ const Progress = () => {
   const dragxError = useMotionValue(0);
   const navigate = useNavigate();
   const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
-  const { user, setUser } = useContext(userContext);
+  const { user } = useContext(userContext);
 
   useEffect(() => {
     const init = async () => {
-      if (!user?.has_progress) {
+      if (user && !user.has_progress) {
         navigate("/", { replace: true });
       }
-
       if (user && !user?.group_id) {
-        setLoading(false);
         return;
       }
 
@@ -114,9 +110,7 @@ const Progress = () => {
         }
       } catch (error) {
         console.error("Failed to fetch data:", error);
-      } finally {
-        setLoading(false);
-      }
+      } 
     };
     init();
   }, [user, navigate]);
@@ -132,7 +126,6 @@ const Progress = () => {
     },
   };
 
-  if (loading) return <Loading />;
 
   const handleViewButtonClick = (activity) => {
     setIsModalOpen(!isModalOpen);
@@ -350,5 +343,6 @@ const Progress = () => {
       </WindowContent>
     </Window>
   );
+
 };
 export default Progress;

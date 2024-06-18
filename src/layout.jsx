@@ -58,7 +58,6 @@ export const Layout = () => {
     "tapB",
     "tapA",
   ];
-  const [loading, setLoading] = useState(true);
   const { user, setUser } = useContext(userContext);
   const [inputSequence, setInputSequence] = useState([]);
   const [isRotating, setIsRotating] = useState(false);
@@ -138,14 +137,12 @@ export const Layout = () => {
 
   useEffect(() => {
     const init = async () => {
-      setLoading(true);
 
       if (!user) {
         const data = await fetchUser();
         setUser(data);
       }
 
-      setLoading(false);
     };
 
     init();

@@ -20,7 +20,6 @@ import {
   addGroupActivity,
 } from "../../../supabase/services";
 import { useStore, initialiseGroups, groupsContext } from "../../../context/context";
-import Loading from "../../loading";
 import { userContext } from "../../../context/context";
 import { Helmet } from "react-helmet";
 // Styled components
@@ -81,7 +80,6 @@ const PointsSection = styled.div`
 const AddActivity = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [activityData, setActivityData] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState(null);
   const [selectedActivity, setSelectedActivity] = useState(null);
@@ -122,7 +120,6 @@ const AddActivity = () => {
 
   // New useEffect hook for fetching activities
   useEffect(() => {
-    setLoading(true);
     const fetchActivityData = async () => {
       try {
         const activities = await fetchActivities();
@@ -132,15 +129,11 @@ const AddActivity = () => {
         ]);
       } catch (error) {
         console.error("Failed to fetch activities:", error);
-      } finally {
-        setLoading(false);
       }
     };
 
     if (storeGroups.length > 0) {
       fetchActivityData();
-    } else {
-      setLoading(false);
     }
   }, [storeGroups.length]);
 
@@ -206,8 +199,6 @@ const AddActivity = () => {
       setIsModalOpen(true);
     }
   };
-
-  if (loading) return <Loading />;
 
   return (
     <StyledWindow windowWidth={windowWidth}>

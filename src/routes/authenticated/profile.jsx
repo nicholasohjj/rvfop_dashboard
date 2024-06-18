@@ -25,7 +25,7 @@ const StyledWindowHeader = styled(WindowHeader)`
 
 export const Profile = () => {
   const { user, setUser } = useContext(userContext);
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [windowWidth] = useState(window.innerWidth);
 
   const dragX = useMotionValue(0);
 

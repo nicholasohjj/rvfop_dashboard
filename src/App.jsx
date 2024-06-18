@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import {
   createBrowserRouter,
   RouterProvider,
@@ -30,7 +30,6 @@ import { ResetForm } from "./routes/resetForm";
 import About from "./routes/about";
 const App = () => {
   const [session, setSession] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [groups, setGroups] = useState([]);
   const [user, setUser] = useState(null);
 
@@ -41,7 +40,6 @@ const App = () => {
       } = await supabaseClient.auth.getSession();
 
       setSession(session);
-      setLoading(false);
     };
 
     checkSession();
@@ -49,7 +47,6 @@ const App = () => {
     const { data: listener } = supabaseClient.auth.onAuthStateChange(
       (_event, session) => {
         setSession(session);
-        // Ideally, handle loading state here as well if necessary
       }
     );
 
@@ -59,11 +56,7 @@ const App = () => {
   const router = createBrowserRouter([
     {
       path: "/",
-      element: loading ? (
-        <Loading />
-      ) : (
-        <Layout />
-      ),
+      element: <Layout />,
       errorElement: <ErrorPage />,
       children: [
         {
@@ -92,7 +85,7 @@ const App = () => {
         },
         {
           path: "/video",
-          element: <Video />
+          element: <Video />,
         },
         {
           path: "/deductions",
@@ -114,52 +107,28 @@ const App = () => {
       children: [
         {
           path: "",
-          element: <About  />,
-        }
-      ]
+          element: <About />,
+        },
+      ],
     },
     {
       path: "/login",
-      element: loading ? (
-        <Loading />
-      ) : !session ? (
-        <Login />
-      ) : (
-        <Navigate to="/" replace />
-      ),
+      element: !session ? <Login /> : <Navigate to="/" replace />,
       errorElement: <ErrorPage />,
     },
     {
       path: "/signup",
-      element: loading ? (
-        <Loading />
-      ) : !session ? (
-        <Signup />
-      ) : (
-        <Navigate to="/" replace />
-      ),
+      element: !session ? <Signup /> : <Navigate to="/" replace />,
       errorElement: <ErrorPage />,
     },
     {
       path: "/resetform",
-      element: loading ? (
-        <Loading />
-      ) : !session ? (
-        <ResetForm />
-      ) : (
-        <Navigate to="/" replace />
-      ),
+      element: !session ? <ResetForm /> : <Navigate to="/" replace />,
       errorElement: <ErrorPage />,
     },
     {
       path: "/invite",
-      element: loading ? (
-        <Loading />
-      ) : session ? (
-        <SignupByInvite />
-      ) : (
-        <Navigate to="/" replace />
-      ),
+      element: session ? <SignupByInvite /> : <Navigate to="/" replace />,
       errorElement: <ErrorPage />,
     },
     {
@@ -168,33 +137,15 @@ const App = () => {
     },
     {
       path: "/update",
-      element: loading ? (
-        <Loading />
-      ) : session ? (
-        <Update />
-      ) : (
-        <Navigate to="/login" replace />
-      ),
+      element: session ? <Update /> : <Navigate to="/login" replace />,
     },
     {
       path: "/profile",
-      element: loading ? (
-        <Loading />
-      ) : session ? (
-        <Profile />
-      ) : (
-        <Navigate to="/login" replace />
-      ),
+      element: session ? <Profile /> : <Navigate to="/login" replace />,
     },
     {
       path: "/reset",
-      element: loading ? (
-        <Loading />
-      ) : session ? (
-        <Reset />
-      ) : (
-        <Navigate to="/login" replace />
-      ),
+      element: session ? <Reset /> : <Navigate to="/login" replace />,
     },
     {
       path: "/loading",
@@ -208,16 +159,17 @@ const App = () => {
 
   return (
     <>
-    
-    <groupsContext.Provider value={{ groups, setGroups }}>
-    <sessionContext.Provider value={{ session, setSession }}>
-    <userContext.Provider value={{ user, setUser }}>
-      <RouterProvider router={router} />
-      <Analytics />
-      <SpeedInsights />
-    </userContext.Provider>
-    </sessionContext.Provider>
-    </groupsContext.Provider>
+      <Suspense fallback={<Loading />}>
+        <groupsContext.Provider value={{ groups, setGroups }}>
+          <sessionContext.Provider value={{ session, setSession }}>
+            <userContext.Provider value={{ user, setUser }}>
+              <RouterProvider router={router} />
+              <Analytics />
+              <SpeedInsights />
+            </userContext.Provider>
+          </sessionContext.Provider>
+        </groupsContext.Provider>
+      </Suspense>
     </>
   );
 };
