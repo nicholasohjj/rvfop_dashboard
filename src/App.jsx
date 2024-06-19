@@ -5,7 +5,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import Video from "./routes/authenticated/video";
-import { userContext, sessionContext, groupsContext } from "./context/context";
+import { userContext, groupsContext } from "./context/context";
 import ErrorPage from "./routes/errorpage";
 import { Login } from "./routes/login";
 import { Layout } from "./layout";
