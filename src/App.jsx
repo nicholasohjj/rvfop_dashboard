@@ -161,13 +161,11 @@ const App = () => {
     <>
       <Suspense fallback={<Loading />}>
         <groupsContext.Provider value={{ groups, setGroups }}>
-          <sessionContext.Provider value={{ session, setSession }}>
             <userContext.Provider value={{ user, setUser }}>
               <RouterProvider router={router} />
               <Analytics />
               <SpeedInsights />
             </userContext.Provider>
-          </sessionContext.Provider>
         </groupsContext.Provider>
       </Suspense>
     </>
