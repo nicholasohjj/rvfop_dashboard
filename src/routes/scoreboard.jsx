@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo, useContext } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo, useContext } from "react";
 import {
   Table,
   TableBody,
@@ -11,6 +11,7 @@ import {
   WindowHeader,
   Button,
 } from "react95";
+
 import { fetchHouses } from "../supabase/services";
 import styled from "styled-components";
 import { supabaseClient } from "../supabase/supabaseClient";
@@ -22,7 +23,6 @@ import { housesContext } from "../context/context";
 
 const useHouses = () => {
   const { houses, setHouses } = useContext(housesContext);
-
   const sortHousesInitially = useCallback((housesData) => {
     return housesData.sort((a, b) => b.total_points - a.total_points);
   }, []);
@@ -77,7 +77,7 @@ const Scoreboard = () => {
   const { houses } = useHouses();
   const windowWidth = useWindowWidth();
   const navigate = useNavigate();
-
+  const constraintsRef = useRef(null);
   const [sortKey, setSortKey] = useState("total_points");
   const [sortDirection, setSortDirection] = useState("desc");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -167,7 +167,10 @@ const Scoreboard = () => {
         position: "relative",
       }}
     >
-
+      <Helmet>
+        <title>Insieme 2024 - Scoreboard</title>
+        <meta name="description" content="Scoreboard page" />
+      </Helmet>
       <Window
         style={{
           flex: 1,
@@ -212,23 +215,39 @@ const Scoreboard = () => {
         )}
       </Window>
       {isModalOpen && (
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          exit="hidden"
-          variants={modalVariants}
-          style={{
-            position: "absolute", // This makes the div position relative to the nearest positioned ancestor
-            top: 0,
-            left: 0,
-            minWidth: "100vw",
-            minHeight: "100vh",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 10,
-          }}
-        >
+                    <div
+                    ref={constraintsRef}
+                    style={{
+                      position: "fixed",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      display: "flex", // Use flexbox for centering
+                      alignItems: "center", // Vertical center
+                      justifyContent: "center", // Horizontal center
+                      zIndex: 10, // Ensure it's above other content
+                    }}
+                  >
+              <motion.div
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              drag
+              dragConstraints={constraintsRef}
+              variants={modalVariants}
+              style={{
+                position: "absolute", // This makes the div position relative to the nearest positioned ancestor
+                top: 0,
+                left: 0,
+                minWidth: "100vw",
+                minHeight: "100vh",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                zIndex: 10,
+              }}
+            >
           <Window style={windowStyle}>
             <StyledWindowHeader>
               <span>About {selectedHouse.house_name}</span>
@@ -262,6 +281,7 @@ const Scoreboard = () => {
             </WindowContent>
           </Window>
         </motion.div>
+      </div>
       )}
     </div>
   );
