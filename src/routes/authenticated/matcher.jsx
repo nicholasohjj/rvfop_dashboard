@@ -4,7 +4,7 @@ import React, {
   useEffect,
   useContext,
   useCallback,
-  useMemo
+  useMemo,
 } from "react";
 import { supabaseClient } from "../../supabase/supabaseClient";
 import { userContext } from "../../context/context";
@@ -68,7 +68,6 @@ const Matcher = () => {
   const lastMessageRef = useRef();
   const filter = useMemo(() => new Filter(), []);
 
-
   useEffect(() => {
     const newChannel = supabaseClient.channel("schema-db-changes");
     if (matching) {
@@ -116,10 +115,21 @@ const Matcher = () => {
 
           setPartner(partnerData);
 
-          const channel = supabaseClient
-            .channel(`chat:${match.match_id}`)
+          const channel = supabaseClient.channel(`chat:${match.match_id}`);
+
+          channel
             .on("broadcast", { event: "chat" }, (payload) => {
               setMessages((prevMessages) => [...prevMessages, payload.payload]);
+            })
+            .on('presence', { event: 'sync' }, () => {
+              const newState = channel.presenceState()
+              console.log('sync', newState)
+            })
+            .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+              console.log('join', key, newPresences)
+            })
+            .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+              console.log('leave', key, leftPresences)
             })
             .subscribe();
 

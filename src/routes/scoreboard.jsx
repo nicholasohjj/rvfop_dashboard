@@ -19,10 +19,8 @@ import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { LoadingHourglass } from "../components/loadinghourglass";
 
-
 const useHouses = () => {
   const [houses, setHouses] = useState([]);
-
 
   const sortHousesInitially = useCallback((housesData) => {
     return housesData.sort((a, b) => b.total_points - a.total_points);
@@ -183,35 +181,35 @@ const Scoreboard = () => {
           Scoreboard
         </WindowHeader>
         <Suspense fallback={<LoadingHourglass />}>
-        <WindowContent>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableHeadCell onClick={() => handleSort("house_name")}>
-                  House
-                </TableHeadCell>
-                <TableHeadCell onClick={() => handleSort("total_points")}>
-                  Points (Tribal)
-                </TableHeadCell>
-                <TableHeadCell onClick={() => handleSort("pro_human_points")}>
-                  Points (Pro-humans)
-                </TableHeadCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {sortedHouses.map((house) => (
-                <TableRow
-                  key={house.house_id}
-                  onClick={() => toggleModal(house)}
-                >
-                  <TableDataCell>{house.house_name}</TableDataCell>
-                  <TableDataCell>{house.total_points}</TableDataCell>
-                  <TableDataCell>{house.pro_human_points}</TableDataCell>
+          <WindowContent>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableHeadCell onClick={() => handleSort("house_name")}>
+                    House
+                  </TableHeadCell>
+                  <TableHeadCell onClick={() => handleSort("total_points")}>
+                    Points (Tribal)
+                  </TableHeadCell>
+                  <TableHeadCell onClick={() => handleSort("pro_human_points")}>
+                    Points (Pro-humans)
+                  </TableHeadCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </WindowContent>
+              </TableHead>
+              <TableBody>
+                {sortedHouses.map((house) => (
+                  <TableRow
+                    key={house.house_id}
+                    onClick={() => toggleModal(house)}
+                  >
+                    <TableDataCell>{house.house_name}</TableDataCell>
+                    <TableDataCell>{house.total_points}</TableDataCell>
+                    <TableDataCell>{house.pro_human_points}</TableDataCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </WindowContent>
         </Suspense>
       </Window>
       {isModalOpen && (
