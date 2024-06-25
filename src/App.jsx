@@ -5,7 +5,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import Video from "./routes/authenticated/video";
-import { userContext, groupsContext } from "./context/context";
+import { userContext, groupsContext, sessionContext } from "./context/context";
 import ErrorPage from "./routes/errorpage";
 import { Login } from "./routes/login";
 import { Layout } from "./layout";
@@ -160,6 +160,7 @@ const App = () => {
   return (
     <>
       <Suspense fallback={<Loading />}>
+      <sessionContext.Provider value={{ session, setSession }}>
         <groupsContext.Provider value={{ groups, setGroups }}>
           <userContext.Provider value={{ user, setUser }}>
             <RouterProvider router={router} />
@@ -167,6 +168,7 @@ const App = () => {
             <SpeedInsights />
           </userContext.Provider>
         </groupsContext.Provider>
+      </sessionContext.Provider>
       </Suspense>
     </>
   );

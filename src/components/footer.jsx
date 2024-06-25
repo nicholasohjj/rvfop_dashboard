@@ -5,7 +5,7 @@ import { supabaseClient } from "../supabase/supabaseClient";
 import { userContext, sessionContext } from "../context/context";
 export const Footer = () => {
   const [open, setOpen] = useState(false);
-  const { session } = useContext(sessionContext);
+  const { session, setSession } = useContext(sessionContext);
   const { user } = useContext(userContext);
 
   const navigate = useNavigate();
@@ -14,10 +14,10 @@ export const Footer = () => {
     navigate(path);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     console.log("Logging out", user);
-    const { error } = supabaseClient.auth.signOut();
-    console.log("Error", error);
+    await supabaseClient.auth.signOut();
+    setSession(null);
     navigate("/login");
   };
 

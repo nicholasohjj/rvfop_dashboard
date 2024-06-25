@@ -5,8 +5,8 @@ import { userContext, sessionContext } from "../context/context";
 export const Header = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const { session, setSession } = useContext(sessionContext);
-  const { user, setUser } = useContext(userContext);
+  const { session } = useContext(sessionContext);
+  const { user } = useContext(userContext);
 
   return (
     <AppBar style={{ zIndex: 1 }}>

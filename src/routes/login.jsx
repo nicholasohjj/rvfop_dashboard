@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useRef, useEffect, useCallback, useMemo, useContext} from "react";
 import {
   Window,
   WindowHeader,
@@ -14,6 +14,7 @@ import { supabaseClient } from "../supabase/supabaseClient";
 import styled from "styled-components";
 import { Helmet } from "react-helmet";
 import { LoadingHourglass } from "../components/loadinghourglass";
+import { sessionContext } from "../context/context";
 
 // Styled Close Icon Component
 const CloseIcon = styled.div`
@@ -55,6 +56,7 @@ const StyledWindowHeader = styled(WindowHeader)`
 
 export const Login = () => {
   const [email, setemail] = useState("");
+  const {session, setSession} = useContext(sessionContext);
   const [isLoading, setIsLoading] = useState(false);
   const [password, setPassword] = useState("");
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -127,21 +129,18 @@ export const Login = () => {
         email,
         password,
       });
-
-      console.log(data, error);
-
       if (error) {
         throw error;
       }
       setIsLoading(false);
-
+      setSession(data);
       navigate("/", { replace: true });
     } catch (error) {
       setIsLoading(false);
       setIsModalOpen(true);
       setError(error);
     }
-  }, [email, password, navigate]);
+  }, [email, password, navigate, setSession]);
 
   const windowStyle = useMemo(() => ({
     width: windowWidth > 500 ? 500 : "90%", // Adjust width here
