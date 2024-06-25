@@ -16,7 +16,8 @@ import styled from "styled-components";
 import { fetchGroups, fetchRoles } from "../supabase/services";
 import { Helmet } from "react-helmet";
 import { LoadingHourglass } from "../components/loadinghourglass";
-import { groupsContext } from "../context/context";
+import { groupsContext, sessionContext } from "../context/context";
+
 // Styled Close Icon Component
 const CloseIcon = styled.div`
   display: inline-block;
@@ -99,6 +100,7 @@ export const Signup = () => {
   const windowWidth = useWindowWidth();
   const { groups, roles } = useFetchData();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { session, setSession } = useContext(sessionContext);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false); // Add isLoading state
   const constraintsRef = useRef(null);
@@ -205,17 +207,6 @@ export const Signup = () => {
       setError({ name: "Error", message: error.message });
       setIsModalOpen(true);
     }
-  };
-
-  const modalVariants = {
-    hidden: {
-      opacity: 0,
-      scale: 0,
-    },
-    visible: {
-      opacity: 1,
-      scale: 1,
-    },
   };
 
   const windowStyle = {
@@ -394,6 +385,10 @@ export const Signup = () => {
                     setError("");
                     setIsModalOpen(false);
                     if (error.type === "success") {
+                      setSession({
+                        user: null,
+                        session: null,
+                      });
                       navigate("/", { replace: true }); // Use navigate to redirect for success
                     }
                   }}

@@ -17,6 +17,8 @@ import { supabaseClient } from "../supabase/supabaseClient";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import { LoadingHourglass } from "../components/loadinghourglass";
+
 
 const useHouses = () => {
   const [houses, setHouses] = useState([]);
@@ -180,6 +182,7 @@ const Scoreboard = () => {
         <WindowHeader onClick={() => navigate("/video")}>
           Scoreboard
         </WindowHeader>
+        <Suspense fallback={<LoadingHourglass />}>
         <WindowContent>
           <Table>
             <TableHead>
@@ -209,6 +212,7 @@ const Scoreboard = () => {
             </TableBody>
           </Table>
         </WindowContent>
+        </Suspense>
       </Window>
       {isModalOpen && (
         <motion.div
