@@ -63,6 +63,7 @@ const Matcher = () => {
   const [messageChannel, setMessageChannel] = useState(null);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
+  const [isOngoing, setIsOngoing] = useState(false);
   const navigate = useNavigate();
   const scrollViewRef = useRef();
   const lastMessageRef = useRef();
@@ -86,6 +87,10 @@ const Matcher = () => {
               payload.new.is_ongoing
             ) {
               setMatch(payload.new);
+              setIsOngoing(true);
+            } else if (!payload.new.is_ongoing) {
+              setMatch(null);
+              setIsOngoing(false);
             }
           }
         )
@@ -121,15 +126,15 @@ const Matcher = () => {
             .on("broadcast", { event: "chat" }, (payload) => {
               setMessages((prevMessages) => [...prevMessages, payload.payload]);
             })
-            .on('presence', { event: 'sync' }, () => {
-              const newState = channel.presenceState()
-              console.log('sync', newState)
+            .on("presence", { event: "sync" }, () => {
+              const newState = channel.presenceState();
+              console.log("sync", newState);
             })
-            .on('presence', { event: 'join' }, ({ key, newPresences }) => {
-              console.log('join', key, newPresences)
+            .on("presence", { event: "join" }, ({ key, newPresences }) => {
+              console.log("join", key, newPresences);
             })
-            .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
-              console.log('leave', key, leftPresences)
+            .on("presence", { event: "leave" }, ({ key, leftPresences }) => {
+              console.log("leave", key, leftPresences);
             })
             .subscribe();
 
@@ -452,24 +457,37 @@ const Matcher = () => {
                       </React.Fragment>
                     );
                   })}
+                {!isOngoing && (
+                  <div
+                    style={{
+                      width: "100%",
+                      textAlign: "center",
+                      margin: "10px 0",
+                    }}
+                  >
+                    <strong>Your partner has left the chat.</strong>
+                  </div>
+                )}
               </ScrollView>
-              <div style={{ display: "flex" }}>
-                <TextInput
-                  value={message}
-                  placeholder="Type here..."
-                  onChange={handleChange}
-                  onKeyPress={(e) => {
-                    if (e.key === "Enter") {
-                      handleSend();
-                      e.preventDefault();
-                    }
-                  }}
-                  style={{ flex: 1 }}
-                />
-                <Button onClick={handleSend} style={{ marginLeft: 4 }}>
-                  Send
-                </Button>
-              </div>
+              {isOngoing && (
+                <div style={{ display: "flex" }}>
+                  <TextInput
+                    value={message}
+                    placeholder="Type here..."
+                    onChange={handleChange}
+                    onKeyPress={(e) => {
+                      if (e.key === "Enter") {
+                        handleSend();
+                        e.preventDefault();
+                      }
+                    }}
+                    style={{ flex: 1 }}
+                  />
+                  <Button onClick={handleSend} style={{ marginLeft: 4 }}>
+                    Send
+                  </Button>
+                </div>
+              )}
             </Frame>
             <Button
               style={{
