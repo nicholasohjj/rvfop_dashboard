@@ -92,7 +92,6 @@ const Games = () => {
       } catch (error) {
         console.error("Failed to fetch awarded games:", error);
       }
-
     };
 
     fetchData();
@@ -127,132 +126,120 @@ const Games = () => {
   };
 
   return (
-    <Window
+    <div
       style={{
         flex: 1,
-        maxWidth: "100vw",
-        margin: "0 auto",
-        position: "relative",
+        display: "flex",
         maxHeight: "100vh",
-        overflow: "auto",
+        position: "relative",
       }}
     >
-      <Helmet>
-        <title>Insieme 2024 - Awarded Games</title>
-        <meta name="description" content="Track games awarded by you here" />
-      </Helmet>
-      <WindowHeader>Awarded Games</WindowHeader>
-      <WindowContent>
-        {awardedGames.length > 0 ? (
-          <Table>
-            <TableHead
-              style={{
-                maxWidth: "100vw",
-                maxHeight: "70vh",
-                overflow: "auto",
-              }}
-            >
-              <TableRow>
-                <TableHeadCell>Day</TableHeadCell>
-                <TableHeadCell>Activity</TableHeadCell>
-                <TableHeadCell>Group</TableHeadCell>
-                <TableHeadCell>Points Awarded</TableHeadCell>
-                <TableHeadCell>Details</TableHeadCell>
-              </TableRow>
-            </TableHead>
-
-            <TableBody
-              style={{
-                maxWidth: "100vw",
-                maxHeight: "70vh",
-                overflow: "auto",
-              }}
-            >
-              {awardedGames.map((game, index) => (
-                <TableRow key={index}>
-                  <TableDataCell>{formatSGT(game.tm_created)}</TableDataCell>
-                  <TableDataCell>{game.activity_name}</TableDataCell>
-                  <TableDataCell>{game.group_name}</TableDataCell>
-                  <TableDataCell>{game.points_earned}</TableDataCell>
-                  <TableDataCell
-                    style={{
-                      gap: 16,
-                      display: "flex",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Button onClick={() => handleViewButtonClick(game)}>
-                      View
-                    </Button>
-                  </TableDataCell>
+      <Window
+        style={{
+          flex: 1,
+          overflow: "auto",
+          minHeight: "100vh",
+          maxHeight: "100vh",
+        }}
+      >
+        <Helmet>
+          <title>Insieme 2024 - Awarded Games</title>
+          <meta name="description" content="Track games awarded by you here" />
+        </Helmet>
+        <WindowHeader>Awarded Games</WindowHeader>
+        <WindowContent>
+          {awardedGames.length > 0 ? (
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableHeadCell>Day</TableHeadCell>
+                  <TableHeadCell>Activity</TableHeadCell>
+                  <TableHeadCell>Group</TableHeadCell>
+                  <TableHeadCell>Points Awarded</TableHeadCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        ) : (
-          <div style={{ textAlign: "center", margin: "20px 0" }}>
-            No games awarded.
-          </div>
-        )}
-        {isModalOpen && (
-          <div
-            ref={constraintsRef}
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              display: "flex", // Use flexbox for centering
-              alignItems: "center", // Vertical center
-              justifyContent: "center", // Horizontal center
-              zIndex: 10, // Ensure it's above other content
-            }}
-          >
-            <motion.div
-              drag
-              dragConstraints={constraintsRef}
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              variants={modalVariants}
+              </TableHead>
+
+              <TableBody>
+                {awardedGames.map((game, index) => (
+                  <TableRow
+                    key={index}
+                    onClick={() => handleViewButtonClick(game)}
+                  >
+                    <TableDataCell>{formatSGT(game.tm_created)}</TableDataCell>
+                    <TableDataCell>{game.activity_name}</TableDataCell>
+                    <TableDataCell>{game.group_name}</TableDataCell>
+                    <TableDataCell>{game.points_earned}</TableDataCell>
+                    <TableDataCell></TableDataCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <div style={{ textAlign: "center", margin: "20px 0" }}>
+              No games awarded.
+            </div>
+          )}
+          {isModalOpen && (
+            <div
+              ref={constraintsRef}
               style={{
-                rotate: rotateValueError,
-                x: dragxError,
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                width: "80%", // Responsive width
-                maxWidth: "80%", // Ensures it doesn't get too large on big screens
-                zIndex: 10,
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                display: "flex", // Use flexbox for centering
+                alignItems: "center", // Vertical center
+                justifyContent: "center", // Horizontal center
+                zIndex: 10, // Ensure it's above other content
               }}
             >
-              <Window style={windowStyle}>
-                <StyledWindowHeader>
-                  <span>{selectedGame.activity_name}</span>
-                  <Button onClick={handleCloseModal}>
-                    <CloseIcon />
-                  </Button>
-                </StyledWindowHeader>
-                <WindowContent>
-                  <div style={{ marginBottom: 10 }}>
-                    <GroupBox label="Description">
-                      {selectedGame?.description}
-                    </GroupBox>
-                    <GroupBox label="Group Awarded">
-                      {selectedGame?.group_name}
-                    </GroupBox>
-                    <GroupBox label="Points Awarded">
-                      {selectedGame?.points_earned}
-                    </GroupBox>
-                  </div>
-                </WindowContent>
-              </Window>
-            </motion.div>
-          </div>
-        )}
-      </WindowContent>
-    </Window>
+              <motion.div
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+                drag
+                dragConstraints={constraintsRef}
+                variants={modalVariants}
+                style={{
+                  position: "absolute", // This makes the div position relative to the nearest positioned ancestor
+                  top: 0,
+                  left: 0,
+                  minWidth: "100vw",
+                  minHeight: "100vh",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  zIndex: 10,
+                }}
+              >
+                <Window style={windowStyle}>
+                  <StyledWindowHeader>
+                    <span>{selectedGame.activity_name}</span>
+                    <Button onClick={handleCloseModal}>
+                      <CloseIcon />
+                    </Button>
+                  </StyledWindowHeader>
+                  <WindowContent>
+                    <div style={{ marginBottom: 10 }}>
+                      <GroupBox label="Description">
+                        {selectedGame?.description}
+                      </GroupBox>
+                      <GroupBox label="Group Awarded">
+                        {selectedGame?.group_name}
+                      </GroupBox>
+                      <GroupBox label="Points Awarded">
+                        {selectedGame?.points_earned}
+                      </GroupBox>
+                    </div>
+                  </WindowContent>
+                </Window>
+              </motion.div>
+            </div>
+          )}
+        </WindowContent>
+      </Window>
+    </div>
   );
 };
 export default Games;

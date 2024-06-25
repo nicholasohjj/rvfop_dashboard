@@ -167,10 +167,7 @@ const Scoreboard = () => {
         position: "relative",
       }}
     >
-      <Helmet>
-        <title>Insieme 2024 - Scoreboard</title>
-        <meta name="description" content="Scoreboard page" />
-      </Helmet>
+
       <Window
         style={{
           flex: 1,
