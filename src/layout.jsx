@@ -158,8 +158,10 @@ export const Layout = () => {
   const updateInputSequence = (input) => {
     setInputSequence((prevSequence) => {
       const newSequence = [...prevSequence, input].slice(-konamiCode.length);
+      console.log(newSequence);
       if (
-        newSequence.slice(2).join(" ") === konamiCode.slice(0, -2).join(" ")
+        //last 8 keys check
+        newSequence.slice(-8).join(" ") === konamiCode.slice(0, -2).join(" ")
       ) {
         setIsModalOpen(true);
         console.log("Modal opened");
