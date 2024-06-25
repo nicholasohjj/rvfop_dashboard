@@ -5,7 +5,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import Video from "./routes/authenticated/video";
-import { userContext, groupsContext, sessionContext } from "./context/context";
+import { userContext, groupsContext, sessionContext, housesContext } from "./context/context";
 import ErrorPage from "./routes/errorpage";
 import { Login } from "./routes/login";
 import { Layout } from "./layout";
@@ -31,6 +31,7 @@ import About from "./routes/about";
 const App = () => {
   const [session, setSession] = useState(null);
   const [groups, setGroups] = useState([]);
+  const [houses, setHouses] = useState([]);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -160,6 +161,7 @@ const App = () => {
   return (
     <>
       <Suspense fallback={<Loading />}>
+      <housesContext.Provider value={{ houses, setHouses }}>
       <sessionContext.Provider value={{ session, setSession }}>
         <groupsContext.Provider value={{ groups, setGroups }}>
           <userContext.Provider value={{ user, setUser }}>
@@ -169,6 +171,7 @@ const App = () => {
           </userContext.Provider>
         </groupsContext.Provider>
       </sessionContext.Provider>
+      </housesContext.Provider>
       </Suspense>
     </>
   );

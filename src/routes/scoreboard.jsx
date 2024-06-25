@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo, Suspense } from "react";
+import { useState, useEffect, useCallback, useMemo, useContext } from "react";
 import {
   Table,
   TableBody,
@@ -18,9 +18,10 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { LoadingHourglass } from "../components/loadinghourglass";
+import { housesContext } from "../context/context";
 
 const useHouses = () => {
-  const [houses, setHouses] = useState([]);
+  const { houses, setHouses } = useContext(housesContext);
 
   const sortHousesInitially = useCallback((housesData) => {
     return housesData.sort((a, b) => b.total_points - a.total_points);
@@ -28,6 +29,7 @@ const useHouses = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (houses.length > 0) return;
       const housesData = await fetchHouses();
       const sortedHouses = sortHousesInitially(housesData);
       setHouses(sortedHouses);
@@ -180,7 +182,7 @@ const Scoreboard = () => {
         <WindowHeader onClick={() => navigate("/video")}>
           Scoreboard
         </WindowHeader>
-        <Suspense fallback={<LoadingHourglass />}>
+        {houses.length === 0 ? <LoadingHourglass /> : (
           <WindowContent>
             <Table>
               <TableHead>
@@ -210,7 +212,7 @@ const Scoreboard = () => {
               </TableBody>
             </Table>
           </WindowContent>
-        </Suspense>
+        )}
       </Window>
       {isModalOpen && (
         <motion.div

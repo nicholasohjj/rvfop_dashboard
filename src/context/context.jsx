@@ -9,6 +9,8 @@ export const sessionContext = createContext([])
 
 export const groupsContext = createContext([])
 
+export const housesContext = createContext([])
+
 export const activitiesContext = createContext([])
 
 export const useStore = create((set) => ({
