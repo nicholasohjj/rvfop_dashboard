@@ -56,15 +56,7 @@ const About = () => {
             © 2024 Insieme. All rights reserved.
           </p>
           <p style={{ textAlign: "center" }}>
-            Website designed by{" "}
-            <Anchor
-              href="https://www.linkedin.com/in/nicholasohjj"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Nicholas Oh
-            </Anchor>
-            .
+            Website designed by Nicholas Oh.
           </p>
         </WindowContent>
       </Window>
