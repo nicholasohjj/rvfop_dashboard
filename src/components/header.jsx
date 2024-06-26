@@ -1,12 +1,35 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { AppBar, Toolbar, Button, MenuList, MenuListItem } from "react95";
 import { useNavigate } from "react-router-dom";
 import { userContext, sessionContext } from "../context/context";
+
+const preloadImages = (imageUrls) => {
+  imageUrls.forEach((url) => {
+    const img = new Image();
+    img.src = url;
+  });
+};
+
+const imageUrls = [
+  "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/logo.png",
+  "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/scoreboard.png",
+  "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/progress.png",
+  "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/deduction.png",
+  "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/games.png",
+  "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/messenger.png",
+  "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/logout.png",
+  "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/login.png",
+];
+
 export const Header = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const { session } = useContext(sessionContext);
   const { user } = useContext(userContext);
+
+  useEffect(() => {
+    preloadImages(imageUrls);
+  }, []);
 
   return (
     <AppBar style={{ zIndex: 1 }}>

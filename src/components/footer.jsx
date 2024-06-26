@@ -1,8 +1,28 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { AppBar, Toolbar, Button, MenuList, MenuListItem } from "react95";
 import { useNavigate } from "react-router-dom";
 import { supabaseClient } from "../supabase/supabaseClient";
 import { userContext, sessionContext } from "../context/context";
+
+
+const preloadImages = (imageUrls) => {
+  imageUrls.forEach((url) => {
+    const img = new Image();
+    img.src = url;
+  });
+};
+
+const imageUrls = [
+  "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/logo.png",
+  "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/scoreboard.png",
+  "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/progress.png",
+  "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/deduction.png",
+  "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/games.png",
+  "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/messenger.png",
+  "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/logout.png",
+  "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/login.png",
+];
+
 export const Footer = () => {
   const [open, setOpen] = useState(false);
   const { session, setSession } = useContext(sessionContext);
@@ -13,6 +33,12 @@ export const Footer = () => {
   const handleNavigate = (path) => {
     navigate(path);
   };
+
+  useEffect(() => {
+    preloadImages(imageUrls);
+  }, []);
+
+  
 
   const handleLogout = async () => {
     console.log("Logging out", user);
@@ -45,16 +71,15 @@ export const Footer = () => {
               }}
               onClick={() => setOpen(false)}
             >
-              {session && (
-                <MenuListItem onClick={() => handleNavigate("/scoreboard")}>
-                  <img
-                    src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/scoreboard.png"
-                    alt="scoreboard_logo"
-                    style={{ height: "20px", marginRight: 4 }}
-                  />
-                  Scoreboard
-                </MenuListItem>
-              )}
+              <MenuListItem onClick={() => handleNavigate("/scoreboard")}>
+                <img
+                  src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/scoreboard.png"
+                  alt="scoreboard_logo"
+                  style={{ height: "20px", marginRight: 4 }}
+                />
+                Scoreboard
+              </MenuListItem>
+
               {session && user.has_progress && (
                 <MenuListItem onClick={() => handleNavigate("/progress")}>
                   <img
