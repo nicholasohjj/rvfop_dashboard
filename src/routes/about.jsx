@@ -1,7 +1,10 @@
 import React, { useMemo } from "react";
 import { Anchor, Window, WindowContent, WindowHeader } from "react95";
 import { Helmet } from "react-helmet";
+import { useNavigate } from "react-router-dom";
+
 const About = () => {
+  const navigate = useNavigate();
   const helmetProps = useMemo(
     () => ({
       title: "Insieme 2024 - About",
@@ -41,6 +44,7 @@ const About = () => {
             justifyContent: "space-between",
             alignItems: "center",
           }}
+          onClick={() => navigate("/match")}
         >
           <span>About Insieme 2024</span>
         </WindowHeader>
