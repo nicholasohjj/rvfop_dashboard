@@ -305,9 +305,8 @@ const AddActivity = () => {
             <PointsSection>
               <p>Points earned: </p>
               <NumberInput
-                value={newGroupActivity.points_earned}
                 defaultValue={0}
-                step={20}
+                step={1}
                 min={0}
                 max={200}
                 onChange={(e) =>
