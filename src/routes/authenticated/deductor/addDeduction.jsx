@@ -253,9 +253,9 @@ const AddDeduction = () => {
                   <PointsSection>
                     <p>Points to deduct: </p>
                     <NumberInput
-                      value={deductionPoints}
+                    defaultValue={0}
                       onChange={(value) => setDeductionPoints(Number(value))}
-                      step={20}
+                      step={1}
                       min={0}
                       max={Math.min(
                         group.total_points,
