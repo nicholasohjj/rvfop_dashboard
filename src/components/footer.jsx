@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { supabaseClient } from "../supabase/supabaseClient";
 import { userContext, sessionContext } from "../context/context";
 
-
 const preloadImages = (imageUrls) => {
   imageUrls.forEach((url) => {
     const img = new Image();
@@ -37,8 +36,6 @@ export const Footer = () => {
   useEffect(() => {
     preloadImages(imageUrls);
   }, []);
-
-  
 
   const handleLogout = async () => {
     console.log("Logging out", user);

@@ -90,7 +90,7 @@ const ErrorPage = () => {
             <Tooltip text="Woof! 🐶" enterDelay={100} leaveDelay={100}>
               <img
                 src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/error.png"
-                alt="rvrc-logo"
+                alt="error-logo"
                 width={100}
               />
             </Tooltip>

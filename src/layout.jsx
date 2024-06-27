@@ -259,7 +259,7 @@ export const Layout = () => {
             <Window style={windowStyle}>
               <StyledWindowHeader>
                 <Button onClick={handleCloseModal}>
-                  <CloseIcon />
+                  <CloseIcon />  
                 </Button>
               </StyledWindowHeader>
               <WindowContent>
