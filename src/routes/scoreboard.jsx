@@ -29,7 +29,6 @@ const useHouses = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (houses.length > 0) return;
       const housesData = await fetchHouses();
       const sortedHouses = sortHousesInitially(housesData);
       setHouses(sortedHouses);
