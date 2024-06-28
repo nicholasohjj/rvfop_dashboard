@@ -101,12 +101,6 @@ const AddActivity = () => {
   const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
   const navigate = useNavigate();
   const storeGroups = useStore((state) => state.groups);
-
-  const activities = useMemo(
-    () => [{ activity_name: "Select Activity" }, ...activityData],
-    [activityData]
-  );
-
   useEffect(() => {
     const init = async () => {
 
@@ -212,8 +206,8 @@ const AddActivity = () => {
       <WindowContent style={{ overflowX: "visible" }}>
         <GroupBox label="Select Activity">
           <Select
-            defaultValue={activities[0]}
-            options={activities.map((activity) => ({
+            defaultValue={1}
+            options={activityData.map((activity) => ({
               label: activity.activity_name,
               value: activity,
             }))}
@@ -232,7 +226,7 @@ const AddActivity = () => {
 
         <GroupBox label="Select Group">
           <Select
-            defaultValue={groups[0]}
+            defaultValue={1}
             options={groups.map((group) => ({
               label: group.group_name,
               value: group,
