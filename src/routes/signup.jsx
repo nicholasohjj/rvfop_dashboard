@@ -69,7 +69,7 @@ const useWindowWidth = () => {
   return windowWidth;
 };
 
-const useFetchData = () => {
+const useFetchData = (setFormData) => {
   const { groups, setGroups } = useContext(groupsContext);
   const [roles, setRoles] = useState([]);
 
@@ -82,9 +82,18 @@ const useFetchData = () => {
 
       const roleData = await fetchRoles();
       setRoles(roleData);
+
+      // Set the default selected role
+      if (roleData.length > 0) {
+        setFormData((prevData) => ({
+          ...prevData,
+          selectedGroup: groups[0]?.group_id,
+          selectedRole: { label: roleData[0].role_name, value: roleData[0] },
+        }));
+      }
     };
     init();
-  }, [groups, setGroups]);
+  }, [groups, setGroups, setFormData]);
 
   return { groups, roles };
 };
@@ -98,7 +107,7 @@ export const Signup = () => {
     selectedRole: null,
   });
   const windowWidth = useWindowWidth();
-  const { groups, roles } = useFetchData();
+  const { groups, roles } = useFetchData(setFormData); // Pass setFormData to useFetchData
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { session, setSession } = useContext(sessionContext);
   const [error, setError] = useState("");
@@ -178,7 +187,6 @@ export const Signup = () => {
           },
         },
       });
-
 
       if (error) throw error;
 
@@ -302,6 +310,7 @@ export const Signup = () => {
 
                   <GroupBox label="Select your Role">
                     <Select
+                      value={formData.selectedRole}
                       options={roleOptions}
                       menuMaxHeight={160}
                       width="100%"
@@ -313,6 +322,7 @@ export const Signup = () => {
                   {formData.selectedRole?.needs_group && (
                     <GroupBox label="Select your Orientation Group">
                       <Select
+                        value={formData.selectedGroup}
                         options={groupOptions}
                         menuMaxHeight={160}
                         width="100%"
@@ -328,8 +338,7 @@ export const Signup = () => {
                       display: "flex",
                       justifyContent: "space-around",
                     }}
-                  >
-                  </div>
+                  ></div>
 
                   <div
                     style={{
