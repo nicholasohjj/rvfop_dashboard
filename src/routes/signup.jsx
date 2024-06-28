@@ -10,6 +10,7 @@ import {
   Tooltip,
 } from "react95";
 import { motion, useMotionValue, useTransform } from "framer-motion";
+import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { supabaseClient } from "../supabase/supabaseClient";
 import styled from "styled-components";
@@ -90,6 +91,7 @@ const useFetchData = () => {
 };
 
 export const Signup = () => {
+  const [captchaToken, setCaptchaToken] = useState();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -100,6 +102,7 @@ export const Signup = () => {
   const windowWidth = useWindowWidth();
   const { groups, roles } = useFetchData();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const captcha = useRef();
   const { session, setSession } = useContext(sessionContext);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false); // Add isLoading state
@@ -171,6 +174,7 @@ export const Signup = () => {
         email,
         password,
         options: {
+          captchaToken,
           data: {
             group_id: selectedGroup,
             role: selectedRole.role,
@@ -178,6 +182,8 @@ export const Signup = () => {
           },
         },
       });
+
+      captcha.current.resetCaptcha()
 
       if (error) throw error;
 
@@ -321,6 +327,21 @@ export const Signup = () => {
                       />
                     </GroupBox>
                   )}
+                  <div
+                    style={{
+                      marginTop: "20px",
+                      display: "flex",
+                      justifyContent: "space-around",
+                    }}
+                  >
+                    <HCaptcha
+                      ref={captcha}
+                      sitekey="736ec14e-6698-40de-b576-06aa9220d1f2"
+                      onVerify={(token) => {
+                        setCaptchaToken(token);
+                      }}
+                    />
+                  </div>
 
                   <div
                     style={{
