@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo, useContext } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import {
   Button,
   Select,
@@ -8,7 +8,6 @@ import {
   GroupBox,
   NumberInput,
   TextInput,
-  ScrollView,
 } from "react95";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
@@ -107,7 +106,9 @@ const AddActivity = () => {
       if (!groups.length) {
         const groups = await fetchGroups();
         setGroups(groups);
-      }
+      } 
+      setSelectedGroup(groups[0]);
+
     };
     init();
   }, [groups, navigate]);
@@ -121,6 +122,7 @@ const AddActivity = () => {
           ...activities,
           { activity_name: "Create Activity", activity_id: "custom" },
         ]);
+        setSelectedActivity(activities[0]);
       } catch (error) {
         console.error("Failed to fetch activities:", error);
       }
@@ -206,7 +208,7 @@ const AddActivity = () => {
       <WindowContent style={{ overflowX: "visible" }}>
         <GroupBox label="Select Activity">
           <Select
-            defaultValue={1}
+          value={selectedActivity}
             options={activityData.map((activity) => ({
               label: activity.activity_name,
               value: activity,
@@ -226,7 +228,7 @@ const AddActivity = () => {
 
         <GroupBox label="Select Group">
           <Select
-            defaultValue={1}
+            value={selectedGroup}
             options={groups.map((group) => ({
               label: group.group_name,
               value: group,
