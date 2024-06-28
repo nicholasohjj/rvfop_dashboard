@@ -25,7 +25,7 @@ const imageUrls = [
 export const Footer = () => {
   const [open, setOpen] = useState(false);
   const { session, setSession } = useContext(sessionContext);
-  const { user } = useContext(userContext);
+  const { user, setUser } = useContext(userContext);
 
   const navigate = useNavigate();
 
@@ -41,6 +41,7 @@ export const Footer = () => {
     console.log("Logging out", user);
     await supabaseClient.auth.signOut();
     setSession(null);
+    setUser(null);
     navigate("/login");
   };
 
