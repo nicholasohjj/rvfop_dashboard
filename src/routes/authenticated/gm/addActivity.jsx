@@ -18,11 +18,7 @@ import {
   addActivity,
   addGroupActivity,
 } from "../../../supabase/services";
-import {
-  useStore,
-  initialiseGroups,
-  groupsContext,
-} from "../../../context/context";
+import { useStore, groupsContext } from "../../../context/context";
 import { userContext } from "../../../context/context";
 import { Helmet } from "react-helmet";
 // Styled components
