@@ -88,7 +88,7 @@ const useFetchData = (setFormData) => {
         setFormData((prevData) => ({
           ...prevData,
           selectedGroup: groups[0]?.group_id,
-          selectedRole: { label: roleData[0].role_name, value: roleData[0] },
+          selectedRole: roleData[0],
         }));
       }
     };
@@ -181,7 +181,7 @@ export const Signup = () => {
         password,
         options: {
           data: {
-            group_id: selectedGroup,
+            group_id: selectedRole.needs_group ? selectedGroup : null,
             role: selectedRole.role,
             profile_name: name,
           },
