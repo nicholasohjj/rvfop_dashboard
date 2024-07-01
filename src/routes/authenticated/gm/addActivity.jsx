@@ -18,7 +18,11 @@ import {
   addActivity,
   addGroupActivity,
 } from "../../../supabase/services";
-import { useStore, initialiseGroups, groupsContext } from "../../../context/context";
+import {
+  useStore,
+  initialiseGroups,
+  groupsContext,
+} from "../../../context/context";
 import { userContext } from "../../../context/context";
 import { Helmet } from "react-helmet";
 // Styled components
@@ -102,13 +106,11 @@ const AddActivity = () => {
   const storeGroups = useStore((state) => state.groups);
   useEffect(() => {
     const init = async () => {
-
       if (!groups.length) {
         const groups = await fetchGroups();
         setGroups(groups);
-      } 
+      }
       setSelectedGroup(groups[0]);
-
     };
     init();
   }, [groups, navigate]);
@@ -166,6 +168,13 @@ const AddActivity = () => {
         return;
       }
 
+      // if points <= 0, don't add activity
+      if (newGroupActivity.points_earned <= 0) {
+        setError("Please enter a valid number of points");
+        setIsModalOpen(true);
+        return;
+      }
+
       try {
         // Directly await the addActivity call without using Promise.all for a single promise
         const [addedActivity] = await addActivity(newActivity);
@@ -184,6 +193,13 @@ const AddActivity = () => {
     newGroupActivity.activity_id = activityToAdd.activity_id;
     newGroupActivity.group_id = selectedGroup.group_id;
     newGroupActivity.gm_id = user.id;
+
+    // if points <= 0, don't add activity
+    if (newGroupActivity.points_earned <= 0) {
+      setError("Please enter a valid number of points");
+      setIsModalOpen(true);
+      return;
+    }
 
     try {
       await addGroupActivity(newGroupActivity);
@@ -208,7 +224,7 @@ const AddActivity = () => {
       <WindowContent style={{ overflowX: "visible" }}>
         <GroupBox label="Select Activity">
           <Select
-          value={selectedActivity}
+            value={selectedActivity}
             options={activityData.map((activity) => ({
               label: activity.activity_name,
               value: activity,
