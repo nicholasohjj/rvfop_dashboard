@@ -117,6 +117,8 @@ const AddDeduction = () => {
           const groupData = await fetchGroup(user.group_id);
           setGroup(groupData);
         }
+
+        setSelectedGroup(groups[0]);
       } catch (error) {
         setError(error.message);
         console.error("Initialization error:", error);
