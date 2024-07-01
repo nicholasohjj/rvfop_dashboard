@@ -117,7 +117,7 @@ By integrating technology with tradition, we're setting a new standard for how o
 
 ### Database Management
 
-<img src="images/db.png" alt="db" style="width: 100%">
+<img src="public/db.png" alt="db" style="width: 100%">
 
 The project uses PostgreSQL, provided by Supabase, for database management.
 
