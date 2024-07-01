@@ -188,7 +188,6 @@ const AddDeduction = () => {
     }
   };
 
-
   const modalVariants = {
     hidden: {
       opacity: 0,
@@ -255,7 +254,7 @@ const AddDeduction = () => {
                   <PointsSection>
                     <p>Points to deduct: </p>
                     <NumberInput
-                    defaultValue={0}
+                      defaultValue={0}
                       onChange={(value) => setDeductionPoints(Number(value))}
                       step={1}
                       min={0}
