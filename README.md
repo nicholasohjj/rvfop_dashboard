@@ -117,14 +117,9 @@ By integrating technology with tradition, we're setting a new standard for how o
 
 ### Database Management
 
-<table>
-  <tr>
-    <td><img src="public/screenshot1.png" alt="er-diagram" style="width: 100%; display: block;"></td>
-    <td><img src="public/screenshot2.png" alt="er-diagram" style="width: 100%; display: block;"></td>
-  </tr>
-</table>
+<img src="images/db.png" alt="db" style="width: 100%">
 
-The project uses PostgreSQL, provided by Supabase, for database management. The schema and migrations are designed to support the dynamic features of the dashboard. More info [here](https://github.com/nicholasohjj/rvfop_dashboard/tree/main/db).
+The project uses PostgreSQL, provided by Supabase, for database management.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
