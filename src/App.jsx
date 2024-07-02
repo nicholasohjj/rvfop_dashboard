@@ -111,6 +111,7 @@ const App = () => {
     {
       path: "/about",
       element: <Layout />,
+      errorElement: <ErrorPage />,
       children: [
         {
           path: "",
@@ -157,7 +158,7 @@ const App = () => {
       path: "/loading",
       element: <Loading />,
       errorElement: <ErrorPage />,
-    }
+    },
   ]);
 
   return (

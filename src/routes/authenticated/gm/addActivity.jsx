@@ -116,6 +116,8 @@ const AddActivity = () => {
     const fetchActivityData = async () => {
       try {
         const activities = await fetchActivities();
+
+        console.log("Activities fetched: ", activities);
         setActivityData([
           ...activities,
           { activity_name: "Create Activity", activity_id: "custom" },
@@ -126,9 +128,7 @@ const AddActivity = () => {
       }
     };
 
-    if (storeGroups.length > 0) {
-      fetchActivityData();
-    }
+    fetchActivityData();
   }, [storeGroups.length]);
 
   const modalVariants = {
