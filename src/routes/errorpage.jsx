@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { Window, WindowHeader, WindowContent, Button, Tooltip } from "react95";
 import { motion, useMotionValue, useTransform } from "framer-motion";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate, useRouteError } from "react-router-dom"; // Import useNavigate
 import styled from "styled-components";
 
 const StyledWindowHeader = styled(WindowHeader)`
@@ -17,6 +17,8 @@ const ErrorPage = () => {
   const constraintsRef = useRef(null);
   const navigate = useNavigate(); // Hook for navigation
   const dragxError = useMotionValue(0);
+
+  const error = useRouteError(); // Hook to get the error object
 
   const rotateValueError = useTransform(dragxError, [-100, 100], [-10, 10]); // Maps drag from -100 to 100 pixels to a rotation of -10 to 10 degrees
 
@@ -96,7 +98,12 @@ const ErrorPage = () => {
             </Tooltip>
           </div>
           <WindowContent>
+            <div>
             <p>Oops! Something bad happened 😔</p>
+            <i>Error {error.status}: {error.statusText}</i>
+
+            </div>
+
             <Button
               style={{ margin: 10 }}
               onClick={() =>

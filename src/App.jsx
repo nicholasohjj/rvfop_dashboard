@@ -139,29 +139,25 @@ const App = () => {
       errorElement: <ErrorPage />,
     },
     {
-      path: "/error",
-      element: <ErrorPage />,
-    },
-    {
       path: "/update",
       element: session ? <Update /> : <Navigate to="/login" replace />,
+      errorElement: <ErrorPage />,
     },
     {
       path: "/profile",
       element: session ? <Profile /> : <Navigate to="/login" replace />,
+      errorElement: <ErrorPage />,
     },
     {
       path: "/reset",
       element: session ? <Reset /> : <Navigate to="/login" replace />,
+      errorElement: <ErrorPage />,
     },
     {
       path: "/loading",
       element: <Loading />,
-    },
-    {
-      path: "*",
-      element: <ErrorPage />,
-    },
+      errorElement: <ErrorPage />,
+    }
   ]);
 
   return (
