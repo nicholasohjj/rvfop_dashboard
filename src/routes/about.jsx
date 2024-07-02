@@ -45,7 +45,7 @@ const About = () => {
               width={100}
               style={{ cursor: "pointer" }}
               onClick={() => {
-                window.open("https://www.instagram.com/rvrc", "_blank");
+                window.open("https://www.instagram.com/rvrc_nus", "_blank");
               }}
             />
           </div>
