@@ -81,7 +81,9 @@ export const Profile = () => {
         style={{ rotate: rotateValue, x: dragX }}
       >
         <Window style={windowStyle}>
-          <StyledWindowHeader>
+          <StyledWindowHeader onClick={() => {
+                window.open("https://www.instagram.com/ridgeviewravens", "_blank");
+              }}>
             <span>My Profile</span>
           </StyledWindowHeader>
           <WindowContent>
