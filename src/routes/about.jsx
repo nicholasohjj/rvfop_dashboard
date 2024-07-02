@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 
 const About = () => {
   const navigate = useNavigate();
+
+  // Memoized helmetProps for meta tags
   const helmetProps = useMemo(
     () => ({
       title: "Insieme 2024 - About",
@@ -16,50 +18,30 @@ const About = () => {
   );
 
   return (
-    <div
-      style={{
-        height: "100vh",
-        width: "100vw",
-        display: "flex",
-        position: "relative",
-      }}
-    >
+    <div style={{ height: "100vh", width: "100vw", display: "flex" }}>
       <Helmet>
         <title>{helmetProps.title}</title>
         <meta name="description" content={helmetProps.description} />
         <meta name="keywords" content={helmetProps.keywords} />
         <meta name="author" content={helmetProps.author} />
       </Helmet>
-      <Window
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          overflow: "hidden",
-        }}
-      >
-        <WindowHeader
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-          onClick={() => navigate("/match")}
-        >
+
+      <Window style={{ flex: 1 }}>
+        <WindowHeader onClick={() => navigate("/match")}>
           <span>About Insieme 2024</span>
         </WindowHeader>
-        <WindowContent
-          style={{
-            padding: "20px",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <p style={{ marginBottom: "1em" }}>
+
+        <WindowContent style={{ padding: "20px", overflowY: "auto" }}>
+          <p>
+            Welcome to the Freshmen Orientation Programme (FOP) AY24/25 at RVRC!
+            Embrace an unforgettable journey where freshmen from the 7 tribal houses unite under the theme "Insieme" (Italian for "together"). Join us as we celebrate RVRC's 10th anniversary with immersive activities, fostering camaraderie, teamwork, and environmental stewardship. Navigate challenges, forge alliances, and assemble the Quark-Working Enthalpy Energiser Nuke (QWEEN) to secure victory. Discover your role in this epic narrative and integrate into RVRC's vibrant community through engaging gameplay and vibrant, anime-inspired visuals. Welcome to a journey of unity, resilience, and lasting memories.
+          </p>
+
+          <p style={{ marginBottom: "1em", textAlign: "center" }}>
             © 2024 Insieme. All rights reserved.
           </p>
-          <p style={{ textAlign: "center" }}>
+
+          <p style={{ marginBottom: 0, textAlign: "center" }}>
             Website designed by Nicholas Oh.
           </p>
         </WindowContent>
