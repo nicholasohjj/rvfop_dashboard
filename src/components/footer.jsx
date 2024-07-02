@@ -130,7 +130,7 @@ export const Footer = () => {
                 <MenuListItem
                   onClick={
                     user
-                      ? () => handleNavigate("/message")
+                      ? () => handleNavigate("/match")
                       : () => handleNavigate("/login")
                   }
                 >
