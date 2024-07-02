@@ -27,7 +27,9 @@ const About = () => {
       </Helmet>
 
       <Window style={{ flex: 1 }}>
-        <WindowHeader onClick={() => navigate("/match")}>
+        <WindowHeader onClick={() => {
+                window.open("https://www.instagram.com/p/C021bpFxfkK/?igsh=Zm0zbjcwNnNndWFu", "_blank");
+              }}>
           <span>About Insieme 2024</span>
         </WindowHeader>
 
