@@ -126,22 +126,6 @@ export const Footer = () => {
                   Messenger
                 </MenuListItem>
               )}
-                            {session && (
-                <MenuListItem
-                  onClick={
-                    user
-                      ? () => handleNavigate("/match")
-                      : () => handleNavigate("/login")
-                  }
-                >
-                  <img
-                    src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/mshearts.png"
-                    alt="messenger_logo"
-                    style={{ height: "20px", marginRight: 4 }}
-                  />
-                  Matcher
-                </MenuListItem>
-              )}
               {session && (
                 <div>
                   <MenuListItem onClick={() => handleLogout()}>
