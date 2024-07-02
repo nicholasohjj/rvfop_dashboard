@@ -57,7 +57,7 @@ const About = () => {
             Join us as we celebrate RVRC's 10th anniversary with immersive
             activities, fostering camaraderie, teamwork, and environmental
             stewardship. Navigate challenges, forge alliances, and assemble the
-            Quark-Working Enthalpy Energiser Nuke (QWEEN) to secure victory.
+            Gaia to secure victory.
             Discover your role in this epic narrative and integrate into RVRC's
             vibrant community through engaging gameplay and vibrant,
             anime-inspired visuals. Welcome to a journey of unity, resilience,
