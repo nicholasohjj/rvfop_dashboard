@@ -95,7 +95,18 @@ const Progress = () => {
           setGroupData(group);
 
           const membersData = await fetchMembers(user?.group_id);
-          console.log("membersData", membersData);
+          //sort members alphabetically
+
+          membersData.sort((a, b) => {
+            if (a.profile_name < b.profile_name) {
+              return -1;
+            }
+            if (a.profile_name > b.profile_name) {
+              return 1;
+            }
+            return 0;
+          });
+
           setMembers(membersData);
 
           if (group) {
