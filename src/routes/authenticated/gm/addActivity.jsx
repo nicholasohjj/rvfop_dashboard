@@ -94,6 +94,7 @@ const AddActivity = () => {
     activity_id: "",
     points_earned: 0,
     gm_id: "",
+    comments: "",
   });
   const constraintsRef = useRef(null);
   const dragxError = useMotionValue(0);
@@ -310,18 +311,41 @@ const AddActivity = () => {
         {selectedActivity &&
           selectedActivity.activity_id != "" &&
           selectedGroup?.group_id && (
-            <PointsSection>
-              <p>Points earned: </p>
-              <NumberInput
-                defaultValue={0}
-                step={1}
-                min={0}
-                max={200}
-                onChange={(e) =>
-                  setNewGroupActivity({ ...newGroupActivity, points_earned: e })
-                }
+            <div style={{
+              marginTop: "20px",
+              display: "flex",
+              flexDirection: "column",
+            
+            }}>
+                          <TextInput
+                value={newGroupActivity.comments}
+                multiline
+                onChange={(e) => {
+                  setNewGroupActivity({
+                    ...newGroupActivity,
+                    comments: e.target.value,
+                  });
+                }}
+                placeholder="Comments. Note: Awarded Group will see this."
+                style={{ marginBottom: "10px" }}
               />
-            </PointsSection>
+              <PointsSection>
+                <p>Points earned: </p>
+                <NumberInput
+                  defaultValue={0}
+                  step={1}
+                  min={0}
+                  max={200}
+                  onChange={(e) =>
+                    setNewGroupActivity({
+                      ...newGroupActivity,
+                      points_earned: e,
+                    })
+                  }
+                />
+              </PointsSection>
+
+            </div>
           )}
         <div
           style={{
