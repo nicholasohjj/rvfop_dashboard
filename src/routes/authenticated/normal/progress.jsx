@@ -206,6 +206,7 @@ const Progress = () => {
                         <TableHeadCell>Day</TableHeadCell>
                         <TableHeadCell>Activity</TableHeadCell>
                         <TableHeadCell>Points</TableHeadCell>
+                        <TableHeadCell>Comments</TableHeadCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -219,6 +220,9 @@ const Progress = () => {
                           </TableDataCell>
                           <TableDataCell>
                             {activity.points_earned}
+                          </TableDataCell>
+                          <TableDataCell>
+                            {activity.comments ? activity.comments : "-"}
                           </TableDataCell>
                         </TableRow>
                       ))}
