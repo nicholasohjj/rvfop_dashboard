@@ -279,6 +279,11 @@ const Progress = () => {
                         <GroupBox label="Points Earned">
                           {selectedActivity?.points_earned}
                         </GroupBox>
+                        {selectedActivity.comments && (
+                        <GroupBox label="Comments">
+                          {selectedActivity?.comments}
+                        </GroupBox>
+                        )}
                       </div>
                     </WindowContent>
                   </Window>
