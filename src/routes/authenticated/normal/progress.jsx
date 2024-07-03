@@ -206,12 +206,11 @@ const Progress = () => {
                         <TableHeadCell>Day</TableHeadCell>
                         <TableHeadCell>Activity</TableHeadCell>
                         <TableHeadCell>Points</TableHeadCell>
-                        <TableHeadCell>Details</TableHeadCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {ActivityData.map((activity, index) => (
-                        <TableRow key={index}>
+                        <TableRow key={index} onClick={() => handleViewButtonClick(activity)}>
                           <TableDataCell>
                             {formatSGT(activity.tm_created)}
                           </TableDataCell>
@@ -220,19 +219,6 @@ const Progress = () => {
                           </TableDataCell>
                           <TableDataCell>
                             {activity.points_earned}
-                          </TableDataCell>
-                          <TableDataCell
-                            style={{
-                              gap: 16,
-                              display: "flex",
-                              justifyContent: "center",
-                            }}
-                          >
-                            <Button
-                              onClick={() => handleViewButtonClick(activity)}
-                            >
-                              View
-                            </Button>
                           </TableDataCell>
                         </TableRow>
                       ))}
