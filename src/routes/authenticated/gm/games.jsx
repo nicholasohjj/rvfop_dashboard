@@ -230,6 +230,9 @@ const Games = () => {
                       <GroupBox label="Points Awarded">
                         {selectedGame?.points_earned}
                       </GroupBox>
+                      <GroupBox label="Comments">
+                        {selectedGame?.comments}
+                      </GroupBox>
                     </div>
                   </WindowContent>
                 </Window>
