@@ -13,6 +13,7 @@ import {
   GroupBox,
   Separator,
   Tooltip,
+  ScrollView,
 } from "react95";
 import styled from "styled-components";
 import { motion, useMotionValue, useTransform } from "framer-motion";
@@ -24,7 +25,6 @@ import {
 } from "../../../supabase/services";
 import { useNavigate } from "react-router-dom";
 import { userContext } from "../../../context/context";
-
 import { formatSGT } from "../../../utils/time";
 import { ProfileAvatar } from "../../../components/profileavatar";
 import { Helmet } from "react-helmet";
@@ -144,6 +144,7 @@ const Progress = () => {
         maxWidth: "100vw",
         margin: "0 auto",
         position: "relative",
+        overflow: "auto",
       }}
     >
       <Helmet>
