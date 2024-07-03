@@ -73,6 +73,8 @@ const Progress = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [members, setMembers] = useState([]); // Initialize to an empty array
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
+
   const constraintsRef = useRef(null);
   const dragxError = useMotionValue(0);
   const navigate = useNavigate();
@@ -96,15 +98,8 @@ const Progress = () => {
           const membersData = await fetchMembers(user?.group_id);
           //sort members alphabetically
 
-          membersData.sort((a, b) => {
-            if (a.profile_name < b.profile_name) {
-              return -1;
-            }
-            if (a.profile_name > b.profile_name) {
-              return 1;
-            }
-            return 0;
-          });
+          membersData.sort((a, b) => a.profile_name.localeCompare(b.profile_name));
+
 
           setMembers(membersData);
 
@@ -146,6 +141,25 @@ const Progress = () => {
     width: windowWidth > 500 ? 500 : "90%", // Adjust width here
     margin: "0%",
   };
+
+  const handleSort = (key) => {
+    let direction = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedActivities = [...ActivityData].sort((a, b) => {
+    if (a[sortConfig.key] < b[sortConfig.key]) {
+      return sortConfig.direction === 'ascending' ? -1 : 1;
+    }
+    if (a[sortConfig.key] > b[sortConfig.key]) {
+      return sortConfig.direction === 'ascending' ? 1 : -1;
+    }
+    return 0;
+  });
+
 
   return (
     <Window
@@ -206,7 +220,7 @@ const Progress = () => {
             </div>
 
             <div style={{ marginTop: 10 }}>
-              {ActivityData.length > 0 ? (
+              {sortedActivities.length > 0 ? (
                 <>
                   <h2 style={{ marginBottom: 20, fontWeight: "bold" }}>
                     Activities
@@ -214,14 +228,14 @@ const Progress = () => {
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <TableHeadCell>Day</TableHeadCell>
-                        <TableHeadCell>Activity</TableHeadCell>
+                      <TableHeadCell onClick={() => handleSort('tm_created')}>Day</TableHeadCell>
+                      <TableHeadCell>Activity</TableHeadCell>
                         <TableHeadCell>Points Earned</TableHeadCell>
                         <TableHeadCell>Comments</TableHeadCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {ActivityData.map((activity, index) => (
+                      {sortedActivities.map((activity, index) => (
                         <TableRow key={index} onClick={() => handleViewButtonClick(activity)}>
                           <TableDataCell>
                             {formatSGT(activity.tm_created)}
