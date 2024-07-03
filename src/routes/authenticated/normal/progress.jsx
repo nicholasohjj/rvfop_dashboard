@@ -206,7 +206,7 @@ const Progress = () => {
                       <TableRow>
                         <TableHeadCell>Day</TableHeadCell>
                         <TableHeadCell>Activity</TableHeadCell>
-                        <TableHeadCell>Points</TableHeadCell>
+                        <TableHeadCell>Points Earned</TableHeadCell>
                         <TableHeadCell>Comments</TableHeadCell>
                       </TableRow>
                     </TableHead>
