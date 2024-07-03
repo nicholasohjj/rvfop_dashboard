@@ -153,7 +153,7 @@ const Progress = () => {
           content="Track your progress here during Insieme 2024"
         />
       </Helmet>
-      <WindowHeader>My Progress</WindowHeader>
+      <WindowHeader onClick={() => navigate("/video")}>My Progress</WindowHeader>
       <WindowContent
         style={{
           flex: 1, // Make WindowContent fill the available space
