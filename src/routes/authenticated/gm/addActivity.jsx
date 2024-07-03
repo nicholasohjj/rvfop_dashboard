@@ -118,7 +118,6 @@ const AddActivity = () => {
       try {
         const activities = await fetchActivities();
 
-        console.log("Activities fetched: ", activities);
         setActivityData([
           ...activities,
           { activity_name: "Create Activity", activity_id: "custom" },
@@ -175,7 +174,6 @@ const AddActivity = () => {
       try {
         // Directly await the addActivity call without using Promise.all for a single promise
         const [addedActivity] = await addActivity(newActivity);
-        console.log("Custom activity received: ", addedActivity);
         activityToAdd = addedActivity;
       } catch (error) {
         console.error("Error adding activity: ", error);

@@ -91,7 +91,6 @@ const Progress = () => {
       try {
         if (user) {
           const group = await fetchGroup(user?.group_id);
-          console.log("group", group);
           setGroupData(group);
 
           const membersData = await fetchMembers(user?.group_id);

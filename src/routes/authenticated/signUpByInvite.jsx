@@ -216,7 +216,6 @@ export const SignupByInvite = () => {
 
   const onRoleChange = (selectedOption) => {
     setSelectedRole(selectedOption.value);
-    console.log("Selected Role", selectedOption);
   };
 
   return (

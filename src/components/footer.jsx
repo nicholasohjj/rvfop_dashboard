@@ -39,7 +39,6 @@ export const Footer = () => {
   }, []);
 
   const handleLogout = async () => {
-    console.log("Logging out", user);
     await supabaseClient.auth.signOut();
     setSession(null);
     setUser(null);
