@@ -232,7 +232,9 @@ const AddDeduction = () => {
                 value={selectedGroup}
                 onChange={handleSelectChange}
                 options={groups.map((group) => ({
-                  label: `${group.group_name} (${group.total_points} points)`,
+                  label: `${
+                    group.group_display_name + " - " + group.group_name
+                  } (${group.total_points} points)`,
                   value: group,
                 }))}
                 width="100%"
