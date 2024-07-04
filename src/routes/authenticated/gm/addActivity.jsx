@@ -241,7 +241,7 @@ const AddActivity = () => {
           <Select
             value={selectedGroup}
             options={groups.map((group) => ({
-              label: group.group_name,
+              label: group.group_display_name + " - " + group.group_name,
               value: group,
             }))}
             width="100%"
@@ -294,7 +294,11 @@ const AddActivity = () => {
                 </div>
                 <div style={{ marginBottom: "5px" }}>
                   <strong>Group:</strong>{" "}
-                  {selectedGroup ? selectedGroup.group_name : "Not selected"}
+                  {selectedGroup
+                    ? selectedGroup.group_display_name +
+                      " - " +
+                      selectedGroup.group_name
+                    : "Not selected"}
                 </div>
               </div>
               <GroupBox
@@ -309,13 +313,14 @@ const AddActivity = () => {
         {selectedActivity &&
           selectedActivity.activity_id != "" &&
           selectedGroup?.group_id && (
-            <div style={{
-              marginTop: "20px",
-              display: "flex",
-              flexDirection: "column",
-            
-            }}>
-                          <TextInput
+            <div
+              style={{
+                marginTop: "20px",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <TextInput
                 value={newGroupActivity.comments}
                 multiline
                 onChange={(e) => {
@@ -342,7 +347,6 @@ const AddActivity = () => {
                   }
                 />
               </PointsSection>
-
             </div>
           )}
         <div
