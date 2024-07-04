@@ -77,6 +77,8 @@ const useFetchData = (setFormData) => {
     const init = async () => {
       if (!groups.length) {
         const groupData = await fetchGroups();
+
+        console.log("Group Data", groupData);
         setGroups(groupData);
       }
 
@@ -224,8 +226,13 @@ export const Signup = () => {
   };
 
   const groupOptions = groups
-    .map((group) => ({ label: group.group_name, value: group.group_id }))
-    .sort((a, b) => a.label.localeCompare(b.label));
+    .map((group) => ({
+      label: group.group_display_name + " - " + group.group_name,
+      value: group.group_id,
+      groupName: group.group_name, // add this property to use in sorting
+    }))
+    .sort((a, b) => a.groupName.localeCompare(b.groupName))
+    .map(({ groupName, ...rest }) => rest); // remove the temporary property
 
   const roleOptions = roles
     .map((role) => ({ label: role.role_name, value: role }))
