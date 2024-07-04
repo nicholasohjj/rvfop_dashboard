@@ -73,7 +73,10 @@ const Progress = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [members, setMembers] = useState([]); // Initialize to an empty array
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: "ascending",
+  });
 
   const constraintsRef = useRef(null);
   const dragxError = useMotionValue(0);
@@ -93,13 +96,15 @@ const Progress = () => {
       try {
         if (user) {
           const group = await fetchGroup(user?.group_id);
+
           setGroupData(group);
 
           const membersData = await fetchMembers(user?.group_id);
           //sort members alphabetically
 
-          membersData.sort((a, b) => a.profile_name.localeCompare(b.profile_name));
-
+          membersData.sort((a, b) =>
+            a.profile_name.localeCompare(b.profile_name)
+          );
 
           setMembers(membersData);
 
@@ -115,7 +120,7 @@ const Progress = () => {
         }
       } catch (error) {
         console.error("Failed to fetch data:", error);
-      } 
+      }
     };
     init();
   }, [user, navigate]);
@@ -131,7 +136,6 @@ const Progress = () => {
     },
   };
 
-
   const handleViewButtonClick = (activity) => {
     setIsModalOpen(!isModalOpen);
     setSelectedActivity(activity); // Set the selected activity
@@ -143,23 +147,22 @@ const Progress = () => {
   };
 
   const handleSort = (key) => {
-    let direction = 'ascending';
-    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending';
+    let direction = "ascending";
+    if (sortConfig.key === key && sortConfig.direction === "ascending") {
+      direction = "descending";
     }
     setSortConfig({ key, direction });
   };
 
   const sortedActivities = [...ActivityData].sort((a, b) => {
     if (a[sortConfig.key] < b[sortConfig.key]) {
-      return sortConfig.direction === 'ascending' ? -1 : 1;
+      return sortConfig.direction === "ascending" ? -1 : 1;
     }
     if (a[sortConfig.key] > b[sortConfig.key]) {
-      return sortConfig.direction === 'ascending' ? 1 : -1;
+      return sortConfig.direction === "ascending" ? 1 : -1;
     }
     return 0;
   });
-
 
   return (
     <Window
@@ -178,7 +181,9 @@ const Progress = () => {
           content="Track your progress here during Insieme 2024"
         />
       </Helmet>
-      <WindowHeader onClick={() => navigate("/video")}>My Progress</WindowHeader>
+      <WindowHeader onClick={() => navigate("/video")}>
+        My Progress
+      </WindowHeader>
       <WindowContent
         style={{
           flex: 1, // Make WindowContent fill the available space
@@ -189,7 +194,9 @@ const Progress = () => {
         {groupData ? (
           <div>
             <GroupBox
-              label={`Group: ${groupData.group_name}`}
+              label={`Group: ${
+                groupData.group_display_name + " - " + groupData.group_name
+              }`}
               style={{ marginBottom: 20 }}
             >
               Total Points Earned: {groupData.total_points}
@@ -228,15 +235,20 @@ const Progress = () => {
                   <Table>
                     <TableHead>
                       <TableRow>
-                      <TableHeadCell onClick={() => handleSort('tm_created')}>Day</TableHeadCell>
-                      <TableHeadCell>Activity</TableHeadCell>
+                        <TableHeadCell onClick={() => handleSort("tm_created")}>
+                          Day
+                        </TableHeadCell>
+                        <TableHeadCell>Activity</TableHeadCell>
                         <TableHeadCell>Points Earned</TableHeadCell>
                         <TableHeadCell>Comments</TableHeadCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {sortedActivities.map((activity, index) => (
-                        <TableRow key={index} onClick={() => handleViewButtonClick(activity)}>
+                        <TableRow
+                          key={index}
+                          onClick={() => handleViewButtonClick(activity)}
+                        >
                           <TableDataCell>
                             {formatSGT(activity.tm_created)}
                           </TableDataCell>
@@ -309,9 +321,9 @@ const Progress = () => {
                           {selectedActivity?.points_earned}
                         </GroupBox>
                         {selectedActivity.comments && (
-                        <GroupBox label="Comments">
-                          {selectedActivity?.comments}
-                        </GroupBox>
+                          <GroupBox label="Comments">
+                            {selectedActivity?.comments}
+                          </GroupBox>
                         )}
                       </div>
                     </WindowContent>
@@ -363,6 +375,5 @@ const Progress = () => {
       </WindowContent>
     </Window>
   );
-
 };
 export default Progress;
