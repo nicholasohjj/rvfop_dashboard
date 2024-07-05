@@ -193,7 +193,7 @@ export const Signup = () => {
       if (error) throw error;
 
       setIsLoading(false);
-      if (data.user && data.user.user_metadata?.email_verified) {
+      if (data.user && data.user.user_metadata?.email_verified == false) {
         setError({
           name: "Account registered successfully!",
           message:
@@ -210,6 +210,7 @@ export const Signup = () => {
         });
         return;
       } else {
+        console.log("Data", data);
         setError({ name: "Error", message: "Email already registered" });
         setIsModalOpen(true);
       }
@@ -410,10 +411,7 @@ export const Signup = () => {
                     setError("");
                     setIsModalOpen(false);
                     if (error.type === "success") {
-                      setSession({
-                        user: null,
-                        session: null,
-                      });
+                      setSession(null);
                       navigate("/", { replace: true }); // Use navigate to redirect for success
                     }
                   }}
