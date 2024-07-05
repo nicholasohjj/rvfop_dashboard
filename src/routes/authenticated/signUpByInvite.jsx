@@ -78,15 +78,22 @@ export const SignupByInvite = () => {
   useEffect(() => {
     const fetch = async () => {
       if (!user) {
-        const user = await fetchUser();
-        setUser(user);
+        const newUser = await fetchUser();
+
+        if (!newUser) {
+          navigate("/login", { replace: true });
+          return;
+        }
+        setUser(newUser);
       }
 
       const groups = await fetchGroups();
+      setSelectedGroup(groups[0].group_id);
       setGroups(groups);
 
       const roles = await fetchRoles();
       setRoles(roles);
+      setSelectedRole(roles[0]);
     };
 
     fetch();
@@ -144,7 +151,7 @@ export const SignupByInvite = () => {
       return;
     }
 
-    if (selectedRole?.needs_group && !selectedGroup) {
+    if (selectedRole.needs_group && !selectedGroup) {
       setIsModalOpen(true);
       setError({
         name: "Error",
@@ -152,6 +159,12 @@ export const SignupByInvite = () => {
       });
       return;
     }
+
+    if (!selectedRole?.needs_group) {
+      setSelectedGroup(null);
+    }
+
+    console.log(selectedRole, selectedGroup, name, email, password);
 
     try {
       const { data, error } = await supabaseClient.auth.admin.updateUserById(
@@ -201,7 +214,7 @@ export const SignupByInvite = () => {
   };
 
   const groupOptions = groups.map((group) => ({
-    label: group.group_name,
+    label: group.group_display_name + " - " + group.group_name,
     value: group.group_id,
   }));
 
@@ -298,7 +311,7 @@ export const SignupByInvite = () => {
 
                 <GroupBox label="Select your Role">
                   <Select
-                    defaultValue={2}
+                    value={selectedRole}
                     options={roleOptions}
                     menuMaxHeight={160}
                     width="100%"
@@ -308,7 +321,7 @@ export const SignupByInvite = () => {
                 {selectedRole?.needs_group && (
                   <GroupBox label="Select your Orientation Group">
                     <Select
-                      defaultValue={2}
+                    value={selectedGroup}
                       options={groupOptions}
                       menuMaxHeight={160}
                       width="100%"

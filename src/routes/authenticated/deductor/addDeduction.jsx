@@ -20,6 +20,7 @@ import {
 import { groupsContext, userContext } from "../../../context/context";
 import { Helmet } from "react-helmet";
 import { supabaseClient } from "../../../supabase/supabaseClient";
+import { LoadingHourglass } from "../../../components/loadinghourglass";
 
 // Styled components
 const StyledWindow = styled(Window)`

@@ -135,7 +135,7 @@ const App = () => {
     },
     {
       path: "/invite",
-      element: session ? <SignupByInvite /> : <Navigate to="/" replace />,
+      element: <SignupByInvite />,
       errorElement: <ErrorPage />,
     },
     {
