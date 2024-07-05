@@ -1,9 +1,4 @@
-import {
-  useEffect,
-  useCallback,
-  useMemo,
-  useContext,
-} from "react";
+import { useEffect, useCallback, useMemo, useContext } from "react";
 import {
   Table,
   TableBody,

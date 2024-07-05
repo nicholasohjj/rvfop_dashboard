@@ -49,8 +49,6 @@ export const Profile = () => {
     fetchUserMemoized();
   }, [fetchUserMemoized]);
 
-
-
   const windowStyle = useMemo(
     () => ({
       width: windowWidth > 500 ? 500 : "90%",
@@ -81,9 +79,14 @@ export const Profile = () => {
         style={{ rotate: rotateValue, x: dragX }}
       >
         <Window style={windowStyle}>
-          <StyledWindowHeader onClick={() => {
-                window.open("https://www.instagram.com/ridgeviewravens", "_blank");
-              }}>
+          <StyledWindowHeader
+            onClick={() => {
+              window.open(
+                "https://www.instagram.com/ridgeviewravens",
+                "_blank"
+              );
+            }}
+          >
             <span>My Profile</span>
           </StyledWindowHeader>
           <WindowContent>

@@ -73,7 +73,6 @@ const Messenger = () => {
 
   useEffect(() => {
     const init = async () => {
-
       const channels = await fetchChannels();
       setChannels(channels);
       setSelectedChannel(channels[0]);
@@ -165,7 +164,6 @@ const Messenger = () => {
     setSelectedChannel(e.value);
     setMessages([]); // Clear messages when changing channels
   }, []);
-
 
   return (
     <StyledWindow style={{ flex: 1, width: 320 }}>

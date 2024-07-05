@@ -8,7 +8,6 @@ import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { styleReset } from "react95";
 import App from "./App";
 
-
 const GlobalStyles = createGlobalStyle`
   ${styleReset}
   @font-face {

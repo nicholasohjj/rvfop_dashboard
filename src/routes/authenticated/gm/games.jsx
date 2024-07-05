@@ -1,10 +1,4 @@
-import {
-  useState,
-  useEffect,
-  useRef,
-  useContext,
-  useCallback,
-} from "react";
+import { useState, useEffect, useRef, useContext, useCallback } from "react";
 import {
   Button,
   Table,

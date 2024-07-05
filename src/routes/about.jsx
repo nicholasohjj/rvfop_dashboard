@@ -27,9 +27,14 @@ const About = () => {
       </Helmet>
 
       <Window style={{ flex: 1 }}>
-        <WindowHeader onClick={() => {
-                window.open("https://www.instagram.com/p/C021bpFxfkK/?igsh=Zm0zbjcwNnNndWFu", "_blank");
-              }}>
+        <WindowHeader
+          onClick={() => {
+            window.open(
+              "https://www.instagram.com/p/C021bpFxfkK/?igsh=Zm0zbjcwNnNndWFu",
+              "_blank"
+            );
+          }}
+        >
           <span>About Insieme 2024</span>
         </WindowHeader>
 
@@ -59,11 +64,10 @@ const About = () => {
             Join us as we celebrate RVRC's 10th anniversary with immersive
             activities, fostering camaraderie, teamwork, and environmental
             stewardship. Navigate challenges, forge alliances, and assemble the
-            Gaia to secure victory.
-            Discover your role in this epic narrative and integrate into RVRC's
-            vibrant community through engaging gameplay and vibrant,
-            anime-inspired visuals. Welcome to a journey of unity, resilience,
-            and lasting memories.
+            Gaia to secure victory. Discover your role in this epic narrative
+            and integrate into RVRC's vibrant community through engaging
+            gameplay and vibrant, anime-inspired visuals. Welcome to a journey
+            of unity, resilience, and lasting memories.
           </p>
 
           <p style={{ marginBottom: "1em", textAlign: "center" }}>

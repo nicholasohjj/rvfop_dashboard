@@ -1,8 +1,7 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import { Avatar } from "react95";
 
 export const ProfileAvatar = ({ name, nameColor }) => {
-
   const generateColorFromName = () => {
     let hash = 0;
 

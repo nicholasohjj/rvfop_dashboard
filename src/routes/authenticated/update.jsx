@@ -98,7 +98,6 @@ export const Update = () => {
       return;
     }
 
-
     try {
       const { data, error } = await supabaseClient.auth.updateUser({
         password,

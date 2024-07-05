@@ -6,11 +6,14 @@ const Loading = () => {
   const [percent, setPercent] = useState(0);
   const navigate = useNavigate();
 
-  const originalStyles = useMemo(() => ({
-    backgroundColor: document.body.style.backgroundColor,
-    margin: document.body.style.margin,
-    htmlHeight: document.documentElement.style.height,
-  }), []);
+  const originalStyles = useMemo(
+    () => ({
+      backgroundColor: document.body.style.backgroundColor,
+      margin: document.body.style.margin,
+      htmlHeight: document.documentElement.style.height,
+    }),
+    []
+  );
 
   const restoreOriginalStyles = useCallback(() => {
     document.body.style.backgroundColor = originalStyles.backgroundColor;
@@ -24,7 +27,7 @@ const Loading = () => {
     document.documentElement.style.height = "100%";
 
     const timer = setInterval(() => {
-      setPercent(prevPercent => {
+      setPercent((prevPercent) => {
         if (prevPercent >= 100) {
           clearInterval(timer);
           return 100;

@@ -1,4 +1,11 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo, useContext} from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useMemo,
+  useContext,
+} from "react";
 import {
   Window,
   WindowHeader,
@@ -56,7 +63,7 @@ const StyledWindowHeader = styled(WindowHeader)`
 
 export const Login = () => {
   const [email, setemail] = useState("");
-  const {session, setSession} = useContext(sessionContext);
+  const { session, setSession } = useContext(sessionContext);
   const [isLoading, setIsLoading] = useState(false);
   const [password, setPassword] = useState("");
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -81,71 +88,80 @@ export const Login = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const modalVariants = useMemo(() => ({
-    hidden: {
-      opacity: 0,
-      scale: 0,
-    },
-    visible: {
-      opacity: 1,
-      scale: 1,
-    },
-  }), []);
+  const modalVariants = useMemo(
+    () => ({
+      hidden: {
+        opacity: 0,
+        scale: 0,
+      },
+      visible: {
+        opacity: 1,
+        scale: 1,
+      },
+    }),
+    []
+  );
 
-  const handleSubmit = useCallback(async (e) => {
-    e.preventDefault();
+  const handleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
 
-    if (!email || !password) {
-      setIsModalOpen(true);
-      setError({
-        name: "Error",
-        message: "Email and password are required.",
-      });
-      return;
-    }
-
-    // check if email is valid and password is at least 6 chars
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setIsModalOpen(true);
-      setError({
-        name: "Error",
-        message: "Please enter a valid email address.",
-      });
-      return;
-    }
-
-    if (password.length < 6) {
-      setIsModalOpen(true);
-      setError({
-        name: "Error",
-        message: "Password must be at least 6 characters.",
-      });
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      const { data, error } = await supabaseClient.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) {
-        throw error;
+      if (!email || !password) {
+        setIsModalOpen(true);
+        setError({
+          name: "Error",
+          message: "Email and password are required.",
+        });
+        return;
       }
-      setIsLoading(false);
-      setSession(data);
-      navigate("/", { replace: true });
-    } catch (error) {
-      setIsLoading(false);
-      setIsModalOpen(true);
-      setError(error);
-    }
-  }, [email, password, navigate, setSession]);
 
-  const windowStyle = useMemo(() => ({
-    width: windowWidth > 500 ? 500 : "90%", // Adjust width here
-    margin: "0%",
-  }), [windowWidth]);
+      // check if email is valid and password is at least 6 chars
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        setIsModalOpen(true);
+        setError({
+          name: "Error",
+          message: "Please enter a valid email address.",
+        });
+        return;
+      }
+
+      if (password.length < 6) {
+        setIsModalOpen(true);
+        setError({
+          name: "Error",
+          message: "Password must be at least 6 characters.",
+        });
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) {
+          throw error;
+        }
+        setIsLoading(false);
+        setSession(data);
+        navigate("/", { replace: true });
+      } catch (error) {
+        setIsLoading(false);
+        setIsModalOpen(true);
+        setError(error);
+      }
+    },
+    [email, password, navigate, setSession]
+  );
+
+  const windowStyle = useMemo(
+    () => ({
+      width: windowWidth > 500 ? 500 : "90%", // Adjust width here
+      margin: "0%",
+    }),
+    [windowWidth]
+  );
 
   return (
     <div

@@ -1,4 +1,10 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 import { Window, WindowHeader, WindowContent, Button, Tooltip } from "react95";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useNavigate, useRouteError } from "react-router-dom"; // Import useNavigate
@@ -33,23 +39,27 @@ const ErrorPage = () => {
     };
   }, [handleResize]);
 
-  const windowStyle = useMemo(() => ({
-    width: windowWidth > 500 ? 500 : "90%",
-    margin: "0%",
-  }), [windowWidth]);
+  const windowStyle = useMemo(
+    () => ({
+      width: windowWidth > 500 ? 500 : "90%",
+      margin: "0%",
+    }),
+    [windowWidth]
+  );
 
-  const modalVariants = useMemo(() => ({
-    hidden: {
-      opacity: 0,
-      scale: 0,
-    },
-    visible: {
-      opacity: 1,
-      scale: 1,
-    },
-  }), []);
-
-  
+  const modalVariants = useMemo(
+    () => ({
+      hidden: {
+        opacity: 0,
+        scale: 0,
+      },
+      visible: {
+        opacity: 1,
+        scale: 1,
+      },
+    }),
+    []
+  );
 
   return (
     <div
@@ -99,9 +109,10 @@ const ErrorPage = () => {
           </div>
           <WindowContent>
             <div>
-            <p>Oops! Something bad happened 😔</p>
-            <i>Error {error.status}: {error.statusText}</i>
-
+              <p>Oops! Something bad happened 😔</p>
+              <i>
+                Error {error.status}: {error.statusText}
+              </i>
             </div>
 
             <Button

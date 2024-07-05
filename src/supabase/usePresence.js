@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { supabaseClient } from './supabaseClient';
+import { useEffect, useState } from "react";
+import { supabaseClient } from "./supabaseClient";
 
 const usePresence = (roomId, userId) => {
   const [presenceState, setPresenceState] = useState(null);
@@ -14,7 +14,7 @@ const usePresence = (roomId, userId) => {
     });
 
     matcherChannel
-      .on('presence', { event: 'sync' }, () => {
+      .on("presence", { event: "sync" }, () => {
         setPresenceState(matcherChannel.presenceState());
       })
       .subscribe();

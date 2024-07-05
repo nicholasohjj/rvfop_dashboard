@@ -297,7 +297,8 @@ const Matcher = () => {
               }}
             >
               <p>
-                Love is in the air! Find your match and start chatting. (Beta version)
+                Love is in the air! Find your match and start chatting. (Beta
+                version)
               </p>
             </div>
             <Button

@@ -90,49 +90,58 @@ export const Reset = () => {
     setPasswordsMatch(password === confirmPassword);
   }, [password, confirmPassword]);
 
-  const handleSubmit = useCallback(async (e) => {
-    e.preventDefault();
-    if (!passwordsMatch) {
-      setError({
-        name: "Password Mismatch",
-        message: "Passwords do not match.",
-      });
-      setIsModalOpen(true);
-      return;
-    }
-
-    try {
-      const { data, error } = await supabaseClient.auth.updateUser({
-        password,
-      });
-
-      if (error) {
-        throw error;
+  const handleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
+      if (!passwordsMatch) {
+        setError({
+          name: "Password Mismatch",
+          message: "Passwords do not match.",
+        });
+        setIsModalOpen(true);
+        return;
       }
 
-      supabaseClient.auth.getSession().then(({ data: { session } }) => {});
-      navigate("/", { replace: true });
-    } catch (error) {
-      setIsModalOpen(true);
-      setError(error);
-    }
-  }, [password, confirmPassword, passwordsMatch, navigate]);
+      try {
+        const { data, error } = await supabaseClient.auth.updateUser({
+          password,
+        });
 
-  const windowStyle = useMemo(() => ({
-    width: windowWidth > 500 ? 500 : "90%", // Adjust width here
-    margin: "0%",
-  }), [windowWidth]);
+        if (error) {
+          throw error;
+        }
 
-  const modalVariants = useMemo(() => ({
-    hidden: {
-      opacity: 0,
-      scale: 0,
+        supabaseClient.auth.getSession().then(({ data: { session } }) => {});
+        navigate("/", { replace: true });
+      } catch (error) {
+        setIsModalOpen(true);
+        setError(error);
+      }
     },
-    visible: {
-      opacity: 1,
-      scale: 1,
-    },
-  }), []);
+    [password, confirmPassword, passwordsMatch, navigate]
+  );
+
+  const windowStyle = useMemo(
+    () => ({
+      width: windowWidth > 500 ? 500 : "90%", // Adjust width here
+      margin: "0%",
+    }),
+    [windowWidth]
+  );
+
+  const modalVariants = useMemo(
+    () => ({
+      hidden: {
+        opacity: 0,
+        scale: 0,
+      },
+      visible: {
+        opacity: 1,
+        scale: 1,
+      },
+    }),
+    []
+  );
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);

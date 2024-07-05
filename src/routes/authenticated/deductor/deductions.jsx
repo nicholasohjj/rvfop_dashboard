@@ -69,7 +69,6 @@ const Deductions = () => {
 
   useEffect(() => {
     const init = async () => {
-
       if (user && !user.can_deduct) {
         navigate("/", { replace: true });
       }
@@ -101,7 +100,6 @@ const Deductions = () => {
       scale: 1,
     },
   };
-
 
   const handleViewButtonClick = (deduction) => {
     setIsModalOpen(!isModalOpen);

@@ -32,8 +32,7 @@ const fetchMembers = async (group_id) => {
   }
 
   return data;
-}
-
+};
 
 const fetchMessages = async (input_channel) => {
   const { data, error } = await supabaseClient
@@ -100,20 +99,21 @@ const fetchUser = async () => {
 
 const fetchOtherUser = async (user_id) => {
   try {
-    const { data, error } = await supabaseClient.from("profiles").select("*").eq("id", user_id).single();
+    const { data, error } = await supabaseClient
+      .from("profiles")
+      .select("*")
+      .eq("id", user_id)
+      .single();
 
     if (error) {
       return null;
     }
 
     return data;
-  }
-  catch (error) {    
-    
+  } catch (error) {
     return null;
   }
-
-}
+};
 
 const fetchGroups = async () => {
   const { data, error } = await supabaseClient.from("groups").select("*");
@@ -167,7 +167,6 @@ const fetchRoles = async () => {
 
 const fetchDeductedDeductions = async (group_id) => {
   try {
-
     const { data: deductionData, error: deductionError } = await supabaseClient
       .from("deductions")
       .select("*");
@@ -180,7 +179,6 @@ const fetchDeductedDeductions = async (group_id) => {
     const filteredDeductions = deductionData.filter(
       (deduction) => deduction.deducted_group_id === group_id
     );
-
 
     // Sort filtered deductions by creation time
     filteredDeductions.sort(
@@ -262,5 +260,5 @@ export {
   fetchMessages,
   fetchPrivateMessages,
   fetchDeductedDeductions,
-  fetchOtherUser
+  fetchOtherUser,
 };
