@@ -71,6 +71,11 @@ export const Reset = () => {
   useEffect(() => {
     const getEmail = async () => {
       const { data } = await supabaseClient.auth.getUser();
+
+      if (!data.user) {
+        navigate("/", { replace: true });
+      }
+
       setEmail(data.user.email);
     };
 
@@ -97,6 +102,20 @@ export const Reset = () => {
         setError({
           name: "Password Mismatch",
           message: "Passwords do not match.",
+        });
+        setIsModalOpen(true);
+        return;
+      }
+
+      if (
+        !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}/.test(
+          password
+        )
+      ) {
+        setError({
+          name: "Error",
+          message:
+            "Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character.",
         });
         setIsModalOpen(true);
         return;
@@ -170,7 +189,7 @@ export const Reset = () => {
       >
         <Window style={windowStyle}>
           <WindowHeader>
-            <span>Reset your password</span>
+            <span>Reset/Update your password</span>
           </WindowHeader>
           <WindowContent>
             <p style={{ display: "flex" }}>

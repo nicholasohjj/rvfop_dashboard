@@ -41,6 +41,11 @@ export const Profile = () => {
   const fetchUserMemoized = useCallback(async () => {
     if (!user) {
       const fetchedUser = await fetchUser();
+
+      if (!fetchedUser) {
+        navigate("/login");
+      }
+
       setUser(fetchedUser);
     }
   }, [user, setUser]);
@@ -127,7 +132,7 @@ export const Profile = () => {
               </div>
             )}
             <div style={{ display: "flex", justifyContent: "space-around" }}>
-              <Button onClick={() => navigate("/update")}>
+              <Button onClick={() => navigate("/reset")}>
                 Update Password
               </Button>
               <Button onClick={handleReturnHome}>Return home</Button>

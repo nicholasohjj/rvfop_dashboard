@@ -18,7 +18,6 @@ import Scoreboard from "./routes/scoreboard";
 import Loading from "./routes/loading";
 import Progress from "./routes/authenticated/normal/progress";
 import { supabaseClient } from "./supabase/supabaseClient";
-import { Update } from "./routes/authenticated/update";
 import { Reset } from "./routes/authenticated/reset";
 import AddActivity from "./routes/authenticated/gm/addActivity";
 import AddDeduction from "./routes/authenticated/deductor/addDeduction";
@@ -140,18 +139,13 @@ const App = () => {
       errorElement: <ErrorPage />,
     },
     {
-      path: "/update",
-      element: session ? <Update /> : <Navigate to="/login" replace />,
-      errorElement: <ErrorPage />,
-    },
-    {
       path: "/profile",
-      element: session ? <Profile /> : <Navigate to="/login" replace />,
+      element: <Profile />,
       errorElement: <ErrorPage />,
     },
     {
       path: "/reset",
-      element: session ? <Reset /> : <Navigate to="/login" replace />,
+      element: <Reset />,
       errorElement: <ErrorPage />,
     },
     {
