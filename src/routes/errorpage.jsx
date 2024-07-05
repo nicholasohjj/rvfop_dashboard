@@ -111,7 +111,7 @@ const ErrorPage = () => {
             <div>
               <p>Oops! Something bad happened 😔</p>
               <i>
-                Error {error.status}: {error.statusText}
+                Error {error.status}: {error.statusText || error.message}
               </i>
             </div>
 

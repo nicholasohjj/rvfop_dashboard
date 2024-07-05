@@ -45,6 +45,8 @@ const App = () => {
         data: { session },
       } = await supabaseClient.auth.getSession();
 
+      console.log("session", session);
+
       setSession(session);
     };
 
