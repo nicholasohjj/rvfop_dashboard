@@ -209,7 +209,7 @@ export const Signup = () => {
       setIsLoading(false);
       if (data.user && data.user.user_metadata?.email_verified == false) {
         setError({
-          name: "Account registered successfully!",
+          name: "Success!",
           message:
             "Please verify your email address by clicking the link in the email we sent you.",
           type: "success",
