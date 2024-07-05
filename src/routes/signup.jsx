@@ -170,6 +170,20 @@ export const Signup = () => {
       return;
     }
 
+    if (
+      !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}/.test(
+        password
+      )
+    ) {
+      setError({
+        name: "Error",
+        message:
+          "Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character.",
+      });
+      setIsModalOpen(true);
+      return;
+    }
+
     if (!selectedRole) {
       setError({ name: "Error", message: "Please select a role." });
       setIsModalOpen(true);
