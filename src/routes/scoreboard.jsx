@@ -1,5 +1,6 @@
 import { useEffect, useCallback, useMemo, useContext } from "react";
 import {
+  Anchor,
   Table,
   TableBody,
   TableDataCell,
@@ -96,6 +97,7 @@ const Scoreboard = () => {
         <WindowHeader onClick={() => navigate("/video")}>
           Scoreboard
         </WindowHeader>
+
         {!totalPoints ? (
           <LoadingHourglass />
         ) : (
@@ -118,6 +120,21 @@ const Scoreboard = () => {
                 </TableRow>
               </TableBody>
             </Table>
+            <div
+              style={{
+                textAlign: "center",
+                marginTop: "10px",
+                marginBottom: "10px",
+              }}
+            >
+              Detailed scoreboard{" "}
+              <Anchor
+                target="_blank"
+                href="https://nicholasohjj.grafana.net/public-dashboards/96bd2c34e5bb424db39f6424cda1451a"
+              >
+                here
+              </Anchor>
+            </div>
           </WindowContent>
         )}
       </Window>
