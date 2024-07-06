@@ -199,7 +199,7 @@ export const Login = () => {
                 alt="rvrc-logo"
                 width={100}
                 onClick={() => {
-                  window.open("https://www.instagram.com/rvrcfop", "_blank");
+                  window.open("https://t.me/rvrcfop", "_blank");
                 }}
               />
             </Tooltip>
