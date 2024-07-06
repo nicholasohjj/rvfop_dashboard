@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { Avatar } from "react95";
 
 export const ProfileAvatar = ({ name, nameColor }) => {
@@ -23,9 +22,4 @@ export const ProfileAvatar = ({ name, nameColor }) => {
       {name[0]}
     </Avatar>
   );
-};
-
-ProfileAvatar.propTypes = {
-  name: PropTypes.string.isRequired,
-  nameColor: PropTypes.string.isRequired,
 };
