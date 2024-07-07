@@ -70,7 +70,8 @@ const ErrorPage = () => {
         justifyContent: "center",
         textAlign: "center",
         minHeight: "100vh",
-        backgroundColor: "rgb(0, 128, 128)",
+        background:
+          "linear-gradient(to bottom, rgb(131, 220, 208), rgb(71, 161, 151))", // Use background instead of backgroundColor for gradients
       }}
     >
       <motion.div

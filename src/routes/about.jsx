@@ -46,7 +46,7 @@ const About = () => {
               marginBottom: 8,
             }}
           >
-                        <img
+            <img
               src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/insieme_logo.jpg"
               alt="rvrc-logo"
               width={100}

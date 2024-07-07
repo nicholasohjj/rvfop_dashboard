@@ -22,7 +22,8 @@ const Loading = () => {
   }, [originalStyles]);
 
   useEffect(() => {
-    document.body.style.backgroundColor = "rgb(0, 128, 128)";
+    document.body.style.background =
+      "linear-gradient(to bottom, rgb(131, 220,208), rgb(71, 161, 151))";
     document.body.style.margin = "0";
     document.documentElement.style.height = "100%";
 

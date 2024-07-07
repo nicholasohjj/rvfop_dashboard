@@ -240,7 +240,8 @@ export const SignupByInvite = () => {
         justifyContent: "center",
         textAlign: "center",
         minHeight: "100vh",
-        backgroundColor: "rgb(0, 128, 128)",
+        background:
+          "linear-gradient(to bottom, rgb(131, 220, 208), rgb(71, 161, 151))", // Use background instead of backgroundColor for gradients
       }}
     >
       <Helmet>
@@ -321,7 +322,7 @@ export const SignupByInvite = () => {
                 {selectedRole?.needs_group && (
                   <GroupBox label="Select your Orientation Group">
                     <Select
-                    value={selectedGroup}
+                      value={selectedGroup}
                       options={groupOptions}
                       menuMaxHeight={160}
                       width="100%"

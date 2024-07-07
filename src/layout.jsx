@@ -67,7 +67,11 @@ const ContentArea = styled.div`
   min-height: 90vh;
   max-height: 90vh;
   padding-top: 48px;
-  background-color: rgb(0, 128, 128);
+  background-color: linear-gradient(
+    to bottom,
+    rgb(131, 220, 208),
+    rgb(71, 161, 151)
+  );
 `;
 
 const windowStyle = {
