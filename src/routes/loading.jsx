@@ -66,7 +66,7 @@ const Loading = () => {
       }}
     >
       <img
-        src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/logo.png"
+        src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/insieme_logo.jpg"
         alt="rvrc_logo"
         style={{ marginBottom: "20px", width: "20%" }}
       />

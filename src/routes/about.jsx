@@ -46,6 +46,15 @@ const About = () => {
               marginBottom: 8,
             }}
           >
+                        <img
+              src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/insieme_logo.jpg"
+              alt="rvrc-logo"
+              width={100}
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                window.open("https://www.instagram.com/rvrc_nus", "_blank");
+              }}
+            />
             <img
               src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/logo.png"
               alt="rvrc-logo"
