@@ -11,7 +11,6 @@ const preloadImages = (imageUrls) => {
 };
 
 const imageUrls = [
-  "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/logo.png",
   "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/scoreboard.png",
   "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/progress.png",
   "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/deduction.png",
