@@ -16,23 +16,23 @@ export default defineConfig({
         background_color: "linear-gradient(to bottom, rgb(131, 220, 208), rgb(71, 161, 151))", 
         icons: [
           {
-            src: "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/favicon-16x16.png?t=2024-04-09T14%3A18%3A03.854Z",
+            src: "./public/pwa/favicon-32x32.png",
             sizes: "64x64",
             type: "image/png",
           },
           {
-            src: "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/android-chrome-192x192.png",
+            src: "./public/pwa/android-chrome-192x192.png",
             sizes: "192x192",
             type: "image/png",
           },
           {
-            src: "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/android-chrome-512x512.png",
+            src: "./public/pwa/android-chrome-512x512.png",
             sizes: "512x512",
             type: "image/png",
             purpose: "any",
           },
           {
-            src: "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/android-chrome-512x512.png",
+            src: "./public/pwa/android-chrome-512x512.png",
             sizes: "512x512",
             type: "image/png",
             purpose: "maskable",
