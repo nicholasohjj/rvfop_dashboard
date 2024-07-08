@@ -47,8 +47,8 @@ const About = () => {
             }}
           >
             <img
-              src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/insieme_logo.png"
-              alt="rvrc-logo"
+              src="../../public/pwa/logo_transparent.png"
+              alt="insieme-logo"
               style={{ width: "25%", cursor: "pointer" }}
               onClick={() => {
                 window.open("https://www.instagram.com/rvrcfop", "_blank");
