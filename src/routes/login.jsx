@@ -196,7 +196,7 @@ export const Login = () => {
           <div style={{ marginTop: 8 }}>
             <Tooltip text="Meow! 🐱‍" enterDelay={100} leaveDelay={100}>
               <img
-                src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/insieme_logo.jpg"
+                src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/insieme_logo.png"
                 alt="rvrc-logo"
                 width={100}
                 onClick={() => {
