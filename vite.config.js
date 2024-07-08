@@ -12,7 +12,8 @@ export default defineConfig({
       manifest: {
         name: "Insieme 2024",
         short_name: "Insieme",
-        theme_color: "#008080",
+        theme_color: "#83dcd0",
+        background_color: "linear-gradient(to bottom, rgb(131, 220, 208), rgb(71, 161, 151))", 
         icons: [
           {
             src: "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/favicon-16x16.png?t=2024-04-09T14%3A18%3A03.854Z",
