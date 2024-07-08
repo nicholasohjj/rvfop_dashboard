@@ -47,7 +47,7 @@ const About = () => {
             }}
           >
             <img
-              src="../../public/pwa/logo_transparent.png"
+              src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/insieme_logo.png"
               alt="insieme-logo"
               style={{ width: "25%", cursor: "pointer" }}
               onClick={() => {

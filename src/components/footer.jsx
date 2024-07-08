@@ -12,6 +12,7 @@ const preloadImages = (imageUrls) => {
 };
 
 const imageUrls = [
+  "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/insieme_logo.png",
   "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/scoreboard.png",
   "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/progress.png",
   "https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/deduction.png",
@@ -54,8 +55,8 @@ export const Footer = () => {
             style={{ fontWeight: "bold" }}
           >
             <img
-              src="../../public/pwa/logo_transparent.png"
-              alt="rvrc-logo"
+              src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/insieme_logo.png"
+              alt="insieme-logo"
               style={{ height: "20px", marginRight: 4 }}
             />
           </Button>

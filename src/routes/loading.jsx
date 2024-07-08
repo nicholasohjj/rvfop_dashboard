@@ -67,7 +67,7 @@ const Loading = () => {
       }}
     >
       <img
-        src="../../public/pwa/logo_transparent.png"
+        src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/insieme_logo.png"
         alt="insieme_logo"
         style={{ marginBottom: "20px", width: "20%" }}
       />
