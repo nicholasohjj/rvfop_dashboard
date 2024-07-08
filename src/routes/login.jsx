@@ -191,7 +191,7 @@ export const Login = () => {
       >
         <Window style={windowStyle}>
           <WindowHeader>
-            <span>Insieme 2024</span>
+            <span>Login</span>
           </WindowHeader>
           <div style={{ marginTop: 8 }}>
             <Tooltip text="Meow! 🐱‍" enterDelay={100} leaveDelay={100}>
