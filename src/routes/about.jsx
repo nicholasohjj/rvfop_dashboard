@@ -49,17 +49,15 @@ const About = () => {
             <img
               src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/insieme_logo.png"
               alt="rvrc-logo"
-              width="50%"
-              style={{ cursor: "pointer" }}
+              style={{ width: "25%", cursor: "pointer" }}
               onClick={() => {
-                window.open("https://www.instagram.com/rvrc_nus", "_blank");
+                window.open("https://www.instagram.com/rvrcfop", "_blank");
               }}
             />
             <img
               src="https://tygfzfyykirshnanbprr.supabase.co/storage/v1/object/public/rvfop/logo.png"
               alt="rvrc-logo"
-              width="50%"
-              style={{ cursor: "pointer" }}
+              style={{ width: "25%", cursor: "pointer" }}
               onClick={() => {
                 window.open("https://www.instagram.com/rvrc_nus", "_blank");
               }}
