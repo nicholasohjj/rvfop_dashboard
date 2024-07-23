@@ -60,6 +60,9 @@ const fetchMessages = async (input_channel) => {
     delete message.profiles;
   });
 
+  //sort the data by tm_created
+  data.sort((a, b) => new Date(a.tm_created) - new Date(b.tm_created));
+
   return data;
 };
 
