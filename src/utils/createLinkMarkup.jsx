@@ -1,4 +1,3 @@
-import React from "react";
 import { Anchor } from "react95";
 
 export const createLinkMarkup = (text) => {

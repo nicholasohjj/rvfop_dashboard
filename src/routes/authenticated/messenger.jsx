@@ -21,13 +21,19 @@ import {
 import { Helmet } from "react-helmet";
 import { userContext } from "../../context/context";
 import { supabaseClient } from "../../supabase/supabaseClient";
-import Filter from "bad-words";
 import styled from "styled-components"; // Import styled-components
 import { useNavigate } from "react-router-dom";
 import { fetchChannels, fetchMessages } from "../../supabase/services";
 import { ProfileAvatar } from "../../components/profileavatar";
 import { createLinkMarkup } from "../../utils/createLinkMarkup";
 import { isNewDay } from "../../utils/time";
+import {
+  TextCensor,
+  RegExpMatcher,
+  englishDataset,
+  englishRecommendedTransformers,
+} from "obscenity";
+
 const StyledWindowHeader = styled(WindowHeader)`
   color: white; // Adjust the text color as needed for contrast
   display: flex;
@@ -64,9 +70,16 @@ const Messenger = () => {
   const [messages, setMessages] = useState([]);
   const scrollViewRef = useRef();
   const lastMessageRef = useRef(null);
-  const filter = useMemo(() => new Filter(), []);
   const navigate = useNavigate();
-
+  const censor = useMemo(() => new TextCensor(), []);
+  const matcher = useMemo(
+    () =>
+      new RegExpMatcher({
+        ...englishDataset.build(),
+        ...englishRecommendedTransformers,
+      }),
+    []
+  );
   const scrollToBottom = useCallback(() => {
     lastMessageRef.current?.scrollIntoView({ behavior: "auto" });
   }, []);
@@ -126,8 +139,8 @@ const Messenger = () => {
 
   const handleSend = useCallback(async () => {
     if (!message.trim()) return;
-
-    const sanitizedMessage = filter.clean(message);
+    const matches = matcher.getAllMatches(message);
+    const sanitizedMessage = censor.applyTo(message, matches);
 
     const payload = {
       user_id: user.id,
@@ -158,7 +171,15 @@ const Messenger = () => {
       setMessage("");
       scrollToBottom();
     }
-  }, [message, user, selectedChannel, channel, filter, scrollToBottom]);
+  }, [
+    message,
+    user,
+    selectedChannel,
+    channel,
+    matcher,
+    censor,
+    scrollToBottom,
+  ]);
 
   const handleChannelChange = useCallback((e) => {
     setSelectedChannel(e.value);
